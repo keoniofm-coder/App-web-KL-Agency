@@ -3988,11 +3988,11 @@ function impWhen(v, order, tz, tv) {
 const impIsDay = f => /^\d{4}-\d{2}-\d{2}$/.test(f);
 const impSum = parts => Object.values(parts || {}).filter(Boolean).reduce((x, v) => [x[0] + num(v[0]), x[1] + num(v[1])], [0, 0]);
 const impPartsTxt = e => { const l = Object.entries(e?.parts || {}).filter(([, v]) => v); return l.length < 2 ? '' : ' : ' + l.map(([f, v]) => `${impIsDay(f) ? 'fichier du ' + dShort(f) : f === 'adj' ? 'corrigé à la main' : 'tapé à la main'} ${fmtC(num(v[0]) + num(v[1]), e.cur || 'EUR')}`).join(' + '); };
-// créneau d'une vente : celui du planning si le chatteur y est, sinon l'heure (avant 2h = shift du soir de la veille)
+// créneau d'une vente, toujours sur son vrai jour (minuit à minuit) : celui du planning si le chatteur y est, sinon l'heure (avant 2h = shift du soir)
 function impShift(cid, d, h) {
   const mine = x => planOf(x).filter(s => s.chatterId === cid).sort((a, b) => slotIdx(a.slot) - slotIdx(b.slot));
   if (h != null) {
-    const at = h < 2 ? { d: addDays(d, -1), slot: 'soir' } : { d, slot: h < 8 ? 'nuit' : h < 14 ? 'matin' : h < 20 ? 'aprem' : 'soir' };
+    const at = { d, slot: h < 2 ? 'soir' : h < 8 ? 'nuit' : h < 14 ? 'matin' : h < 20 ? 'aprem' : 'soir' };
     const p = mine(at.d);
     if (p.some(s => s.slot === at.slot)) return { ...at, how: 'plan' };
     // un seul shift ce jour-là : la vente faite juste avant ou après lui revient
@@ -4057,9 +4057,9 @@ function impBuild(st) {
   raMatch(B, items, st);
   items.forEach(it => {
     const { w, cn, mn, mid, a, t } = it, cid = it.to || it.cid;
-    // vente de 0h à 2h rangée sur la veille : sa propre ligne « Ventes 0h–2h »
-    const sh = impShift(cid, w.d, w.h), late = w.h != null && sh.d !== w.d; const key = ekey(sh.slot, cid, mid, c.platformId) + (late ? '_0h2' : '');
-    const g = B.groups[sh.d + '/' + key] ||= { d: sh.d, slot: sh.slot, how: sh.how, c: cid, m: mid, key, late, sales: 0, tips: 0, n: 0, parts: {} };
+    // vente rangée sur son vrai jour (une vente à 0h40 le 1er compte pour le 1er)
+    const sh = impShift(cid, w.d, w.h); const key = ekey(sh.slot, cid, mid, c.platformId);
+    const g = B.groups[sh.d + '/' + key] ||= { d: sh.d, slot: sh.slot, how: sh.how, c: cid, m: mid, key, sales: 0, tips: 0, n: 0, parts: {} };
     g.sales += a; g.tips += t; g.n++; it.gk = sh.d + '/' + key;
     if (it.ra && !(g.ra ||= []).includes(it.ra.id)) g.ra.push(it.ra.id);
     const pt = g.parts[w.f] ||= [0, 0]; pt[0] += a; pt[1] += t;
@@ -4071,21 +4071,24 @@ function impBuild(st) {
   // fichier (réimporter ne double rien). La ligne 0h–2h de la veille reçoit les ventes de deux fichiers (heures UTC) : chacun y
   // garde sa part, et la ligne du soir de la veille n'est plus touchée
   const combos = {}; gs.forEach(g => (combos[g.d] ||= new Set()).add(g.c + '|' + g.m));
+  // avant, les ventes de 0h à 2h allaient sur une ligne « 0h–2h » de la veille : on regarde aussi la veille de chaque jour
+  const exDays = [...new Set(Object.keys(combos).flatMap(d => [d, addDays(d, -1)]))].sort(); B.mv = 0;
   // anciennes lignes importées sans parts : écrites en même temps que des lignes des jours de ce fichier, elles venaient de lui
   const ats = [...F].flatMap(d => Object.values(S.days[d]?.entries || {}).filter(e => e && e.src === st.src && !e.parts && e.at).map(e => e.at));
-  Object.entries(combos).forEach(([d, set]) => {
-    const own = F.has(d);
-    B.ex[d] = Object.entries(S.days[d]?.entries || {}).filter(([, e]) => e && e.platformId === c.platformId && set.has(e.chatterId + '|' + e.modelId)).map(([key, e]) => {
+  exDays.forEach(d => {
+    const own = F.has(d), set = combos[d] || new Set(), nx = combos[addDays(d, 1)] || new Set();
+    B.ex[d] = Object.entries(S.days[d]?.entries || {}).filter(([key, e]) => e && e.platformId === c.platformId && (set.has(e.chatterId + '|' + e.modelId) || (/_0h2$/.test(key) && nx.has(e.chatterId + '|' + e.modelId)))).map(([key, e]) => {
       const keep = {}; let lost = false;
       const cov = paris ? F.has(/_0h2$/.test(key) ? addDays(d, 1) : d) : own; // ligne couverte en entier par ce fichier
       if (e.parts) Object.entries(e.parts).forEach(([f, v]) => { if (!v) return; if (paris ? cov : F.has(f) || (own && !impIsDay(f))) lost = true; else keep[f] = v; });
       else if (!e.src && !cov) keep.manuel = [num(e.sales), num(e.tips)];
       else if (!e.src || cov || ats.some(t => Math.abs(t - e.at) < 15e3)) lost = true;
       else keep[d] = [num(e.sales), num(e.tips)]; // importée avec le fichier de son jour : gardée
+      if (/_0h2$/.test(key) && lost) B.mv++;
       return { key, e, keep, lost, add: Object.keys(keep).length > 0 };
     });
     B.ex[d].forEach(x => {
-      if (x.lost && !x.add) B.nRep++; else if (x.add && gs.some(g => g.d === d && g.key === x.key)) B.nAdd++;
+      if (x.lost && !x.add && !/_0h2$/.test(x.key)) B.nRep++; else if (x.add && gs.some(g => g.d === d && g.key === x.key)) B.nAdd++;
       gs.forEach(g => { if (g.d === d && g.c === x.e.chatterId && g.m === x.e.modelId) { if (x.lost) g.rep = true; if (x.add && x.key === g.key) g.add = true; } });
     });
   });
@@ -4186,7 +4189,7 @@ async function impOpen() {
         if (!x.found) return `<div class="imp-ra miss"><span class="imp-ra-i">!</span><div><div>${who} · <b>${fmtC(num(r.amount), 'EUR')}</b> · fan ${esc(r.fan)}</div><small>Pas trouvée dans ce fichier (vente du ${esc(dShort(r.date))}) : elle reste en attente du prochain import.</small></div></div>`;
         const tot = x.sales.reduce((s, it) => s + it.a + it.t, 0);
         return `<label class="imp-ra ok ${x.off ? 'off' : ''}"><input type="checkbox" data-ra="${esc(r.id)}" ${x.off ? '' : 'checked'} aria-label="Appliquer cette réattribution"><div><div>${who} · <b>${fmtC(tot, cur)}</b> · fan ${esc(r.fan)} ${r.status === 'applied' ? '<span class="pill mute">déjà faite, gardée</span>' : '<span class="pill good">à faire</span>'}</div><small>${x.sales.length} vente${plS(x.sales.length)} : ${x.sales.map(it => esc(cap(fd(it.w.d, { weekday: 'short', day: 'numeric', month: 'short' }))) + (it.w.h != null ? ` ${Math.floor(it.w.h)}h${impP2(Math.round(it.w.h % 1 * 60))}` : '') + ' · ' + fmtC(it.a + it.t, cur)).join(', ')}${!r.to ? ` · ⚠️ ${esc(r.toName || '?')} n'est pas relié à un chatteur de l'app : rien ne change` : ''}</small></div></label>`; }).join('');
-      const dayG = Object.entries(groupBy(gs, 'd')).map(([d, l]) => `<div class="${B.F.has(d) ? '' : 'x'}"><span>${esc(cap(fd(d, { weekday: 'short', day: 'numeric', month: 'short' })))}</span><b>${fmtC(l.reduce((x, g) => x + g.sales + g.tips, 0), cur)}</b><small>${B.F.has(d) ? `${l.length} ligne${plS(l.length)}` : `ventes de 0h à 2h le ${esc(dShort(addDays(d, 1)))}, ${l.every(g => g.slot === 'soir') ? 'fin du shift Soir' : 'comptées sur la veille'}`}</small></div>`).join('');
+      const dayG = Object.entries(groupBy(gs, 'd')).map(([d, l]) => `<div class="${B.F.has(d) ? '' : 'x'}"><span>${esc(cap(fd(d, { weekday: 'short', day: 'numeric', month: 'short' })))}</span><b>${fmtC(l.reduce((x, g) => x + g.sales + g.tips, 0), cur)}</b><small>${B.F.has(d) ? `${l.length} ligne${plS(l.length)}` : `${l.length} ligne${plS(l.length)} · après minuit, heure de Paris`}</small></div>`).join('');
       h += `<div class="imp-sec"><div class="imp-h"><b>Aperçu</b><div class="imp-tools">${st.cols ? '' : `<button class="btn sm" type="button" data-cols>Réglages du fichier</button>`}${gs.length ? `<button class="btn sm" type="button" data-detail>${st.detail ? 'Masquer le détail' : 'Voir le détail ligne par ligne'}</button>` : ''}</div></div>
         ${gs.length ? `<div class="imp-kpis"><div><span>Lignes de vente</span><b>${gs.length}</b><small>${new Set(gs.map(g => g.c)).size} chatteur${plS(new Set(gs.map(g => g.c)).size)}</small></div><div><span>${nd > 1 ? 'Jours' : 'Jour'}</span><b>${nd > 1 ? nd : esc(cap(fd(B.from, { weekday: 'short', day: 'numeric', month: 'short' })))}</b><small>${nd > 1 ? `du ${esc(dShort(B.from))} au ${esc(dShort(B.to))}` : '&nbsp;'}</small></div><div><span>Ventes</span><b>${fmtC(tS, cur)}</b></div><div><span>Tips</span><b>${fmtC(tT, cur)}</b></div><div class="hl"><span>Total brut</span><b>${fmtC(tS + tT, cur)}</b></div></div>` : '<div class="imp-msg">Rien à importer pour l\'instant.</div>'}
         ${nd > 1 ? `<div class="imp-dayg">${dayG}</div>` : ''}
@@ -4194,6 +4197,7 @@ async function impOpen() {
         <div class="imp-msgs">
         ${B.nRep ? `<div class="imp-msg warn">${B.nRep} ligne${plS(B.nRep)} déjà saisie${plS(B.nRep)} sur ${esc(plat.name)} pour ces jours, chatteurs et modèles ${B.nRep > 1 ? 'seront remplacées' : 'sera remplacée'} par l'import (réimporter le même fichier ne compte rien en double).</div>` : ''}
         ${B.nAdd ? `<div class="imp-msg">${B.nAdd} ligne${plS(B.nAdd)} déjà saisie${plS(B.nAdd)} ${B.nAdd > 1 ? 'gardent' : 'garde'} ce qui vient d'un autre jour du CRM ou d'une saisie à la main : cet import s'y ajoute, sans rien compter en double.</div>` : ''}
+        ${B.mv ? `<div class="imp-msg">${B.mv} ancienne${plS(B.mv)} ligne${plS(B.mv)} « Ventes entre 0h et 2h » de la veille ${B.mv > 1 ? 'passent' : 'passe'} sur ${B.mv > 1 ? 'leur' : 'son'} vrai jour : chaque vente compte sur le jour où elle a été faite.</div>` : ''}
         ${B.wait ? `<div class="imp-msg warn">${B.wait} vente${plS(B.wait)} en attente : choisis à qui correspondent les noms surlignés ci-dessus.</div>` : ''}
         ${noSlot ? `<div class="imp-msg">${noSlot} ligne${plS(noSlot)} sans créneau : pas d'heure dans le fichier et chatteur absent du planning ce jour-là.</div>` : ''}
         </div>
@@ -4269,8 +4273,9 @@ async function impRun(st) {
   const clean = o => Object.fromEntries(Object.entries(o).filter(([, v]) => v));
   const raDone = (B.ra || []).filter(x => x.found && !x.off && x.r.to && x.r.status !== 'applied');
   const ok = await guard(async () => {
-    for (const [d, l] of Object.entries(byD)) {
-      const patch = {}, ex = Object.fromEntries((B.ex[d] || []).map(x => [x.key, x]));
+    const wd = [...new Set([...Object.keys(byD), ...Object.keys(B.ex).filter(d => B.ex[d].some(x => x.lost))])].sort();
+    for (const d of wd) {
+      const l = byD[d] || [], patch = {}, ex = Object.fromEntries((B.ex[d] || []).map(x => [x.key, x]));
       // parts écrites en entier : celles qui ne restent pas passent à null
       const partsOf = (key, parts) => ({ ...Object.fromEntries(Object.keys(ex[key]?.e.parts || {}).map(f => [f, null])), ...Object.fromEntries(Object.entries(parts).map(([f, v]) => [f, [r2(v[0]), r2(v[1])]])) });
       Object.values(ex).forEach(x => { if (!x.lost) return; delete draft[d + '/' + x.key];
@@ -4279,7 +4284,7 @@ async function impRun(st) {
       l.forEach(g => { const prev = S.days[d]?.entries?.[g.key]; delete draft[d + '/' + g.key];
         const parts = { ...(ex[g.key]?.keep || {}), ...g.parts }, [s, t] = impSum(parts);
         patch[g.key] = { slot: g.slot, chatterId: g.c, modelId: g.m, platformId: c.platformId, sales: r2(s), tips: r2(t), parts: partsOf(g.key, parts), ...(g.late ? { late: true } : {}), ra: g.ra || null, rate: prev?.rate ?? num(S.chatters[g.c]?.rate ?? 10), fee: c.net ? fee : prev?.fee ?? fee, cur: prev?.cur || cur, at: Date.now(), src: st.src }; });
-      await writeMap('days', d, 'entries', patch);
+      if (Object.keys(patch).length) await writeMap('days', d, 'entries', patch);
     }
     for (const x of raDone) await db.doc('reattrib/' + x.r.id).update({ status: 'applied', appliedAt: Date.now(), appliedFile: x.sales[0].w.f, sales: [...new Set(x.sales.map(it => it.gk))] });
     impCfgAll = { ...impCfgAll, last: st.src, [st.src]: { platformId: c.platformId, cols: c.cols, net: c.net, tipsIn: c.tipsIn, order: c.order, tz: c.tz, model: c.model, chatters: clean(c.chatters), models: clean(c.models) } };
@@ -6272,7 +6277,7 @@ function viewPay() {
       <div class="pay-per">
         <span class="pay-kick">${k.endsWith('A') ? '1re quinzaine' : '2de quinzaine'} · ${cap(fd(from, { month: 'long', year: 'numeric' }))}${sel ? ' · ' + esc(paySelName()) : ''}</span>
         <h2>Du ${parse(from).getDate()}${parse(from).getDate() === 1 ? 'er' : ''} au ${dShort(to)}</h2>
-        <p class="hint">${t.shifts} shift${payS(t.shifts)} · ${rows.length} chatteur${payS(rows.length)} · CA net ${fmt0(t.net)} · brut ${fmt0(t.gross)}</p>
+        <p class="hint">${t.shifts} shift${payS(t.shifts)} · ${rows.length} chatteur${payS(rows.length)} · CA net ${payE(t.net, rate)} · brut ${payE(t.gross, rate)}</p>
       </div>
       <div class="pay-stripw"><span class="pay-cap">Paie générée chaque jour</span><div class="pay-strip">${strip}</div></div>
       <div class="pay-due">
@@ -6314,7 +6319,7 @@ function viewPay() {
     <div class="pay-tbl" role="list">
       <div class="pay-hd" aria-hidden="true"><span>Payé</span><span>Abandon</span><span>Chatteur</span><span>Par modèle</span><span class="n">Shifts</span><span class="n">CA net</span><span class="n">Pén. / primes</span><span class="n">À verser</span><span></span></div>
       ${G.map(([kind, a]) => grp(kind, a)).join('')}
-      <div class="pay-ft"><span></span><span></span><span>Total</span><span class="pay-ms">${mTot.map(x => payMc(x.m, x.com)).join('')}</span><span class="pay-nums"><span class="n" data-l="Shifts">${rows.reduce((a, r) => a + r.s.shifts, 0)}</span><span class="n" data-l="CA net">${fmt0(t.net)}</span><span class="n" data-l="Pén. / primes">${payAdj(inPens, inPrs, true)}</span></span><span class="n pay-tot">${payAmt(total)}${payEq(total, rate)}</span><span></span></div>
+      <div class="pay-ft"><span></span><span></span><span>Total</span><span class="pay-ms">${mTot.map(x => payMc(x.m, x.com)).join('')}</span><span class="pay-nums"><span class="n" data-l="Shifts">${rows.reduce((a, r) => a + r.s.shifts, 0)}</span><span class="n" data-l="CA net">${payE(t.net, rate)}</span><span class="n" data-l="Pén. / primes">${payAdj(inPens, inPrs, true)}</span></span><span class="n pay-tot">${payAmt(total)}${payEq(total, rate)}</span><span></span></div>
     </div></section>`;
   // ---- par plateforme / par modèle
   const byP = Object.entries(groupBy(list, 'platformId')).map(([p, l]) => ({ p, s: agg(l, rate), c: curOf(p) })).sort((a, b) => b.s.com - a.s.com);
@@ -6324,14 +6329,15 @@ function viewPay() {
     <section class="card">${secHead('Par plateforme', 'Montants dans la devise de la plateforme, paie convertie en $.')}
       <div class="pay-br pay-brp"><div class="pay-brh" aria-hidden="true"><span>Plateforme</span><span class="n">CA net</span><span class="n">CA brut</span><span class="n">Paie</span><span class="n">Paie en $</span></div>
       ${byP.map(({ p, s, c }) => `<div class="pay-bri" style="--c:${platColor(p)}"><span class="pay-brn">${platBadge(p)}<span class="pay-cur">${sym(c)}</span></span><span class="n" data-l="CA net">${fmtC(s[c].net, c)}</span><span class="n" data-l="CA brut">${fmtC(s[c].gross, c)}</span><span class="n" data-l="Paie">${fmtC(s[c].com, c)}</span><span class="n pay-brv">${fmtC(s.com)}</span><span class="pay-brbar"><span class="pay-trk"><i style="width:${(s.com / pmax * 100).toFixed(1)}%"></i></span><em>${Math.round(s.com / ptot * 100)} %</em></span></div>`).join('')}</div></section>
-    <section class="card">${secHead('Par modèle', 'Paie des chatteurs par modèle, tout converti en $ (avant pénalités et primes).')}
+    <section class="card">${secHead('Par modèle', 'CA en €, paie des chatteurs en $ (avant pénalités et primes).')}
       <div class="pay-br pay-brm"><div class="pay-brh" aria-hidden="true"><span>Modèle</span><span class="n">CA net</span><span class="n">CA brut</span><span class="n">Paie</span></div>
-      ${byM.map(({ m, s }) => `<div class="pay-bri" style="--c:${modelColor(m)}"><span class="pay-brn">${modelDot(m)}</span><span class="n" data-l="CA net">${fmtC(s.net)}</span><span class="n" data-l="CA brut">${fmtC(s.gross)}</span><span class="n pay-brv">${fmtC(s.com)}</span><span class="pay-brbar"><span class="pay-trk"><i style="width:${(s.com / mmax * 100).toFixed(1)}%"></i></span><em>${Math.round(s.com / ptot * 100)} %</em></span></div>`).join('')}</div></section>
+      ${byM.map(({ m, s }) => `<div class="pay-bri" style="--c:${modelColor(m)}"><span class="pay-brn">${modelDot(m)}</span><span class="n" data-l="CA net">${payE(s.net, rate)}</span><span class="n" data-l="CA brut">${payE(s.gross, rate)}</span><span class="n pay-brv">${fmtC(s.com)}</span><span class="pay-brbar"><span class="pay-trk"><i style="width:${(s.com / mmax * 100).toFixed(1)}%"></i></span><em>${Math.round(s.com / ptot * 100)} %</em></span></div>`).join('')}</div></section>
   </div>`;
   h += payPenSection(k, vPens, rows, rate) + payPrimeSection(k, vPrs, rows, rate);
   $('#view').innerHTML = h;
 }
 // montant en $ redit en € au taux de la quinzaine, en petit
+const payE = (v, rate) => fmt0(v / (num(rate) || 1), 'EUR'); // CA en € (les $ convertis au taux de la quinzaine)
 const payEq = (v, rate) => `<small class="pay-eq">${esc(fmtC(v / (num(rate) || 1), 'EUR'))}</small>`;
 // une modèle et sa paie dans une ligne (ok = déjà payée à part)
 const payMc = (m, v, cls = '') => `<span class="pay-mc ${cls}" style="--c:${modelColor(m)}"><i></i>${esc(mName(m))} <b>${esc(fmtC(v))}</b>${cls === 'ok' ? ICONS.check : ''}</span>`;
@@ -6424,7 +6430,7 @@ function payRow(r, rate, st, k, sel) {
     <span class="pay-cb"><button class="pay-box ab ${r.abandon ? 'on' : ''}" type="button" data-act="aband" data-id="${r.id}" aria-pressed="${r.abandon}" aria-label="${r.abandon ? 'Annuler l\'abandon de ' + nm : nm + ' est parti (abandon)'}" title="Abandon : chatteur parti">${IC.leave}</button></span>
     <span class="pay-who"><span class="av" style="background:${chatterColor(r.id)}">${esc(initials(cName(r.id)))}</span><span class="pay-wn"><span class="pay-wl"><b>${nm}</b>${chip}${drift}${off}</span><span class="pay-wl2">${m}${payWal(r.id)}</span></span></span>
     <span class="pay-ms">${ms}</span>
-    <span class="pay-nums"><span class="n" data-l="Shifts">${r.s.shifts}</span><span class="n" data-l="CA net">${fmt0(r.s.net)}</span><span class="n" data-l="Pén. / primes">${payAdj(r.pens, r.primes, r.adjIn, r.main)}</span></span>
+    <span class="pay-nums"><span class="n" data-l="Shifts">${r.s.shifts}</span><span class="n" data-l="CA net">${payE(r.s.net, rate)}</span><span class="n" data-l="Pén. / primes">${payAdj(r.pens, r.primes, r.adjIn, r.main)}</span></span>
     <span class="n pay-tot">${r.paid ? `<span class="pay-tick">${ICONS.check}</span>` : ''}${payAmt(r.total)}${payEq(r.total, rate)}${r.part ? `<small class="pay-left">reste ${esc(fmtC(r.left))} · ${esc(fmtC(r.left / (num(rate) || 1), 'EUR'))}</small>` : ''}</span>
     <button class="pay-chev" type="button" data-act="toggle" data-id="${r.id}" aria-expanded="${open}" aria-label="${open ? 'Masquer' : 'Voir'} le détail de ${nm}">${payIc.chev}</button>
   </div>${open ? `<div class="pay-detail" role="listitem">${payDetail(r, rate)}</div>` : ''}`;
