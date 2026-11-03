@@ -2991,7 +2991,7 @@ const CHATTER_COLORS = ['#6C4FB3', '#B4235A', '#1F7A8C', '#A6612A', '#3F7D3A', '
 
 /* ================= état ================= */
 const S = {
-  chatters: {}, models: {}, platforms: {}, days: {}, plan: {}, att: {}, offs: {}, payouts: {}, penalties: {}, primes: {}, reattrib: {},
+  chatters: {}, models: {}, platforms: {}, days: {}, plan: {}, att: {}, offs: {}, payouts: {}, penalties: {}, primes: {}, reattrib: {}, wallets: {},
   settings: { eurUsd: 1.12, dayOffQuota: 3 },
   loaded: {}, live: false, canWrite: true, loadStart: '',
   tab: 'dash',
@@ -3186,6 +3186,8 @@ async function connect() {
     for (;;) { const { data: ok } = await sb.rpc('is_member'); if (ok) break; const em = (await sb.auth.getUser()).data.user?.email || ''; await sb.auth.signOut(); await loginScreen(sb, `${em} n'est pas encore autorisé. Demande à Keoni de t'ajouter.`); }
     setTimeout(() => sb.auth.onAuthStateChange(ev => { if (ev === 'SIGNED_OUT') location.reload(); }), 0);
     S.me = ((await sb.auth.getUser()).data.user?.email || '').toLowerCase();
+    // wallets : seulement le propriétaire et ceux qu'il autorise (sans ces fonctions dans la base : comme avant, tout le monde)
+    { const r = await sb.rpc('can_see_wallets'); S.canWallets = r.error ? true : !!r.data; const o = await sb.rpc('kl_is_owner'); S.isOwner = !o.error && !!o.data; }
     const lo = $('#logout'); lo.hidden = false; lo.onclick = () => sb.auth.signOut();
     const ac = $('#access'); ac.hidden = !canSee('access'); ac.onclick = () => accessModal(sb);
     db = supaDB(sb); S.live = true; S.supa = true; downloads = fileDownloads;
@@ -3195,7 +3197,7 @@ async function connect() {
   try { downloads = window.claude && await window.claude.use('downloads'); } catch (e) { downloads = null; }
   }
   try { const user = window.claude && await window.claude.use('user'); if (user && user.can) { const w = await user.can('data.write'); if (w === false) S.canWrite = false; } } catch (e) {}
-  ['chatters', 'models', 'platforms', 'offs', 'payouts', 'penalties', 'primes', 'reattrib'].forEach(n => subColl(n, n, c => c));
+  ['chatters', 'models', 'platforms', 'offs', 'payouts', 'penalties', 'primes', 'reattrib', 'wallets'].forEach(n => subColl(n, n, c => c));
   db.doc('config/settings').onSnapshot(s => { if (s.exists) S.settings = { ...S.settings, ...s.data() }; S.loaded.settings = true; schedule(); }, onErr);
   db.doc('config/perso').onSnapshot(s => { S.perso = s.exists ? s.data() : {}; schedule(); }, onErr);
   db.doc('config/access').onSnapshot(s => { S.access = s.exists ? s.data() : {}; schedule(); }, onErr);
@@ -3363,10 +3365,10 @@ function loginScreen(sb, msg) {
 async function accessModal(sb) {
   const me = ((await sb.auth.getUser()).data.user?.email || '').toLowerCase();
   const m = modal(`<div class="modal-h"><h2>Accès à l'app</h2><button class="btn ghost sm" type="button" data-close aria-label="Fermer">✕</button></div>
-    <p class="muted" style="margin:0 0 12px">Ces adresses peuvent se connecter et voir toutes les données. La personne crée ensuite son accès avec la même adresse sur l'écran de connexion (« Première fois ? Créer mon accès »).</p>
+    <p class="muted" style="margin:0 0 12px">Ces adresses peuvent se connecter et voir les données, sauf les wallets : 💳 Wallets, c'est toi qui choisis. La personne crée ensuite son accès avec la même adresse sur l'écran de connexion (« Première fois ? Créer mon accès »).</p>
     <form id="accF" style="display:flex;gap:8px;margin-bottom:12px"><input id="accE" type="email" required placeholder="email@exemple.com" autocomplete="off" style="flex:1;min-width:0"><button class="btn primary" type="submit">Ajouter</button></form>
     <div id="accL" class="muted">Chargement…</div>
-    <p class="hint" style="margin:12px 0 0">Clique sur un onglet pour l'ouvrir ou le fermer à la personne. Toi, tu gardes tout. Un onglet ouvert à tout le monde le sera aussi pour une nouvelle adresse ; un onglet que tu as restreint ne le sera pas.</p>`);
+    <p class="hint" style="margin:12px 0 0">Clique sur un onglet pour l'ouvrir ou le fermer à la personne. 💳 Wallets : les adresses de paie des chatteurs, cachées partout (Équipe, Paies, fiche) pour qui ne l'a pas. Toi, tu gardes tout. Un onglet ouvert à tout le monde le sera aussi pour une nouvelle adresse ; un onglet que tu as restreint ne le sera pas.</p>`);
   let emails = [];
   const load = async () => {
     const { data, error } = await sb.rpc('kl_list_members');
@@ -3375,8 +3377,11 @@ async function accessModal(sb) {
     box.className = '';
     emails = (data || []).map(r => (typeof r === 'string' ? r : r.kl_list_members));
     const has = (k, e) => e.toLowerCase() === me || !accList(k).length || accList(k).includes(e.toLowerCase());
+    // 💳 Wallets : qui les voit (le propriétaire toujours) ; seul le propriétaire peut changer
+    const wv = await sb.rpc('kl_wallet_viewers'); const wset = new Set((wv.data || []).map(r => String(typeof r === 'string' ? r : r.kl_wallet_viewers).toLowerCase()));
+    const walB = e => wv.error ? '' : `<button type="button" class="acc-t acc-w" data-wal data-e="${esc(e)}" aria-pressed="${wset.has(e.toLowerCase())}" ${!S.isOwner || e.toLowerCase() === me ? 'disabled' : ''} title="${S.isOwner ? (e.toLowerCase() === me ? 'Toi, tu les vois toujours' : 'Voir les wallets des chatteurs') : 'Seul le propriétaire de l\'app choisit qui voit les wallets'}">💳 Wallets</button>`;
     box.innerHTML = emails.map(e => `<div class="acc-r"><div class="acc-h"><span>${esc(e)}${e.toLowerCase() === me ? ' <span class="muted">(toi)</span>' : ''}</span>${e.toLowerCase() === me ? '' : `<button class="btn sm" type="button" data-rm="${esc(e)}">Retirer</button>`}</div>
-      <div class="acc-c" role="group" aria-label="Onglets de ${esc(e)}">${ACCESS_KEYS.map(([k, l]) => `<button type="button" class="acc-t" data-acc="${k}" data-e="${esc(e)}" aria-pressed="${has(k, e)}" ${e.toLowerCase() === me ? 'disabled' : ''}>${l}</button>`).join('')}</div></div>`).join('');
+      <div class="acc-c" role="group" aria-label="Onglets de ${esc(e)}">${ACCESS_KEYS.map(([k, l]) => `<button type="button" class="acc-t" data-acc="${k}" data-e="${esc(e)}" aria-pressed="${has(k, e)}" ${e.toLowerCase() === me ? 'disabled' : ''}>${l}</button>`).join('')}${walB(e)}</div></div>`).join('');
   };
   $('#accF', m).onsubmit = async ev => {
     ev.preventDefault(); const inp = $('#accE', m); const e = inp.value.trim();
@@ -3393,6 +3398,14 @@ async function accessModal(sb) {
     tabs[k] = emails.every(e => who.has(e.toLowerCase())) ? [] : [...who];
     const lbl = ACCESS_KEYS.find(x => x[0] === k)[1];
     if (!await guard(() => db.doc('config/access').set({ tabs }), on ? `${lbl} ouvert à ${t.dataset.e}` : `${lbl} fermé pour ${t.dataset.e}`)) t.setAttribute('aria-pressed', String(!on));
+  });
+  // 💳 Wallets : ouvert ou fermé à la personne (propriétaire seulement, vérifié aussi par la base)
+  m.addEventListener('click', async ev => {
+    const t = ev.target.closest('[data-wal]'); if (!t || t.disabled) return;
+    const e = t.dataset.e, on = t.getAttribute('aria-pressed') !== 'true'; t.disabled = true;
+    const { error } = await sb.rpc('kl_set_wallets', { p_email: e, p_on: on }); t.disabled = false;
+    if (error) { toast(error.message || 'Changement impossible', true); return; }
+    t.setAttribute('aria-pressed', String(on)); toast(on ? `${e} voit maintenant les wallets (après avoir rechargé la page)` : `Wallets cachés pour ${e}`);
   });
   m.addEventListener('click', async ev => {
     const b = ev.target.closest('[data-rm]'); if (!b) return;
@@ -4357,7 +4370,7 @@ async function saveRate(v) {
 function payText() {
   const { from, to, rows, sel, rate } = payData(S.pay.key);
   const adjT = r => r.adjIn && (r.pens.length || r.primes.length) && (r.penUsd || r.primeUsd) ? ` (${fmtC(r.base)}${r.penUsd ? ' − ' + curTxt(curTot(r.pens)) + ' de pénalité' + plS(penFines(r.pens)) : ''}${r.primeUsd ? ' + ' + curTxt(curTot(r.primes)) + ' de prime' + plS(r.primes.length) : ''})` : '';
-  const line = r => { const c = S.chatters[r.id] || {}; return `${r.abandon ? '🚪' : r.paid ? '✅' : r.part ? '◐' : '⬜'} ${cName(r.id)} : ${fmtC(r.total)} (${fmtC(r.total / (num(rate) || 1), 'EUR')})${r.abandon ? ' · abandon' : r.part ? ` · reste ${fmtC(r.left)}` : ''}${adjT(r)}${c.method ? ' · ' + c.method : ''}${c.wallet ? ' · ' + c.wallet : ''}`; };
+  const line = r => { const c = S.chatters[r.id] || {}; return `${r.abandon ? '🚪' : r.paid ? '✅' : r.part ? '◐' : '⬜'} ${cName(r.id)} : ${fmtC(r.total)} (${fmtC(r.total / (num(rate) || 1), 'EUR')})${r.abandon ? ' · abandon' : r.part ? ` · reste ${fmtC(r.left)}` : ''}${adjT(r)}${c.method ? ' · ' + c.method : ''}${walOf(r.id) ? ' · ' + walOf(r.id) : ''}`; };
   const live = rows.filter(r => !r.abandon), gone = rows.filter(r => r.abandon);
   return `Paies KL Agency du ${dShort(from)} au ${dShort(to)}${sel ? ' · ' + paySelName() : ''}\n` + live.map(line).join('\n') + `\nTotal : ${fmtC(live.reduce((a, r) => a + r.total, 0))}`
     + (gone.length ? `\n\nAbandons :\n${gone.map(line).join('\n')}\nTotal abandons : ${fmtC(gone.reduce((a, r) => a + r.total, 0))}` : '');
@@ -4371,7 +4384,7 @@ async function exportCsv() {
   const { from, to, rate, rows, list, pens, prs, sel } = payData(S.pay.key);
   const q = v => `"${String(v).replace(/"/g, '""')}"`; const n2 = v => r2(v).toString().replace('.', ',');
   const st = r => r.abandon ? 'abandon' : r.paid ? 'paye' : r.part ? 'en partie' : 'a payer';
-  let csv = `Paies du ${from} au ${to};Taux EUR/USD;${n2(rate)}${sel ? ';Modeles;' + q(paySelName()) : ''}\nChatteur;Moyen de paiement;Wallet;Shifts;Paie EUR;Paie USD;Paie avant ajustements USD;Penalites EUR;Penalites USD;Primes EUR;Primes USD;A verser USD;Statut\n` + rows.map(r => { const c = S.chatters[r.id] || {}, p = r.adjIn ? curTot(r.pens) : { EUR: 0, USD: 0 }, b = r.adjIn ? curTot(r.primes) : { EUR: 0, USD: 0 }; return [q(cName(r.id)), q(c.method || ''), q(c.wallet || ''), r.s.shifts, n2(r.eur), n2(r.usdPart), n2(r.base), n2(p.EUR), n2(p.USD), n2(b.EUR), n2(b.USD), n2(r.total), st(r)].join(';'); }).join('\n');
+  let csv = `Paies du ${from} au ${to};Taux EUR/USD;${n2(rate)}${sel ? ';Modeles;' + q(paySelName()) : ''}\nChatteur;Moyen de paiement;Wallet;Shifts;Paie EUR;Paie USD;Paie avant ajustements USD;Penalites EUR;Penalites USD;Primes EUR;Primes USD;A verser USD;Statut\n` + rows.map(r => { const c = S.chatters[r.id] || {}, p = r.adjIn ? curTot(r.pens) : { EUR: 0, USD: 0 }, b = r.adjIn ? curTot(r.primes) : { EUR: 0, USD: 0 }; return [q(cName(r.id)), q(c.method || ''), q(walOf(r.id)), r.s.shifts, n2(r.eur), n2(r.usdPart), n2(r.base), n2(p.EUR), n2(p.USD), n2(b.EUR), n2(b.USD), n2(r.total), st(r)].join(';'); }).join('\n');
   if (pens.length) csv += '\n\nPenalites\nDate;Chatteur;Faute;Numero;Montant;Devise;Detail\n' + pens.map(p => [p.date, q(p.cid ? cName(p.cid) : p.name || ''), q(p.label || p.fault), p.n, n2(num(p.amount)), curOfP(p), q(p.note || '')].join(';')).join('\n');
   if (prs.length) csv += '\n\nPrimes\nDate;Chatteur;Raison;Montant;Devise\n' + prs.map(p => [p.date, q(p.cid ? cName(p.cid) : p.name || ''), q(p.reason || ''), n2(num(p.amount)), curOfP(p)].join(';')).join('\n');
   csv += '\n\nDetail\nDate;Creneau;Chatteur;Modele;Plateforme;Devise;Ventes;Tips;Brut;Net;Paie\n' + list.sort((a, b) => a.date.localeCompare(b.date)).map(e => { const c = calc(e, rate); return [e.date, q(slotL(e.slot)), q(cName(e.chatterId)), q(mName(e.modelId)), q(pName(e.platformId)), c.cur, n2(c.sales), n2(c.tips), n2(c.gross), n2(c.net), n2(c.com)].join(';'); }).join('\n');
@@ -4408,8 +4421,8 @@ function viewTeam() {
   if (!S.teamBy) { let v = ''; try { v = localStorage.getItem('kl_teamby') || ''; } catch (e) {} S.teamBy = v === 'model' ? 'model' : 'shift'; }
   const byM = S.teamBy === 'model';
   $('#view').innerHTML = `<div class="card"><div class="card-head"><div><h2>Chatteurs</h2><p class="hint">${cs.filter(c => c.active !== false).length} actifs · ${byM ? 'rangés par modèle de leur shift habituel, du matin à la nuit' : 'clique sur un chatteur pour changer son shift habituel'}</p></div><div class="tm-acts">${seg('teamBy', S.teamBy, [['shift', 'Par shift'], ['model', 'Par modèle']])}<button class="btn sm primary" type="button" data-act="addchatter">+ Chatteur</button></div></div>
-      ${cs.length ? `<div class="tbl-wrap"><table class="tm-tbl"><thead><tr><th>Nom</th><th>Shift habituel</th><th>Wallet crypto</th><th class="n">Commission</th><th>Paiement</th><th class="n">Day off</th><th class="n">CA du mois</th></tr></thead><tbody>
-      ${(byM ? teamOrderByModel(cs) : teamOrder(cs)).map(({ c, head }) => `${head ? `<tr class="grp-row"><td colspan="7">${head}</td></tr>` : ''}<tr class="click ${c.active === false ? 'inact' : ''}" data-act="editchatter" data-id="${c.id}"><td><div class="tm-n"><span class="av sm" style="background:${chatterColor(c.id)}">${esc(initials(cName(c.id)))}</span><b>${esc(cName(c.id))}</b>${c.active === false ? '<span class="pill mute">Inactif</span>' : ''}${dcTag(c)}</div></td><td class="tm-hab">${habitText(c, byM)}</td><td class="tm-wal">${payWal(c.id)}</td><td class="n tm-k" data-l="Commission">${pct(num(c.rate ?? 10))}</td><td class="muted tm-k" data-l="Paiement">${esc(c.method || '–')}</td><td class="n tm-k" data-l="Day off">${offsCount(c.id, today())}/${num(st.dayOffQuota) || 3}</td><td class="n tm-k" data-l="CA du mois">${fmt0(agg(mlist.filter(e => e.chatterId === c.id)).gross)}</td></tr>`).join('')}
+      ${cs.length ? `<div class="tbl-wrap"><table class="tm-tbl"><thead><tr><th>Nom</th><th>Shift habituel</th>${S.canWallets === false ? '' : '<th>Wallet crypto</th>'}<th class="n">Commission</th><th>Paiement</th><th class="n">Day off</th><th class="n">CA du mois</th></tr></thead><tbody>
+      ${(byM ? teamOrderByModel(cs) : teamOrder(cs)).map(({ c, head }) => `${head ? `<tr class="grp-row"><td colspan="${S.canWallets === false ? 6 : 7}">${head}</td></tr>` : ''}<tr class="click ${c.active === false ? 'inact' : ''}" data-act="editchatter" data-id="${c.id}"><td><div class="tm-n"><span class="av sm" style="background:${chatterColor(c.id)}">${esc(initials(cName(c.id)))}</span><b>${esc(cName(c.id))}</b>${c.active === false ? '<span class="pill mute">Inactif</span>' : ''}${dcTag(c)}</div></td><td class="tm-hab">${habitText(c, byM)}</td>${S.canWallets === false ? '' : `<td class="tm-wal">${payWal(c.id)}</td>`}<td class="n tm-k" data-l="Commission">${pct(num(c.rate ?? 10))}</td><td class="muted tm-k" data-l="Paiement">${esc(c.method || '–')}</td><td class="n tm-k" data-l="Day off">${offsCount(c.id, today())}/${num(st.dayOffQuota) || 3}</td><td class="n tm-k" data-l="CA du mois">${fmt0(agg(mlist.filter(e => e.chatterId === c.id)).gross)}</td></tr>`).join('')}
       </tbody></table></div>` : '<div class="empty"><p>Aucun chatteur pour le moment.</p></div>'}
     </div>
     ${teamDiscord()}
@@ -4466,7 +4479,7 @@ function chatterModal(id) {
       <label class="f full">Nom ou pseudo<input type="text" name="name" value="${esc(c.name)}"></label>
       <label class="f">Commission (% du net)<input type="number" step="0.1" min="0" max="100" name="rate" value="${c.rate ?? 10}"></label>
       <label class="f">Moyen de paiement<input type="text" name="method" value="${esc(c.method || 'USDC')}"></label>
-      <label class="f full">Wallet crypto <small class="muted" style="font-weight:600">· l'adresse où il est payé (aussi modifiable dans sa fiche Discord)</small><input type="text" name="wallet" value="${esc(c.wallet || '')}" placeholder="ex : TQn9…" spellcheck="false" style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace"></label>
+      ${S.canWallets === false ? '' : `<label class="f full">Wallet crypto <small class="muted" style="font-weight:600">· l'adresse où il est payé (aussi modifiable dans sa fiche Discord)${S.supa ? ', visible seulement par ceux que tu autorises' : ''}</small><input type="text" name="wallet" value="${esc(id ? walOf(id) : '')}" placeholder="ex : TQn9…" spellcheck="false" style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace"></label>`}
       <div class="full hb"><div class="hb-t">Shift habituel <small class="muted" style="font:600 12px var(--f-body)">· coche-en deux pour un double shift, aucun s'il n'a pas de shift fixe</small></div>
         <div class="checks" id="hbSlot">${SLOTS.map(s => `<label><input type="checkbox" name="slot" value="${s.k}" ${hbs.includes(s.k) ? 'checked' : ''}>${s.l} <small class="muted">${s.h.replace(/ /g, '')}</small></label>`).join('')}</div>
         <div class="hb-sub">Sur les modèles</div>
@@ -4489,10 +4502,13 @@ function chatterModal(id) {
     if (shift && !shift.accts.length) { toast('Coche au moins une modèle pour son shift.', true); return; }
     const cid = id || 'c-' + uid();
     const old = id ? S.chatters[id] || {} : {};
-    const data = { name, rate: num(f.rate.value), method: f.method.value.trim(), wallet: f.wallet.value.replace(/\s+/g, ''), notes: f.notes.value.trim(), active: f.active.checked, shift, ...(old.discordId ? { discordId: old.discordId } : {}) };
+    const wal = f.wallet ? f.wallet.value.replace(/\s+/g, '').slice(0, 200) : null;
+    const data = { name, rate: num(f.rate.value), method: f.method.value.trim(), notes: f.notes.value.trim(), active: f.active.checked, shift, ...(old.discordId ? { discordId: old.discordId } : {}) };
     if (!id && S.tab === 'sales') { S.sales.focusC = cid; S.sales.q = ''; }
     const ok = await guard(async () => {
       await db.doc('chatters/' + cid).set(data);
+      // wallet à part (wallets/<id>) ; l'ancien, rangé dans la fiche, y passe aussi
+      if (wal !== null && (wal !== String(S.wallets?.[cid]?.wallet || '') || old.wallet)) await (wal ? db.doc('wallets/' + cid).set({ wallet: wal }) : db.doc('wallets/' + cid).delete());
       if (S.tpl) await tplSetChatter(cid, f.active.checked && shift ? shift.slots : [], shift?.accts || []);
       else if (apply) await applyHabit(cid, shift);
     }, apply ? `${name} enregistré et placé sur le planning` : id ? 'Chatteur modifié' : `${name} ajouté`);
@@ -6348,14 +6364,18 @@ function payAdj(pens, prs, inView, main) {
   const p = curTot(pens), q = curTot(prs);
   return `<span class="pay-adj">${p.EUR || p.USD ? `<b class="bad">${esc(curTxt(p, '−', ' '))}</b>` : pens.length ? `<small>${pens.length} avertissement${payS(pens.length)}</small>` : ''}${q.EUR || q.USD ? `<b class="good">${esc(curTxt(q, '+', ' '))}</b>` : ''}</span>`;
 }
-// wallet crypto (fiche Discord ou Équipe) : clic = copié
+// wallet crypto (fiche Discord ou Équipe), rangé à part dans wallets/<id> : seuls le propriétaire et ceux qu'il
+// autorise (Gérer les accès) le voient. S.canWallets = false : on ne montre rien, même pas « Pas de wallet »
+const walOf = id => S.canWallets === false ? '' : String(S.wallets?.[id]?.wallet || S.chatters[id]?.wallet || '').trim();
+// wallet crypto : clic = copié
 function payWal(id) {
-  const w = String(S.chatters[id]?.wallet || '').trim();
+  if (S.canWallets === false) return '';
+  const w = walOf(id);
   if (!w) return '<span class="pay-wal none">Pas de wallet</span>';
   return `<button class="pay-wal" type="button" data-act="copywal" data-id="${id}" title="Copier le wallet : ${esc(w)}">${payIc.copy}${esc(w.length > 18 ? w.slice(0, 7) + '…' + w.slice(-5) : w)}</button>`;
 }
 HOOK.act.copywal = async (el, e) => {
-  e?.stopPropagation(); const w = String(S.chatters[el.dataset.id]?.wallet || '').trim(); if (!w) return;
+  e?.stopPropagation(); const w = walOf(el.dataset.id); if (!w) return;
   try { await navigator.clipboard.writeText(w); toast(`Wallet de ${cName(el.dataset.id)} copié`); }
   catch (x) { const m = modal(`<div class="modal-h"><h2>Wallet de ${esc(cName(el.dataset.id))}</h2><button class="icon-btn" type="button" data-close aria-label="Fermer">${ICONS.x}</button></div><input id="walTxt" type="text" readonly value="${esc(w)}" style="font-family:ui-monospace,monospace"><div class="modal-f"><button class="btn primary" type="button" data-close>Fermer</button></div>`, 'sm'); const i = $('#walTxt', m); i.focus(); i.select(); }
 };
