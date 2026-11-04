@@ -2919,6 +2919,17 @@ input[type=text], input[type=number], input[type=date], input[type=email], input
   .topbar .stepper input[type=date]::-webkit-calendar-picker-indicator { display: none }
   .topbar .stepper input[type=date] { font-size: 15px }
 }
+
+/* v63 paies : nom du chatteur jamais coupé, les pastilles passent à la ligne si besoin ; colonne du nom un peu plus large */
+.v-pay .pay-wl { flex-wrap: wrap; row-gap: 3px }
+.v-pay .pay-wl > b { flex: 0 1 auto; max-width: 100% }
+.v-pay .pay-tbl { --cols: 46px 58px minmax(230px, 1.55fr) minmax(200px, 1.25fr) 52px 84px 124px 190px 34px }
+@media (max-width: 1180px) {
+  .v-pay .pay-tbl { --cols: 42px 52px minmax(190px, 1.35fr) minmax(160px, 1.35fr) 112px 176px 32px }
+}
+@media (max-width: 760px) {
+  .v-pay .pay-row > .pay-tot .pay-tick { display: none }
+}
 </style>
 </head>
 <body>
@@ -6448,7 +6459,7 @@ function payRow(r, rate, st, k, sel) {
   return `<div class="pay-row ${r.paid ? 'paid' : ''} ${r.abandon ? 'ab' : ''} ${open ? 'open' : ''}" role="listitem" data-act="toggle" data-id="${r.id}">
     <span class="pay-cb"><button class="pay-box ${r.paid ? 'on' : ''} ${pop ? 'pop' : ''}" type="button" data-act="paid" data-id="${r.id}" aria-pressed="${r.paid}" aria-label="${r.paid ? 'Repasser ' + nm + ' en attente' : 'Marquer ' + nm + ' comme payé'}${sel ? ' (' + esc(paySelName()) + ')' : ''}">${ICONS.check}</button></span>
     <span class="pay-cb"><button class="pay-box ab ${r.abandon ? 'on' : ''}" type="button" data-act="aband" data-id="${r.id}" aria-pressed="${r.abandon}" aria-label="${r.abandon ? 'Annuler l\'abandon de ' + nm : nm + ' est parti (abandon)'}" title="Abandon : chatteur parti">${IC.leave}</button></span>
-    <span class="pay-who"><span class="av" style="background:${chatterColor(r.id)}">${esc(initials(cName(r.id)))}</span><span class="pay-wn"><span class="pay-wl"><b>${nm}</b>${chip}${drift}${off}</span><span class="pay-wl2">${m}${payWal(r.id)}</span></span></span>
+    <span class="pay-who"><span class="av" style="background:${chatterColor(r.id)}">${esc(initials(cName(r.id)))}</span><span class="pay-wn"><span class="pay-wl"><b title="${nm}">${nm}</b>${chip}${drift}${off}</span><span class="pay-wl2">${m}${payWal(r.id)}</span></span></span>
     <span class="pay-ms">${ms}</span>
     <span class="pay-nums"><span class="n" data-l="Shifts">${r.s.shifts}</span><span class="n" data-l="CA net">${payE(r.s.net, rate)}</span><span class="n" data-l="Pén. / primes">${payAdj(r.pens, r.primes, r.adjIn, r.main)}</span></span>
     <span class="n pay-tot">${r.paid ? `<span class="pay-tick">${ICONS.check}</span>` : ''}${payAmt(r.total)}${payEq(r.total, rate)}${r.part ? `<small class="pay-left">reste ${esc(fmtC(r.left))} · ${esc(fmtC(r.left / (num(rate) || 1), 'EUR'))}</small>` : ''}</span>
