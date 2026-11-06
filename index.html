@@ -3185,6 +3185,10 @@ input[type=text], input[type=number], input[type=date], input[type=email], input
 @media (max-width: 760px) {
   .v-sales .ln .acw > .inm { margin-left: auto; height: 30px; padding: 0 10px 0 12px; font-size: 13px }
 }
+
+/* v65 : une agence Wysper ne répond pas, les autres oui */
+.wy-bar.warn { background: color-mix(in srgb, var(--warn) 7%, var(--surface)); border-color: color-mix(in srgb, var(--warn) 30%, var(--line)) }
+.warn > .wy-dot { background: var(--warn); box-shadow: 0 0 0 4px color-mix(in srgb, var(--warn) 18%, transparent) }
 </style>
 </head>
 <body>
@@ -4473,7 +4477,7 @@ async function impOpen() {
     const plat = S.platforms[c.platformId]; const cur = curOf(c.platformId); const fee = num(plat?.fee ?? 20);
     let h = `<div class="imp-sec"><div class="imp-row"><div class="seg" role="group" aria-label="CRM">${CRMS.map(x => `<button type="button" data-src="${x.k}" aria-pressed="${st.src === x.k}">${x.l} · ${x.sub}</button>`).join('')}</div>
       <label class="imp-pl">Ventes rangées sur<select data-cf="platformId"><option value="">Choisir…</option>${sortedBy(S.platforms).map(p => `<option value="${p.id}" ${p.id === c.platformId ? 'selected' : ''}>${esc(p.name)} (${sym(curOf(p.id))})</option>`).join('')}</select></label></div>
-      ${st.src === 'whysper' && wyOn() ? `<div class="imp-msg">${wyMods().length ? `Telegram ${esc(wyDe(wyCovL()))} arrive en direct depuis Wysper depuis le ${esc(dShort(wyFrom()))} : ${wyMods().length > 1 ? 'leurs' : 'ses'} ventes de ces jours-là sont ignorées ici.${wyRest().length ? ` ${esc(wyAnd(wyRest()))} s'import${wyRest().length > 1 ? 'ent' : 'e'} toujours ici, tous les jours.` : ''}` : `Wysper en direct est branché depuis le ${esc(dShort(wyFrom()))} : une modèle reliée à un compte de l'agence Wysper arrive toute seule, les autres s'importent ici comme avant.`}</div>` : ''}<label class="imp-drop ${f ? 'has' : ''}"><input type="file" accept=".csv,.tsv,.txt,.xlsx,.xls" data-file hidden><span class="imp-dropi">${ICONS.upload}</span>${f ? `<b>${esc(f.name)}</b><span>${f.rows.length} ligne${plS(f.rows.length)} · clique ou dépose un autre fichier pour le remplacer</span>` : `<b>Dépose ici l'export ${esc(crm.l)}</b><span>ou clique pour le choisir · fichier CSV ou Excel</span>`}</label></div>`;
+      ${st.src === 'whysper' && wyOn() ? `<div class="imp-msg">${wyMods().length && !wyRest().length ? `Telegram arrive en direct depuis Wysper depuis le ${esc(dShort(wyFrom()))} : ces jours-là sont ignorés ici, l'import ne sert plus que pour les jours d'avant.` : wyMods().length ? `Telegram ${esc(wyDe(wyCovL()))} arrive en direct depuis Wysper depuis le ${esc(dShort(wyFrom()))} : ${wyMods().length > 1 ? 'leurs' : 'ses'} ventes de ces jours-là sont ignorées ici.${wyRest().length ? ` ${esc(wyAnd(wyRest()))} s'import${wyRest().length > 1 ? 'ent' : 'e'} toujours ici, tous les jours.` : ''}` : `Wysper en direct est branché depuis le ${esc(dShort(wyFrom()))} : une modèle reliée à un compte de l'agence Wysper arrive toute seule, les autres s'importent ici comme avant.`}</div>` : ''}<label class="imp-drop ${f ? 'has' : ''}"><input type="file" accept=".csv,.tsv,.txt,.xlsx,.xls" data-file hidden><span class="imp-dropi">${ICONS.upload}</span>${f ? `<b>${esc(f.name)}</b><span>${f.rows.length} ligne${plS(f.rows.length)} · clique ou dépose un autre fichier pour le remplacer</span>` : `<b>Dépose ici l'export ${esc(crm.l)}</b><span>ou clique pour le choisir · fichier CSV ou Excel</span>`}</label></div>`;
     if (f && (st.cols || (B && B.missing.length))) {
       const opt = k => `<option value="">—</option>${f.headers.map(x => `<option value="${esc(x)}" ${c.cols[k] === x ? 'selected' : ''}>${esc(x)}</option>`).join('')}`;
       h += `<div class="imp-sec"><div class="imp-h"><b>Réglages du fichier</b><span class="hint">Trouvés automatiquement et retenus pour le prochain import.</span>${B && !B.missing.length ? `<button class="imp-lk" type="button" data-cols>Masquer</button>` : ''}</div>
@@ -4660,6 +4664,7 @@ function wyState() {
   if (S.wyCfg.on === false) return { k: 'off', l: 'En pause' };
   if (st.lastErr && num(st.lastErrAt) > seen) return { k: 'bad', l: 'Wysper ne répond pas', why: st.lastErr };
   if (!seen) return { k: 'wait', l: 'Première lecture en cours' };
+  if (st.agErr) return { k: 'warn', l: 'À vérifier', why: String(st.agErr) };
   return { k: 'ok', l: 'En direct' };
 }
 // enregistre un lien nom Wysper -> chatteur / modèle (ou « - » pour ignorer) dans config/import.whysper, comme l'import
@@ -4682,8 +4687,8 @@ function wyBar(d) {
   if (!wyFrom() || d < wyFrom()) return '';
   const s = wyState(), st = S.wy || {}, un = wyUnknown().filter(u => !u.stats);
   const last = st.lastEvent ? `dernière vente reçue ${wyWhen(st.lastEvent)}` : st.lastOk ? `à jour ${wyWhen(st.lastOk)}` : '';
-  const sub = s.k === 'off' ? 'Les ventes Telegram ne se mettent plus à jour : reprends le direct dans les réglages.' : s.k === 'bad' ? `Les ventes reprendront toutes seules dès que Wysper répond. ${last ? cap(last) + '.' : ''}` : s.k === 'wait' ? 'Les ventes Telegram arrivent dès la première lecture du bot.' : cap(last) || 'Les ventes Telegram arrivent toutes seules.';
-  return `<div class="wy-bar ${s.k}"><span class="wy-dot" aria-hidden="true"></span><div class="wy-t"><b>Telegram ${wyMods().length ? esc(wyDe(wyCovL())) + ' ' : ''}en direct depuis Wysper <span class="pill ${s.k === 'ok' ? 'good' : s.k === 'bad' ? 'bad' : 'mute'}">${s.l}</span></b><span>${esc(sub)}${wyRest().length ? `${/[.!?]$/.test(sub) ? '' : '.'} ${esc(wyAnd(wyRest()))} : toujours par l'import Whysper.` : ''}</span>${un.length ? `<span class="wy-un">${un.slice(0, 3).map(u => `<em>${esc(u.raw)}</em> ${u.amt ? wyE(u.amt) : ''}`).join(' · ')}${un.length > 3 ? ` · et ${un.length - 3} autre${plS(un.length - 3)}` : ''}</span>` : ''}</div>
+  const sub = s.k === 'off' ? 'Les ventes Telegram ne se mettent plus à jour : reprends le direct dans les réglages.' : s.k === 'bad' ? `Les ventes reprendront toutes seules dès que Wysper répond. ${last ? cap(last) + '.' : ''}` : s.k === 'wait' ? 'Les ventes Telegram arrivent dès la première lecture du bot.' : s.k === 'warn' ? `${s.why}${/[.!?]$/.test(s.why) ? '' : '.'} Les autres modèles arrivent bien.` : cap(last) || 'Les ventes Telegram arrivent toutes seules.';
+  return `<div class="wy-bar ${s.k}"><span class="wy-dot" aria-hidden="true"></span><div class="wy-t"><b>Telegram ${wyMods().length && wyRest().length ? esc(wyDe(wyCovL())) + ' ' : ''}en direct depuis Wysper <span class="pill ${s.k === 'ok' ? 'good' : s.k === 'bad' ? 'bad' : s.k === 'warn' ? 'warn' : 'mute'}">${s.l}</span></b><span>${esc(sub)}${wyRest().length ? `${/[.!?]$/.test(sub) ? '' : '.'} ${esc(wyAnd(wyRest()))} : toujours par l'import Whysper.` : ''}</span>${un.length ? `<span class="wy-un">${un.slice(0, 3).map(u => `<em>${esc(u.raw)}</em> ${u.amt ? wyE(u.amt) : ''}`).join(' · ')}${un.length > 3 ? ` · et ${un.length - 3} autre${plS(un.length - 3)}` : ''}</span>` : ''}</div>
     <div class="wy-acts">${un.length ? `<button class="btn sm warn" type="button" data-act="wyOpen">${IC.link}${un.length} nom${plS(un.length)} à relier</button>` : ''}<button class="btn sm" type="button" data-act="wyOpen" aria-label="Réglages Wysper en direct">Réglages</button></div></div>`;
 }
 HOOK.act.wyOpen = () => wyModal();
@@ -4691,7 +4696,7 @@ HOOK.act.wyLinkName = el => wyModal({ extra: [{ kind: el.dataset.k || 'c', raw: 
 // fenêtre « Wysper en direct » : état, noms à relier, vérifications des derniers jours, réglages
 function wyModal(o = {}) {
   const st = { newN: null, busy: false };
-  const m = modal(`<div class="modal-h"><div><h2>Wysper en direct</h2><p class="hint">Les ventes Telegram des modèles de ton agence Wysper arrivent toutes seules, rangées par jour, shift et chatteur comme avec l'import.</p></div><button class="icon-btn" type="button" data-close aria-label="Fermer">${ICONS.x}</button></div><div class="wy-b"></div>
+  const m = modal(`<div class="modal-h"><div><h2>Wysper en direct</h2><p class="hint">Les ventes Telegram des modèles de tes agences Wysper arrivent toutes seules, rangées par jour, shift et chatteur comme avec l'import.</p></div><button class="icon-btn" type="button" data-close aria-label="Fermer">${ICONS.x}</button></div><div class="wy-b"></div>
     <div class="modal-f"><button class="btn" type="button" data-close>Fermer</button></div>`, 'wy-modal');
   const body = $('.wy-b', m);
   const draw = () => {
