@@ -2930,6 +2930,261 @@ input[type=text], input[type=number], input[type=date], input[type=email], input
 @media (max-width: 760px) {
   .v-pay .pay-row > .pay-tot .pay-tick { display: none }
 }
+
+/* v64 Wysper en direct : bandeau Ventes, marque du jour, fenêtre */
+.wy-bar { display: flex; align-items: center; gap: 12px; padding: 11px 14px 11px 16px; border-radius: 14px; margin-bottom: 14px; background: color-mix(in srgb, var(--good) 7%, var(--surface)); border: 1px solid color-mix(in srgb, var(--good) 28%, var(--line)) }
+.wy-bar.off, .wy-bar.wait { background: var(--surface); border-color: var(--line) }
+.wy-bar.bad { background: color-mix(in srgb, var(--bad) 7%, var(--surface)); border-color: color-mix(in srgb, var(--bad) 30%, var(--line)) }
+.wy-dot { width: 9px; height: 9px; border-radius: 50%; flex: none; background: var(--good); box-shadow: 0 0 0 4px color-mix(in srgb, var(--good) 20%, transparent) }
+.wy-bar.ok .wy-dot, .wy-stt.ok .wy-dot { animation: wyPulse 2.4s ease-in-out infinite }
+.off > .wy-dot, .wait > .wy-dot { background: var(--muted); box-shadow: 0 0 0 4px color-mix(in srgb, var(--muted) 16%, transparent) }
+.bad > .wy-dot { background: var(--bad); box-shadow: 0 0 0 4px color-mix(in srgb, var(--bad) 18%, transparent) }
+@keyframes wyPulse { 0%, 100% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--good) 22%, transparent) } 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--good) 6%, transparent) } }
+@media (prefers-reduced-motion: reduce) { .wy-dot { animation: none !important } }
+.wy-bar > .wy-dot { align-self: flex-start; margin-top: 5px }
+.wy-t { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; font-size: 13px; color: var(--muted) }
+.wy-t > b { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--fg); font-size: 13.5px }
+.wy-un { font-size: 12.5px } .wy-un em { font-style: normal; font-weight: 700; color: var(--warn) }
+.wy-acts { display: flex; gap: 8px; flex: none; align-items: center }
+.btn.warn { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 45%, var(--line)); background: var(--warn-soft) }
+.btn.warn:hover { border-color: var(--warn) }
+.wy-acts .btn svg { width: 14px; height: 14px }
+.wy-ck { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; border: 1px solid var(--line); background: var(--surface-2); color: var(--muted); transition: filter .15s, border-color .15s }
+.wy-ck svg { width: 13px; height: 13px }
+.wy-ck.ok { background: var(--good-soft); color: var(--good); border-color: transparent }
+.wy-ck.bad { background: var(--warn-soft); color: var(--warn); border-color: transparent }
+.wy-ck:hover { filter: brightness(1.08); border-color: currentColor }
+.wy-ck:focus-visible { outline: 2px solid var(--ring, var(--accent)); outline-offset: 2px }
+.ln .impt.wy { color: var(--good); background: var(--good-soft) }
+.modal.wy-modal { width: min(760px, 100%) }
+.wy-b { display: flex; flex-direction: column; gap: 14px }
+.wy-sec { display: flex; flex-direction: column; gap: 10px }
+.wy-sec + .wy-sec { padding-top: 14px; border-top: 1px solid var(--line) }
+.wy-stt { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 12px 14px; border-radius: 12px; background: var(--surface-2) }
+.wy-stx { display: flex; flex-direction: column; min-width: 120px } .wy-stx small { color: var(--bad); font-size: 12px }
+.wy-kv { display: flex; flex-wrap: wrap; gap: 6px 22px; margin-left: auto; font-size: 12.5px }
+.wy-kv > div { display: flex; flex-direction: column } .wy-kv span { color: var(--muted); font-size: 11px; font-weight: 600 } .wy-kv b { font-variant-numeric: tabular-nums }
+.wy-cks { display: flex; flex-direction: column; gap: 6px }
+.wy-ckr { display: grid; grid-template-columns: 92px auto 1fr; align-items: center; gap: 4px 12px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; font-size: 13px }
+.wy-ckr .pill { justify-self: start }
+.wy-ckd { font-weight: 700 } .wy-ckv { color: var(--muted) } .wy-ckv b { color: var(--fg); font-variant-numeric: tabular-nums }
+.wy-ckr small { grid-column: 1 / -1; color: var(--muted); font-size: 11.5px }
+.wy-setr { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end }
+.wy-setr .f { flex: 1 1 220px; max-width: 280px }
+.imp-map.nw { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) }
+@media (max-width: 760px) {
+  .wy-bar { flex-wrap: wrap; padding: 11px 12px }
+  .statbar .wy-ck { order: 9 }
+  .wy-bar .wy-t { flex: 1 1 calc(100% - 30px) }
+  .wy-acts { width: 100%; justify-content: flex-end }
+  .wy-kv { margin-left: 0; width: 100% }
+  .wy-ckr { grid-template-columns: auto 1fr }
+  .wy-ckr .wy-ckv { grid-column: 1 / -1 }
+  .imp-map.nw { grid-template-columns: 1fr }
+}
+
+/* v64 tableau de bord › Telegram */
+.v-dash .wy-src { margin: -6px 0 14px }
+.v-dash .wy-card { margin-bottom: 16px }
+.v-dash .wyt { min-width: 820px }
+.v-dash .wyt td.n, .v-dash .wyt th.n { white-space: nowrap }
+.v-dash .wyt .dr-c1 { min-width: 190px }
+.v-dash .wyt .dr-who .slp { flex: none }
+.v-dash .wyt .dr-who > small { font-size: 12px; font-variant-numeric: tabular-nums }
+.v-dash .wy-rate { font-weight: 800 }
+.v-dash .wy-rate.hi { color: var(--good) } .v-dash .wy-rate.mid { color: var(--fg) } .v-dash .wy-rate.lo { color: var(--warn) }
+.v-dash .wy-mn { margin: 0; font-size: 14px }
+.v-dash .wy-mn .md i { width: 9px; height: 9px }
+.wy-lk { display: inline-flex; align-items: center; gap: 4px; padding: 1px 8px; border-radius: 999px; border: 0; font: inherit; font-size: 11px; font-weight: 800; cursor: pointer; background: var(--warn-soft); color: var(--warn); transition: filter .15s }
+.wy-lk svg { width: 11px; height: 11px } .wy-lk:hover { filter: brightness(1.1) }
+.wy-lk:focus-visible { outline: 2px solid var(--warn); outline-offset: 2px }
+.v-dash .wy-load { min-height: 160px }
+.v-dash .wy-card .dash-sort .seg button { padding: 5px 11px; font-size: 12.5px }
+/* pas d'illustration (faites pour le CA) sur les tuiles Telegram */
+.v-dash .tiles.t3.wy-tiles .tile::after { content: none }
+.v-dash .tiles.t3.wy-tiles .tile .spark { right: 10px }
+@media (max-width: 760px) {
+  /* téléphone : une ligne en-tête (nom à gauche, CA à droite), puis les chiffres alignés sur 4 colonnes */
+  .v-dash .wyt { min-width: 0 }
+  .v-dash .wyt tr { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px 10px; padding: 14px 0 }
+  .v-dash .wyt .dr-c1 { grid-column: 1 / 3; align-self: center }
+  .v-dash .wyt .dr-ca { grid-column: 3 / 5 }
+  .v-dash .wyt .dr-ca div { align-items: flex-end }
+  .v-dash .wyt .dr-tr { max-width: 130px }
+  .v-dash .wyt td[data-l] { margin: 0 !important; min-width: 0 }
+  .v-dash .wyt td[data-l]::before { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100% }
+  .v-dash .wyt .dr-who > small { display: none }
+  .v-dash .wy-card .card-head { flex-wrap: wrap }
+  .v-dash .wy-card .dash-sort { width: 100% }
+  .v-dash .wy-card .dash-sort .dash-lbl { display: none }
+  .v-dash .wy-card .dash-sort .seg { display: grid; grid-template-columns: repeat(5, auto); width: 100% }
+  .v-dash .wy-card .dash-sort .seg button { padding: 6px 2px; font-size: 11.5px; text-align: center }
+}
+@media (max-width: 600px) {
+  .v-dash .dash-subl > .seg { grid-template-columns: repeat(4, auto) }
+  .v-dash .dash-subl > .seg button { padding: 6px 2px; font-size: 11.5px }
+  .v-dash .tiles.t3.wy-tiles .tile:first-child { grid-column: auto }
+  .v-dash .wy-tiles .tile-l { white-space: normal; line-height: 1.25 }
+  .v-dash .wy-tiles .tile-s { white-space: normal; flex-wrap: wrap; row-gap: 1px; line-height: 1.3 }
+  .v-dash .wy-tiles .tile-s .dash-vs { display: inline }
+  .v-dash .wy-tiles .tile-v { font-size: 22px }
+}
+
+/* v64 classements : stats Wysper sur la même ligne */
+.v-dash .wyh { color: color-mix(in srgb, var(--info) 55%, var(--muted)) }
+.v-dash td.wyc { font-size: 13px }
+.v-dash .dr-ca small.dr-vt { font-size: 11px; color: var(--muted); font-weight: 600; white-space: nowrap }
+.v-dash .dash-rank-card .dash-sort .seg { flex-wrap: wrap }
+@media (min-width: 761px) {
+  .v-dash .dr.wyon { min-width: 1000px }
+  .v-dash .dr.wyon td, .v-dash .dr.wyon th, .v-dash .hist-rt.wyon td, .v-dash .hist-rt.wyon th { padding-left: 8px; padding-right: 8px }
+  .v-dash .dr.wyon .dr-c1 { min-width: 180px }
+  .v-dash .dr.wyon .dr-ca { min-width: 120px }
+  .v-dash .dr.wyon .dr-tr { max-width: 130px }
+  .v-dash .hist-rt.wyon .hist-cab { min-width: 110px }
+  .v-dash .hist-rt.wyon .hist-tr { max-width: 140px }
+}
+@media (min-width: 761px) and (max-width: 1500px) {
+  .v-dash .dr.wyon td, .v-dash .dr.wyon th, .v-dash .hist-rt.wyon td, .v-dash .hist-rt.wyon th { padding-left: 6px; padding-right: 6px }
+  .v-dash .dr.wyon .dr-ca { min-width: 104px }
+  .v-dash .dr.wyon .dr-tr { max-width: 110px }
+  .v-dash .hist-rt.wyon .hist-cab { min-width: 96px }
+  .v-dash .hist-rt.wyon .hist-tr { max-width: 120px }
+  /* mois chargé : modèles du chatteur sur 2 lignes si besoin, pastilles de ponctualité 2 par ligne max */
+  .v-dash .dr.wyon .dr-c1 { min-width: 140px }
+  .v-dash .dr.wyon .who small { flex-wrap: wrap; row-gap: 0 }
+  .v-dash .dr.wyon .dr-pu { min-width: 150px }
+  .v-dash .dr.wyon .dr-pu .pill { font-size: 11px; padding-left: 7px; padding-right: 7px }
+}
+@media (max-width: 760px) {
+  /* téléphone : chiffres rangés par 4, même grille pour chaque chatteur */
+  .v-dash .dr.wyon tr { gap: 12px 12px }
+  .v-dash .dr.wyon tr > td[data-l] { flex: 0 0 calc((100% - 36px) / 4); min-width: 0; margin-left: 0 }
+  .v-dash .dr.wyon td.wyc { order: 3 }
+  .v-dash .dr.wyon td.wy0 { display: none }
+  .v-dash .dr.wyon .dr-pu { order: 4; flex: 1 1 calc((100% - 12px) / 2); padding-left: 0 }
+  .v-dash .dr.wyon .dr-pu:not(:has(.muted)) { display: flex; flex-direction: column; align-items: flex-start; gap: 3px }
+  .v-dash .dr.wyon .dr-pu::before { content: 'Ponctualité'; font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--muted) }
+  .v-dash .hist-rt { min-width: 0 }
+  .v-dash .hist-rt thead { display: none }
+  .v-dash .hist-rt tbody, .v-dash .hist-rt tr { display: block }
+  .v-dash .hist-rt tr { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line) }
+  .v-dash .hist-rt tbody tr:last-child { border-bottom: 0 }
+  .v-dash .hist-rt td { display: block; padding: 0; border: 0; background: none !important }
+  .v-dash .hist-rt td.hr-rk { width: auto; flex: 0 0 auto }
+  .v-dash .hist-rt td.hr-who { flex: 1 1 calc(100% - 170px); min-width: 0 }
+  .v-dash .hist-rt td.hr-ca { flex: 0 0 110px }
+  .v-dash .hist-rt .hist-cab { min-width: 0; align-items: flex-end }
+  .v-dash .hist-rt .hist-cab b { font-size: 15px }
+  .v-dash .hist-rt .hist-tr { width: 100%; max-width: 110px }
+  .v-dash .hist-rt tr > td[data-l] { flex: 0 0 calc((100% - 36px) / 4); min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; font-size: 12.5px; font-weight: 700; order: 2 }
+  .v-dash .hist-rt td[data-l]::before { content: attr(data-l); font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--muted) }
+  .v-dash .hist-rt tr > td.hr-mv:not(:has(*)) { display: none }
+  .v-dash .hist-rt tr > td.wyc { order: 3 }
+  .v-dash .hist-rt tr > td.wy0 { display: none }
+  .v-dash .hist-rt td.hr-pt { order: 4; flex: 1 1 calc((100% - 12px) / 2); display: flex; flex-direction: column; align-items: flex-start; gap: 3px }
+  .v-dash .hist-rt td.hr-pt::before { content: 'Pointage'; font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--muted) }
+  .v-dash .hist-rt .hist-inc { flex-wrap: wrap }
+}
+
+/* v64 Équipe › Noms des plateformes */
+.nm-card .card-head { flex-wrap: wrap; gap: 12px }
+.nm-sec + .nm-sec { margin-top: 18px }
+.nm-h { display: flex; align-items: baseline; gap: 10px; margin: 4px 0 6px }
+.nm-h b { font: 700 14px var(--f-display) }
+.nm-h small { color: var(--muted); font-size: 12px; font-weight: 600 }
+.nm-empty { margin: 4px 0 0 }
+.nm-note { display: flex; gap: 8px; align-items: flex-start; margin: 2px 0 14px; padding: 10px 12px; border-radius: 10px; background: var(--surface-2); color: var(--muted); font-size: 13px; line-height: 1.45 }
+.nm-note svg { width: 15px; height: 15px; flex: none; margin-top: 2px; color: var(--good) }
+.nm-chips { display: flex; flex-wrap: wrap; gap: 6px }
+.nm-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 11px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 13px; font-weight: 600 }
+.nm-chip i { width: 8px; height: 8px; border-radius: 50% }
+.nm-chip small { color: var(--muted); font-weight: 600; font-size: 12px }
+.nm-acts .seg { flex-wrap: wrap }
+.nm-tbl td.nm-when { color: var(--muted); font-size: 13px; white-space: nowrap }
+.nm-tbl th:first-child { width: 42% }
+.nm-tbl th:nth-child(2):not(:last-child) { width: 150px }
+@media (max-width: 760px) {
+  .nm-acts { width: 100% }
+  .nm-acts .seg { width: 100% }
+  .nm-acts .seg button { flex: 1 }
+}
+
+/* v64 Paies : brut / net en clair dans le détail */
+.v-pay .pay-dd .pay-dlh, .v-pay .pay-dd .pay-dr { grid-template-columns: 58px minmax(0, 1fr) minmax(84px, max-content) minmax(76px, max-content) 72px }
+.v-pay .pay-dd .pay-dr > [data-l="Net"] { color: var(--muted) }
+.v-pay .pay-dsum span.pay-dsb { color: var(--fg); border-color: color-mix(in srgb, var(--info) 35%, var(--line)) }
+.v-pay .pay-how { margin: 8px 0 4px; padding-top: 8px; border-top: 1px dashed var(--line); font-size: 12px; line-height: 1.5; color: var(--muted) }
+.v-pay .pay-how b { color: var(--fg); font-weight: 700 }
+@media (max-width: 760px) {
+  .v-pay .pay-dd .pay-dlh, .v-pay .pay-dd .pay-dr { grid-template-columns: minmax(0, 1fr) minmax(72px, max-content) minmax(66px, max-content) 62px; column-gap: 8px }
+  .v-pay .pay-dd .pay-dlh > :nth-child(2) { display: none }
+  .v-pay .pay-dd .pay-dlh > :nth-child(3), .v-pay .pay-dd .pay-dr > [data-l="CA"] { display: initial }
+  .v-pay .pay-dd .pay-dr > .pay-date { grid-column: 1; grid-row: 1 }
+  .v-pay .pay-dd .pay-dr > .pay-sl { grid-column: 1; grid-row: 2 }
+  .v-pay .pay-dd .pay-dr > .n { grid-row: 1 / span 2 }
+  .v-pay .pay-dd .pay-dr > [data-l="CA"], .v-pay .pay-dd .pay-dr > [data-l="Net"] { font-size: 12px }
+}
+
+/* v64 tableau de bord : haut compact sur téléphone */
+.dtools { display: contents }
+.dp-sel, .dp-rl, .sub-ph { display: none }
+@media (max-width: 760px) {
+  .topbar .tools > .dtools { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; width: 100% }
+  .dtools > .seg { display: none }
+  .dtools .stepper { display: contents }
+  /* le menu natif (roue de l'iPhone) est posé, invisible, sur une pastille qui prend juste la largeur du mot */
+  .dtools .dp-sel { display: flex; align-items: center; gap: 6px; position: relative; flex: none; order: 1; height: 38px; padding: 0 10px 0 12px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--ctl-line, var(--line)); font-weight: 650; font-size: 15px; white-space: nowrap; cursor: pointer }
+  .dtools .dp-sel svg { width: 14px; height: 14px; flex: none; color: var(--muted) }
+  .dtools .dp-sel select { position: absolute; inset: 0; width: 100%; height: 100%; min-height: 0; opacity: 0; appearance: none; -webkit-appearance: none; font-size: 16px; cursor: pointer }
+  .dtools .dp-sel:active { transform: scale(.97) }
+  .dtools .dp-sel:focus-within { border-color: var(--accent) }
+  .dtools .navstep { order: 2; flex: none; min-width: 38px; height: 38px; border-radius: 12px; font-size: 17px }
+  .dtools .navstep[data-act="dnext"] { order: 4 }
+  .dtools .dp-rl { all: unset; box-sizing: border-box; order: 3; flex: 1 1 0; min-width: 0; height: 38px; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 0 10px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--ctl-line, var(--line)); font-weight: 650; font-size: 15px; cursor: pointer; white-space: nowrap; -webkit-tap-highlight-color: transparent }
+  .dtools .dp-rl span { overflow: hidden; text-overflow: ellipsis }
+  .dtools .dp-rl svg { width: 15px; height: 15px; flex: none; color: var(--muted) }
+  .dtools .dp-rl:active, .dtools .navstep:active { transform: scale(.97) }
+  .dtools.open .dp-rl { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent) }
+  .dtools #dfrom, .dtools #dto, .dtools .dp-ar { display: none }
+  .dtools.open #dfrom, .dtools.open #dto { display: block; order: 6; flex: 1 1 0 !important; min-width: 0; height: 40px; text-align: center; border-radius: 12px; animation: dpIn .18s ease }
+  .dtools.open .dp-ar { display: block; order: 6; flex: none; color: var(--muted) }
+  .dtools.open::after { content: ''; order: 5; flex-basis: 100% }
+  @keyframes dpIn { from { opacity: 0; transform: translateY(-4px) } }
+  /* ligne sous le titre : la période est déjà dans le bouton, on garde « jour X sur Y » */
+  .sub-dt { display: none }
+  .sub-ph { display: inline }
+  /* Général / Chatteurs / Plateformes / Telegram + filtre modèles sur une ligne */
+  .v-dash .dash-subnav { margin-bottom: 12px }
+  .v-dash .dash-subl { flex-wrap: nowrap; gap: 6px; width: 100% }
+  .v-dash .dash-subl > .seg { display: flex; flex: 1 1 auto; min-width: 0; width: auto; padding: 3px }
+  .v-dash .dash-subl > .seg button { flex: 1 0 auto; min-height: 32px; padding: 0 6px; font-size: 12.5px }
+  .v-dash .dash-subl > .seg { gap: 0 }
+  .v-dash .dash-subl > .msel { flex: none }
+  .v-dash .dash-subl > .msel > summary { height: 38px; min-height: 38px; padding: 0 11px; gap: 0 }
+  .v-dash .dash-subl > .msel .msel-t, .v-dash .dash-subl > .msel > summary > svg { display: none }
+  .v-dash .dash-subr { display: none }
+  .dv-lg { display: none }
+}
+@media (min-width: 761px) { .dv-sm { display: none } }
+@media (max-width: 380px) { .v-dash .dash-subl > .seg button { padding: 0 5px; font-size: 12px } .dtools .dp-rl svg { display: none } }
+
+/* v64 Ventes : montant tapé en brut ou en net */
+.v-sales .ln .acw { display: flex; align-items: center; gap: 8px; min-width: 0 }
+.v-sales .ln .acw > .acct { flex: 0 1 auto; min-width: 0 }
+.v-sales .ln .acw > .msel { flex: 1 1 auto; min-width: 0; width: auto }
+.inm { position: relative; flex: none; display: inline-flex; align-items: center; gap: 4px; height: 26px; padding: 0 8px 0 10px; border-radius: 999px; font-size: 12px; font-weight: 750; color: var(--muted); background: var(--surface-2); border: 1px solid var(--line); cursor: pointer; white-space: nowrap; transition: color .15s, background .15s, border-color .15s }
+.inm svg { width: 11px; height: 11px; flex: none }
+.inm:hover { color: var(--fg); border-color: color-mix(in srgb, var(--fg) 25%, var(--line)) }
+.inm.net { color: var(--accent); background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 40%, var(--line)) }
+.inm select { position: absolute; inset: 0; width: 100%; height: 100%; min-height: 0; padding: 0; margin: 0; border: 0; opacity: 0; appearance: none; -webkit-appearance: none; font-size: 16px; cursor: pointer }
+.inm:focus-within { outline: 2px solid var(--accent); outline-offset: 2px }
+.inm:active { transform: scale(.97) }
+.inm.inm-off { display: none }
+.v-team .pill.inp-net { margin-right: 6px }
+@media (max-width: 760px) {
+  .v-sales .ln .acw > .inm { margin-left: auto; height: 30px; padding: 0 10px 0 12px; font-size: 13px }
+}
 </style>
 </head>
 <body>
@@ -3063,8 +3318,10 @@ function calc(e, rate, base = BASE) {
   const cur = e.cur || curOf(e.platformId);
   const fee = e.fee ?? num(S.platforms[e.platformId]?.fee ?? 20);
   const cr = e.rate ?? num(S.chatters[e.chatterId]?.rate ?? 10);
-  const sales = num(e.sales), tips = num(e.tips), gross = sales + tips;
-  const net = gross * (1 - num(fee) / 100), com = net * num(cr) / 100;
+  // tapé en net (Twizz) : net = montant tapé, brut retrouvé avec les frais (0 % = brut égal au net)
+  const isN = e.inp === 'net', k = isN && num(fee) < 100 ? 1 / (1 - num(fee) / 100) : 1;
+  const sales = num(e.sales) * k, tips = num(e.tips) * k, gross = sales + tips;
+  const net = isN ? num(e.sales) + num(e.tips) : gross * (1 - num(fee) / 100), com = net * num(cr) / 100;
   const b = x => toBase(x, cur, rate, base);
   return { cur, sales, tips, gross, net, com, grossU: b(gross), netU: b(net), comU: b(com), salesU: b(sales), tipsU: b(tips) };
 }
@@ -3186,7 +3443,9 @@ function ensureRange(from) {
   subColl('days', 'days', c => c.where('date', '>=', want));
   subColl('plan', 'plan', c => c.where('date', '>=', want));
   subColl('att', 'att', c => c.where('date', '>=', want));
+  if (subs.wyst) subColl('wystats', 'wyst', c => c.where('date', '>=', want));
 }
+const wySig = v => v ? JSON.stringify([v.unknown, v.checks, v.lastErr && v.lastErrAt, v.lastTest, v.from, Math.floor(num(v.lastEvent) / 6e4), Math.floor(num(v.lastOk) / 9e5)]) : '';
 async function connect() {
   let live = null;
   if (window.KL_CONFIG && window.supabase && !String(KL_CONFIG.url).includes('COLLE')) {
@@ -3215,6 +3474,11 @@ async function connect() {
   db.doc('config/discord').onSnapshot(s => { S.discord = s.exists ? s.data() : null; schedule(); }, onErr);
   db.doc('config/discordPost').onSnapshot(s => { S.dpost = s.exists ? s.data() : null; schedule(); }, onErr);
   db.doc('config/planning').onSnapshot(s => { S.tpl = s.exists ? s.data() : null; S.loaded.tpl = true; schedule(); }, onErr);
+  db.doc('config/wysper').onSnapshot(s => { S.wyCfg = s.exists ? s.data() : null; schedule(); }, onErr);
+  // état du bot : réécrit à chaque vente reçue ; on ne redessine que si ce qui est affiché change
+  db.doc('config/wysperState').onSnapshot(s => { const v = s.exists ? s.data() : null; const k = wySig(v); S.wy = v; if (k !== S.wySig) { S.wySig = k; schedule(); if (wyM) wyM(); } }, onErr);
+  db.doc('config/import').onSnapshot(s => { S.impCfg = s.exists ? s.data() : {}; schedule(); if (wyM) wyM(); }, onErr);
+  db.doc('config/wystatsState').onSnapshot(s => { const v = (s.exists && s.data()?.names) || null; if (JSON.stringify(v) !== JSON.stringify(S.wyNames ?? null)) { S.wyNames = v; schedule(); } }, onErr);
   ensureRange(S.dash.from);
   schedule();
 }
@@ -3730,8 +3994,9 @@ function viewSales() {
   activeChatters().forEach(c => { if (isOff(c.id, d)) { offIds.push(c.id); return; } cards[c.id] = { chatterId: c.id, saved: [] }; });
   saved.forEach(e => (cards[e.chatterId] ||= { chatterId: e.chatterId, saved: [] }).saved.push(e));
   let h = `<div class="statbar" id="sstat"></div>`;
+  h += wyBar(d);
   const rp = raPending().sort((a, b) => a.date.localeCompare(b.date));
-  if (rp.length) h += `<div class="ra-bar"><span class="ra-bi">${ICONS.swap}</span><div><b>${rp.length} réattribution${plS(rp.length)} Discord en attente du prochain import Whysper</b><div class="ra-l">${rp.slice(0, 4).map(r => `<span>${esc(raName(r.from, r.fromName))} → ${esc(raName(r.to, r.toName))} · <b>${fmtC(num(r.amount), 'EUR')}</b> · fan ${esc(r.fan)} <small>(${esc(dShort(r.date))})</small></span>`).join('')}${rp.length > 4 ? `<span>et ${rp.length - 4} autre${plS(rp.length - 4)}</span>` : ''}</div></div></div>`;
+  if (rp.length) h += `<div class="ra-bar"><span class="ra-bi">${ICONS.swap}</span><div><b>${rp.length} réattribution${plS(rp.length)} Discord en attente ${wyOn() ? (wyRest().length ? 'de la vente dans Wysper ou du prochain import Whysper' : 'de la vente dans Wysper') : 'du prochain import Whysper'}</b><div class="ra-l">${rp.slice(0, 4).map(r => `<span>${esc(raName(r.from, r.fromName))} → ${esc(raName(r.to, r.toName))} · <b>${fmtC(num(r.amount), 'EUR')}</b> · fan ${esc(r.fan)} <small>(${esc(dShort(r.date))})</small></span>`).join('')}${rp.length > 4 ? `<span>et ${rp.length - 4} autre${plS(rp.length - 4)}</span>` : ''}</div></div></div>`;
   if (!Object.keys(cards).length) { $('#view').innerHTML = h + `<div class="card empty"><h3>Aucun chatteur actif</h3><p>Ajoute tes chatteurs dans l'onglet Équipe.</p></div>`; liveStats(); return; }
   h += `<div class="sq-bar"><label class="sq ${S.sales.q ? 'has' : ''}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="text" id="sq" value="${esc(S.sales.q || '')}" placeholder="Chercher un chatteur…" autocomplete="off" spellcheck="false" enterkeyhint="search" aria-label="Chercher un chatteur"><button class="icon-btn sq-x" type="button" data-act="sqClear" aria-label="Effacer la recherche">${ICONS.x}</button></label><span class="hint" id="sqn" aria-live="polite"></span></div>`;
   h += `<div class="card flat sl"><div class="sl-cols" aria-hidden="true"><span>Chatteur</span><span>Modèle</span><span>Ventes</span><span>Tips</span><span class="r">Total brut</span><span class="r">Paie</span><span></span></div>`;
@@ -3767,7 +4032,7 @@ function viewSales() {
   });
   h += `</div>`;
   if (offIds.length) h += `<p class="hint mt">En day off aujourd'hui : ${offIds.map(id => esc(cName(id))).join(', ')}.</p>`;
-  h += `<p class="hint mt">Choisis la modèle, tape le montant brut : ça s'enregistre tout seul. Entrée passe à la case suivante. OnlyFans et Telegram peuvent aussi s'importer depuis Inflow et Whysper (bouton Importer en haut), Uncove et Twizz se saisissent ici.</p>`;
+  h += `<p class="hint mt">Choisis la modèle, tape le montant brut : ça s'enregistre tout seul. ${nmManual().length ? `Pour ${esc(nmManual().map(p => p.name).join(' et '))}, le petit menu Brut / Net permet aussi de taper le net.` : ''} Entrée passe à la case suivante. ${wyOn() ? (wyRest().length ? `Telegram ${esc(wyDe(wyCovL() || 'ton agence Wysper'))} arrive tout seul depuis Wysper ; Telegram ${esc(wyDe(wyAnd(wyRest())))} (Whysper) et OnlyFans (Inflow) s'importent avec le bouton Importer en haut ; Uncove et Twizz se saisissent ici.` : 'Telegram arrive tout seul depuis Wysper, OnlyFans s\'importe depuis Inflow (bouton Importer en haut), Uncove et Twizz se saisissent ici.') : 'OnlyFans et Telegram peuvent aussi s\'importer depuis Inflow et Whysper (bouton Importer en haut), Uncove et Twizz se saisissent ici.'}</p>`;
   $('#view').innerHTML = h; liveStats(); salesFilter();
   const nr = S.sales.focusC && $(`.sl-row[data-c="${S.sales.focusC}"]`);
   if (nr) { S.sales.focusC = null; const sx = nr.closest('.sx'); sx.classList.add('sx-new'); setTimeout(() => { if (!sx.isConnected) return; sx.scrollIntoView({ block: 'center' }); $('input[data-f=sales]', sx)?.focus({ preventScroll: true }); }); }
@@ -3788,22 +4053,42 @@ $('#view').addEventListener('keydown', e => {
   else if (e.key === 'Escape' && S.sales.q) { e.preventDefault(); HOOK.act.sqClear(); }
 });
 // une ligne de vente : modèle fixe si déjà saisie, sinon menu pour la choisir
+
+// plateformes sans import (Uncove, Twizz) : le montant se tape en brut ou en net, au choix ligne par ligne
+const manualPlat = pid => { const p = S.platforms[pid]; return !!p && !CRMS.some(c => c.re.test(p.name || '')); };
+const platInp = pid => S.platforms[pid]?.input === 'net' && manualPlat(pid) ? 'net' : 'gross';
+const inmPill = (v, off) => `<label class="inm ${v === 'net' ? 'net' : ''} ${off ? 'inm-off' : ''}" title="Montant tapé : brut (avant les frais de la plateforme) ou net (ce que la plateforme verse)"><span>${v === 'net' ? 'Net' : 'Brut'}</span>${DP_CHEV}<select data-f="inp" aria-label="Montant tapé en brut ou en net"><option value="gross" ${v !== 'net' ? 'selected' : ''}>Brut</option><option value="net" ${v === 'net' ? 'selected' : ''}>Net</option></select></label>`;
+function setInm(row, v) {
+  row.dataset.inp = v;
+  const lb = $('.inm', row); if (lb) { lb.classList.toggle('net', v === 'net'); lb.querySelector('span').textContent = v === 'net' ? 'Net' : 'Brut'; const s = lb.querySelector('select'); if (s.value !== v) s.value = v; }
+  const a = $('input[data-f=sales]', row), b = $('input[data-f=tips]', row);
+  if (a) a.placeholder = v === 'net' ? 'Ventes nettes' : 'Ventes'; if (b) b.placeholder = v === 'net' ? 'Tips nets' : 'Tips';
+}
+HOOK.change.push(e => {
+  const t = e.target; if (!t.matches || !t.matches('.sl-row select[data-f=inp]')) return;
+  const row = t.closest('.sl-row'), v = t.value === 'net' ? 'net' : 'gross'; setInm(row, v);
+  const dk = S.sales.date + '/' + row.dataset.key; draft[dk] = { ...(draft[dk] || {}), inp: v };
+  const s = $('input[data-f=sales]', row); if (s.value !== '' || $('input[data-f=tips]', row).value !== '') onSaleInput(s);
+});
 function saleLine(d, cd, key, modelId, platformId, e, opts, planned, isBase, selected, ck, o = {}) {
   const k = key || ekey(cd.slot, cd.chatterId, modelId, platformId);
   const dr = draft[d + '/' + k] || {};
   const sales = dr.sales ?? (e ? e.sales : ''), tips = dr.tips ?? (e ? e.tips : '');
   const cur = e?.cur || curOf(platformId); const filled = sales !== '' || tips !== '';
-  const com = filled ? calc({ ...(e || {}), chatterId: cd.chatterId, platformId, sales, tips, cur }).com : 0;
+  // Uncove / Twizz tapés à la main : menu Brut / Net (une ligne importée reste en brut)
+  const canIn = !e?.src && !e?.parts?.api, onIn = canIn && manualPlat(platformId);
+  const inp = !onIn ? 'gross' : dr.inp ?? e?.inp ?? (e && num(e.fee ?? S.platforms[platformId]?.fee ?? 20) > 0 ? 'gross' : platInp(platformId));
+  const cc = filled ? calc({ ...(e || {}), chatterId: cd.chatterId, platformId, sales, tips, cur, inp }) : null, com = cc ? cc.com : 0;
   const label = opts ? `<select class="msel" data-f="acct" aria-label="Modèle">${acctOptions(opts, selected)}</select>`
-    : `<span class="acct"><i style="background:${modelColor(modelId)}"></i><b>${esc(mName(modelId))}</b> <small>${esc(pName(platformId))}</small>${e?.src ? `<em class="impt" title="Importé depuis ${esc(CRMS.find(x => x.k === e.src)?.l || 'un CRM')}${esc(impPartsTxt(e))}">CRM</em>` : ''}${e?.ra?.length ? `<em class="rat" title="${esc(raTitle(e))}">${ICONS.swap}Réatrib</em>` : ''}</span>`;
+    : `<span class="acct"><i style="background:${modelColor(modelId)}"></i><b>${esc(mName(modelId))}</b> <small>${esc(pName(platformId))}</small>${e?.parts?.api ? `<em class="impt wy" title="Reçu de Wysper en direct${e.n ? ` · ${e.n} vente${plS(e.n)}` : ''}${esc(impPartsTxt(e))}. Corrige le montant si besoin : l'écart est gardé.">Wysper</em>` : e?.src ? `<em class="impt" title="Importé depuis ${esc(CRMS.find(x => x.k === e.src)?.l || 'un CRM')}${esc(impPartsTxt(e))}">CRM</em>` : ''}${e?.ra?.length ? `<em class="rat" title="${esc(raTitle(e))}">${ICONS.swap}Réatrib</em>` : ''}</span>`;
   const who = `<span class="ln-who">${o.who || ''}${e?.late ? '<em class="h02" title="Ventes faites entre 0h et 2h, à la fin du shift de la veille">Ventes entre 0h et 2h</em>' : ''}</span>`;
-  return `<div class="ln sl-row ${filled ? 'filled' : ''} ${opts ? 'new' : ''} ${e?.late ? 'late' : ''}" data-key="${k}" data-slot="${cd.slot}" data-c="${cd.chatterId}" data-m="${modelId}" data-p="${platformId}" data-cur="${cur}" ${opts ? `data-ck="${ck}"` : ''}>
-    ${who}${label}
-    <span class="money"><input type="number" inputmode="decimal" step="0.01" min="0" data-f="sales" value="${sales === '' ? '' : sales}" placeholder="Ventes" aria-label="Ventes"><span data-sym>${sym(cur)}</span></span>
-    <span class="money"><input type="number" inputmode="decimal" step="0.01" min="0" data-f="tips" value="${tips === '' ? '' : tips}" placeholder="Tips" aria-label="Tips"><span data-sym>${sym(cur)}</span></span>
-    <span class="tot" data-tot>${filled ? fmtC(num(sales) + num(tips), cur) : ''}</span>
+  return `<div class="ln sl-row ${filled ? 'filled' : ''} ${opts ? 'new' : ''} ${e?.late ? 'late' : ''}" data-key="${k}" data-slot="${cd.slot}" data-c="${cd.chatterId}" data-m="${modelId}" data-p="${platformId}" data-cur="${cur}" data-inp="${inp}" ${opts ? `data-ck="${ck}"` : ''}>
+    ${who}<span class="acw">${label}${canIn && (opts || onIn) ? inmPill(inp, !onIn) : ''}</span>
+    <span class="money"><input type="number" inputmode="decimal" step="0.01" min="0" data-f="sales" value="${sales === '' ? '' : sales}" placeholder="${inp === 'net' ? 'Ventes nettes' : 'Ventes'}" aria-label="Ventes"><span data-sym>${sym(cur)}</span></span>
+    <span class="money"><input type="number" inputmode="decimal" step="0.01" min="0" data-f="tips" value="${tips === '' ? '' : tips}" placeholder="${inp === 'net' ? 'Tips nets' : 'Tips'}" aria-label="Tips"><span data-sym>${sym(cur)}</span></span>
+    <span class="tot" data-tot>${cc ? fmtC(cc.gross, cur) : ''}</span>
     <span class="r pay" data-pay>${filled ? fmtC(com, cur) : ''}</span>
-    <span class="act">${e ? `<button class="icon-btn" type="button" data-act="delsale" aria-label="Effacer cette ligne">${ICONS.x}</button>` : ''}${o.more || ''}</span>
+    <span class="act">${e && !(e.parts?.api && wyLiveDay(d)) ? `<button class="icon-btn" type="button" data-act="delsale" aria-label="Effacer cette ligne">${ICONS.x}</button>` : ''}${o.more || ''}</span>
   </div>`;
 }
 // totaux du jour recalculés depuis les cases (ce qui est tapé compte tout de suite)
@@ -3813,10 +4098,10 @@ function liveStats() {
   $$('.sl-row[data-key]').forEach(r => {
     all.add(r.dataset.slot + r.dataset.c);
     const s = $('input[data-f=sales]', r).value, t = $('input[data-f=tips]', r).value; if (s === '' && t === '') return;
-    const e = S.days[S.sales.date]?.entries?.[r.dataset.key]; const c = calc({ ...(e || {}), chatterId: r.dataset.c, platformId: r.dataset.p, sales: s, tips: t, cur: r.dataset.cur });
+    const e = S.days[S.sales.date]?.entries?.[r.dataset.key]; const c = calc({ ...(e || {}), chatterId: r.dataset.c, platformId: r.dataset.p, sales: s, tips: t, cur: r.dataset.cur, inp: r.dataset.inp });
     gU += c.grossU; cU += c.comU; byCur[c.cur] += c.gross; shifts.add(r.dataset.slot + r.dataset.c);
   });
-  el.innerHTML = `<span class="big">${fmt0(gU)}</span><span class="muted">CA du jour${byCur.EUR || byCur.USD ? ' · ' + [byCur.EUR ? fmtC(byCur.EUR, 'EUR') : '', byCur.USD ? fmtC(byCur.USD) : ''].filter(Boolean).join(' + ') : ''}</span>
+  el.innerHTML = `<span class="big">${fmt0(gU)}</span><span class="muted">CA du jour${byCur.EUR || byCur.USD ? ' · ' + [byCur.EUR ? fmtC(byCur.EUR, 'EUR') : '', byCur.USD ? fmtC(byCur.USD) : ''].filter(Boolean).join(' + ') : ''}</span>${wyChip(S.sales.date)}
     <span class="sep"></span><span class="big">${fmtC(cU)}</span><span class="muted">de paie</span>
     <span class="sep"></span><span class="big">${new Set([...shifts].map(x => x.replace(/^(matin|aprem|soir|nuit)/, ''))).size}/${new Set([...all].map(x => x.replace(/^(matin|aprem|soir|nuit)/, ''))).size}</span><span class="muted">chatteurs remplis</span>
     <span class="saving ${saveState === 'ok' ? 'ok' : ''}" id="saving">${saveState === 'ok' ? '✓ Enregistré' : saveState === 'busy' ? 'Enregistrement…' : ''}</span>
@@ -3828,6 +4113,7 @@ function onSaleInput(inp) {
     const a = splitAcct(inp.value); const cur = curOf(a.platformId);
     Object.assign(row.dataset, { m: a.modelId, p: a.platformId, cur, key: ekey(row.dataset.slot, row.dataset.c, a.modelId, a.platformId) });
     $$('[data-sym]', row).forEach(x => x.textContent = sym(cur));
+    { const on = manualPlat(a.platformId), lb = $('.inm', row); if (lb) { lb.classList.toggle('inm-off', !on); setInm(row, on ? platInp(a.platformId) : 'gross'); } }
     if ($('input[data-f=sales]', row).value === '' && $('input[data-f=tips]', row).value === '') return;
     ['sales', 'tips'].forEach(f => { draft[d + '/' + row.dataset.key] = { ...(draft[d + '/' + row.dataset.key] || {}), [f]: $(`input[data-f=${f}]`, row).value }; });
   } else {
@@ -3842,8 +4128,9 @@ function onSaleInput(inp) {
   const s = $('input[data-f=sales]', row).value, t = $('input[data-f=tips]', row).value; const filled = s !== '' || t !== '';
   const e = S.days[d]?.entries?.[key];
   row.classList.toggle('filled', filled);
-  const tt = $('[data-tot]', row); if (tt) tt.innerHTML = filled ? fmtC(num(s) + num(t), row.dataset.cur) : '';
-  $('[data-pay]', row).innerHTML = filled ? fmtC(calc({ ...(e || {}), chatterId: row.dataset.c, platformId: row.dataset.p, sales: s, tips: t, cur: row.dataset.cur }).com, row.dataset.cur) : '';
+  const cc = filled ? calc({ ...(e || {}), chatterId: row.dataset.c, platformId: row.dataset.p, sales: s, tips: t, cur: row.dataset.cur, inp: row.dataset.inp }) : null;
+  const tt = $('[data-tot]', row); if (tt) tt.innerHTML = cc ? fmtC(cc.gross, row.dataset.cur) : '';
+  $('[data-pay]', row).innerHTML = cc ? fmtC(cc.com, row.dataset.cur) : '';
   liveStats();
 }
 async function flushSale(d, key, ds) {
@@ -3857,6 +4144,7 @@ async function flushSale(d, key, ds) {
   // ligne importée corrigée à la main : l'écart est gardé à part (adj), il reste quand le fichier du lendemain s'y ajoute
   if (val && prev?.parts) { const [s0, t0] = impSum({ ...prev.parts, adj: null }); const adj = [r2(val.sales - s0), r2(val.tips - t0)]; val.parts = { adj: adj[0] || adj[1] ? adj : null }; }
   if (val && prev?.late) val.late = true;
+  if (val && ds.inp === 'net' && manualPlat(ds.p)) val.inp = 'net'; else if (val && prev?.inp) val.inp = null;
   const ok = await guard(() => writeMap('days', d, 'entries', { [key]: val }));
   if (draft[dk] === dr) delete draft[dk];
   if (ok) setSaving('ok');
@@ -4011,7 +4299,7 @@ function impWhen(v, order, tz, tv) {
 // et adj (corrigé à la main après) ; la base fusionne les objets, une part retirée est écrite à null
 const impIsDay = f => /^\d{4}-\d{2}-\d{2}$/.test(f);
 const impSum = parts => Object.values(parts || {}).filter(Boolean).reduce((x, v) => [x[0] + num(v[0]), x[1] + num(v[1])], [0, 0]);
-const impPartsTxt = e => { const l = Object.entries(e?.parts || {}).filter(([, v]) => v); return l.length < 2 ? '' : ' : ' + l.map(([f, v]) => `${impIsDay(f) ? 'fichier du ' + dShort(f) : f === 'adj' ? 'corrigé à la main' : 'tapé à la main'} ${fmtC(num(v[0]) + num(v[1]), e.cur || 'EUR')}`).join(' + '); };
+const impPartsTxt = e => { const l = Object.entries(e?.parts || {}).filter(([, v]) => v); return l.length < 2 ? '' : ' : ' + l.map(([f, v]) => `${impIsDay(f) ? 'fichier du ' + dShort(f) : f === 'api' ? 'Wysper en direct' : f === 'adj' ? 'corrigé à la main' : 'tapé à la main'} ${fmtC(num(v[0]) + num(v[1]), e.cur || 'EUR')}`).join(' + '); };
 // créneau d'une vente, toujours sur son vrai jour (minuit à minuit) : celui du planning si le chatteur y est, sinon l'heure (avant 2h = shift du soir)
 function impShift(cid, d, h) {
   const mine = x => planOf(x).filter(s => s.chatterId === cid).sort((a, b) => slotIdx(a.slot) - slotIdx(b.slot));
@@ -4045,6 +4333,9 @@ function impWho(kind, raw, st, B, amt) {
   }
   return map[n];
 }
+// noms tels qu'écrits dans le fichier (pour Équipe › Noms des plateformes), ajoutés à ceux déjà gardés
+const impNamesKeep = (prev, B) => ({ c: { ...(prev?.c || {}), ...Object.fromEntries(Object.entries(B?.names?.chatter || {}).map(([n, r]) => [n, String(r.raw).trim()])) },
+  m: { ...(prev?.m || {}), ...Object.fromEntries(Object.entries(B?.names?.model || {}).map(([n, r]) => [n, String(r.raw).trim()])) } });
 function impBuild(st) {
   const { headers, rows } = st.file, c = st.cfg;
   const I = Object.fromEntries(IMPF.map(f => [f.k, c.cols[f.k] ? headers.indexOf(c.cols[f.k]) : -1]));
@@ -4073,7 +4364,10 @@ function impBuild(st) {
     if (!w) { sk('date illisible'); return; }
     const cn = String(r[I.chatter] ?? '').trim(); if (!cn) { sk('sans chatteur'); return; }
     const mn = I.model >= 0 ? String(r[I.model] ?? '').trim() : ''; if (I.model >= 0 && !mn) { sk('sans modèle'); return; }
-    const cid = impWho('chatter', cn, st, B, a + t), mid = I.model >= 0 ? impWho('model', mn, st, B, a + t) : c.model;
+    const mid = I.model >= 0 ? impWho('model', mn, st, B, a + t) : c.model;
+    // jour en direct : les modèles de l'agence Wysper branchée arrivent toutes seules, les autres s'importent comme avant
+    if (st.src === 'whysper' && wyLiveDay(w.d) && mid && mid !== '-' && wyCov(mid)) { sk(`${mName(mid)} : déjà en direct depuis Wysper`); return; }
+    const cid = impWho('chatter', cn, st, B, a + t);
     if (cid === '-' || mid === '-') { sk('nom ignoré'); return; }
     if (!cid || !mid) { B.wait++; return; }
     items.push({ w, cn, mn, cid, mid, a: a * k, t: t * k, raw: a + t, fan: I.fan >= 0 ? String(r[I.fan] ?? '').trim() : '' });
@@ -4179,7 +4473,7 @@ async function impOpen() {
     const plat = S.platforms[c.platformId]; const cur = curOf(c.platformId); const fee = num(plat?.fee ?? 20);
     let h = `<div class="imp-sec"><div class="imp-row"><div class="seg" role="group" aria-label="CRM">${CRMS.map(x => `<button type="button" data-src="${x.k}" aria-pressed="${st.src === x.k}">${x.l} · ${x.sub}</button>`).join('')}</div>
       <label class="imp-pl">Ventes rangées sur<select data-cf="platformId"><option value="">Choisir…</option>${sortedBy(S.platforms).map(p => `<option value="${p.id}" ${p.id === c.platformId ? 'selected' : ''}>${esc(p.name)} (${sym(curOf(p.id))})</option>`).join('')}</select></label></div>
-      <label class="imp-drop ${f ? 'has' : ''}"><input type="file" accept=".csv,.tsv,.txt,.xlsx,.xls" data-file hidden><span class="imp-dropi">${ICONS.upload}</span>${f ? `<b>${esc(f.name)}</b><span>${f.rows.length} ligne${plS(f.rows.length)} · clique ou dépose un autre fichier pour le remplacer</span>` : `<b>Dépose ici l'export ${esc(crm.l)}</b><span>ou clique pour le choisir · fichier CSV ou Excel</span>`}</label></div>`;
+      ${st.src === 'whysper' && wyOn() ? `<div class="imp-msg">${wyMods().length ? `Telegram ${esc(wyDe(wyCovL()))} arrive en direct depuis Wysper depuis le ${esc(dShort(wyFrom()))} : ${wyMods().length > 1 ? 'leurs' : 'ses'} ventes de ces jours-là sont ignorées ici.${wyRest().length ? ` ${esc(wyAnd(wyRest()))} s'import${wyRest().length > 1 ? 'ent' : 'e'} toujours ici, tous les jours.` : ''}` : `Wysper en direct est branché depuis le ${esc(dShort(wyFrom()))} : une modèle reliée à un compte de l'agence Wysper arrive toute seule, les autres s'importent ici comme avant.`}</div>` : ''}<label class="imp-drop ${f ? 'has' : ''}"><input type="file" accept=".csv,.tsv,.txt,.xlsx,.xls" data-file hidden><span class="imp-dropi">${ICONS.upload}</span>${f ? `<b>${esc(f.name)}</b><span>${f.rows.length} ligne${plS(f.rows.length)} · clique ou dépose un autre fichier pour le remplacer</span>` : `<b>Dépose ici l'export ${esc(crm.l)}</b><span>ou clique pour le choisir · fichier CSV ou Excel</span>`}</label></div>`;
     if (f && (st.cols || (B && B.missing.length))) {
       const opt = k => `<option value="">—</option>${f.headers.map(x => `<option value="${esc(x)}" ${c.cols[k] === x ? 'selected' : ''}>${esc(x)}</option>`).join('')}`;
       h += `<div class="imp-sec"><div class="imp-h"><b>Réglages du fichier</b><span class="hint">Trouvés automatiquement et retenus pour le prochain import.</span>${B && !B.missing.length ? `<button class="imp-lk" type="button" data-cols>Masquer</button>` : ''}</div>
@@ -4311,12 +4605,161 @@ async function impRun(st) {
       if (Object.keys(patch).length) await writeMap('days', d, 'entries', patch);
     }
     for (const x of raDone) await db.doc('reattrib/' + x.r.id).update({ status: 'applied', appliedAt: Date.now(), appliedFile: x.sales[0].w.f, sales: [...new Set(x.sales.map(it => it.gk))] });
-    impCfgAll = { ...impCfgAll, last: st.src, [st.src]: { platformId: c.platformId, cols: c.cols, net: c.net, tipsIn: c.tipsIn, order: c.order, tz: c.tz, model: c.model, chatters: clean(c.chatters), models: clean(c.models) } };
+    impCfgAll = { ...impCfgAll, last: st.src, [st.src]: { platformId: c.platformId, cols: c.cols, net: c.net, tipsIn: c.tipsIn, order: c.order, tz: c.tz, model: c.model, chatters: clean(c.chatters), models: clean(c.models), names: impNamesKeep(impCfgAll[st.src]?.names, B) } };
     await db.doc('config/import').set(impCfgAll);
   }, `${gs.length} ligne${plS(gs.length)} importée${plS(gs.length)} sur ${nd} jour${plS(nd)}${raDone.length ? ` · ${raDone.length} réattribution${plS(raDone.length)} faite${plS(raDone.length)}` : ''}`);
   if (ok) { closeModal(); S.sales.date = B.to; ensureRange(B.from); render(); }
 }
 HOOK.act.simport = () => impOpen();
+
+/* ================= WYSPER EN DIRECT : ventes Telegram écrites par le bot (config/wysper, config/wysperState) ================= */
+// jours remplis par le bot : à partir de config/wysper.from (posé par le bot à sa mise en route), sauf en pause
+let wyM = null; // fenêtre « Wysper en direct » ouverte : redessinée quand l'état du bot change
+const wyFrom = () => S.wyCfg?.from || '';
+const wyOn = () => !!wyFrom() && S.wyCfg.on !== false;
+const wyLiveDay = d => wyOn() && d >= wyFrom();
+
+// modèles en direct : celles des comptes de l'agence Wysper branchée (relevées par le bot) ; les autres modèles Telegram
+// (agence pas encore branchée) s'importent comme avant, tous les jours
+const wyMods = () => (Array.isArray(S.wy?.models) ? S.wy.models : []).filter(id => S.models[id]);
+const wyCov = mid => wyMods().includes(mid);
+const wyTgPid = () => { const p = S.impCfg?.whysper?.platformId; return p && S.platforms[p] ? p : Object.keys(S.platforms).find(id => /telegram|^tg$/i.test(S.platforms[id].name || '')) || ''; };
+const wyRest = () => { const pid = wyTgPid(); return pid ? sortedBy(S.models).filter(m => m.active !== false && (m.platforms || []).includes(pid) && !wyCov(m.id)).map(m => m.name) : []; };
+const wyAnd = l => l.length < 2 ? l.join('') : l.slice(0, -1).join(', ') + ' et ' + l[l.length - 1];
+const wyDe = s => (/^[aeiouyhàâéèêîïôûü]/i.test(s) ? "d'" : 'de ') + s;
+const wyCovL = () => wyAnd(wyMods().map(mName));
+const wyHm = t => t ? new Date(t).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Paris' }).replace(':', 'h') : '';
+const wyWhen = t => { if (!t) return ''; const d = iso(new Date(t)); return d === today() ? `à ${wyHm(t)}` : d === addDays(today(), -1) ? `hier à ${wyHm(t)}` : `le ${dShort(d)} à ${wyHm(t)}`; };
+const wyE = v => fmtC(v, 'EUR', Math.abs(v) % 1 ? 2 : 0);
+// nom Wysper -> chatteur (kind 'c') ou modèle ('m') : lien de l'import Whysper, sinon un seul chatteur actif du même nom
+const wyLinks = () => { const w = S.impCfg?.whysper || {}; return { c: w.chatters || {}, m: w.models || {} }; };
+function wyLink(kind, raw) {
+  const n = impNorm(raw) || (kind === 'c' ? 'sans membre' : ''); if (!n) return '';
+  const all = kind === 'c' ? S.chatters : S.models, v = wyLinks()[kind][n];
+  if (v === '-') return '-'; if (v && all[v]) return v;
+  const same = Object.keys(all).filter(id => impNorm(all[id]?.name) === n && all[id]?.active !== false);
+  return same.length === 1 ? same[0] : '';
+}
+// noms Wysper pas encore reliés : relevés par le bot sur les ventes, plus ceux passés en paramètre (vus dans les stats)
+function wyUnknown(extra = []) {
+  const out = {}, L = wyLinks();
+  const done = (kind, n) => { const v = L[kind][n]; return v === '-' || (v && (kind === 'c' ? S.chatters : S.models)[v]); };
+  ['c', 'm'].forEach(kind => Object.entries(S.wy?.unknown?.[kind] || {}).forEach(([n, u]) => {
+    if (done(kind, n)) return;
+    out[kind + '|' + n] = { kind, n, raw: u.raw || n, cnt: num(u.n), amt: num(u.amt), days: Object.keys(u.byDay || {}).sort() };
+  }));
+  extra.forEach(x => { const n = impNorm(x.raw); if (!n || done(x.kind, n) || wyLink(x.kind, x.raw)) return; out[x.kind + '|' + n] ||= { kind: x.kind, n, raw: x.raw, cnt: 0, amt: 0, days: [], stats: true }; });
+  return Object.values(out).sort((a, b) => (a.kind === 'm') - (b.kind === 'm') || b.amt - a.amt || a.raw.localeCompare(b.raw, 'fr'));
+}
+// « 5 et 6 nov. », « du 3 au 6 nov. » (le mois une seule fois quand c'est le même)
+const wyDaysTxt = l => { if (!l.length) return ''; if (l.length === 1) return dShort(l[0]); const a = l[0], b = l[l.length - 1], same = a.slice(0, 7) === b.slice(0, 7); const x = same ? String(+a.slice(8)) : dShort(a); return l.length === 2 ? `${x} et ${dShort(b)}` : `du ${x} au ${dShort(b)}`; };
+// état du direct : ok (reçu ou lu il y a moins de 20 min), pause, erreur, attente
+function wyState() {
+  const st = S.wy || {}; const seen = Math.max(num(st.lastOk), num(st.lastEvent));
+  if (!wyFrom()) return { k: 'wait', l: 'En attente du bot' };
+  if (S.wyCfg.on === false) return { k: 'off', l: 'En pause' };
+  if (st.lastErr && num(st.lastErrAt) > seen) return { k: 'bad', l: 'Wysper ne répond pas', why: st.lastErr };
+  if (!seen) return { k: 'wait', l: 'Première lecture en cours' };
+  return { k: 'ok', l: 'En direct' };
+}
+// enregistre un lien nom Wysper -> chatteur / modèle (ou « - » pour ignorer) dans config/import.whysper, comme l'import
+async function wySaveLink(kind, n, id) {
+  const raw = S.wy?.unknown?.[kind]?.[n]?.raw || Object.values((kind === 'c' ? S.wyNames?.u : S.wyNames?.a) || {}).map(x => x?.[0]).find(x => x && impNorm(x) === n) || '';
+  return nmSaveLink('whysper', kind, n, id, raw);
+}
+// petite marque ✅ / ⚠️ à côté du total du jour, d'après la dernière vérification du bot avec le tableau de bord Wysper
+function wyChip(d) {
+  if (!wyFrom() || d < wyFrom()) return '';
+  const c = S.wy?.checks?.[d];
+  if (!c) return d === today() ? `<button class="wy-ck" type="button" data-act="wyOpen" title="Le bot compare avec Wysper toutes les heures">Wysper · vérif à venir</button>` : '';
+  const w = c.w ?? c.l, gap = r2(num(c.y) - num(w));
+  const t = `Vérifié ${wyWhen(c.at)} : ${wyE(num(w))} dans Wysper, ${wyE(num(c.y))} dans l'app`;
+  return c.ok ? `<button class="wy-ck ok" type="button" data-act="wyOpen" title="${esc(t)}">${IC.check}Wysper OK</button>`
+    : `<button class="wy-ck bad" type="button" data-act="wyOpen" title="${esc(t)}">${IC.alert}Écart Wysper ${gap > 0 ? '+' : '−'}${wyE(Math.abs(gap))}</button>`;
+}
+// bandeau en haut de Ventes, sur les jours remplis en direct
+function wyBar(d) {
+  if (!wyFrom() || d < wyFrom()) return '';
+  const s = wyState(), st = S.wy || {}, un = wyUnknown().filter(u => !u.stats);
+  const last = st.lastEvent ? `dernière vente reçue ${wyWhen(st.lastEvent)}` : st.lastOk ? `à jour ${wyWhen(st.lastOk)}` : '';
+  const sub = s.k === 'off' ? 'Les ventes Telegram ne se mettent plus à jour : reprends le direct dans les réglages.' : s.k === 'bad' ? `Les ventes reprendront toutes seules dès que Wysper répond. ${last ? cap(last) + '.' : ''}` : s.k === 'wait' ? 'Les ventes Telegram arrivent dès la première lecture du bot.' : cap(last) || 'Les ventes Telegram arrivent toutes seules.';
+  return `<div class="wy-bar ${s.k}"><span class="wy-dot" aria-hidden="true"></span><div class="wy-t"><b>Telegram ${wyMods().length ? esc(wyDe(wyCovL())) + ' ' : ''}en direct depuis Wysper <span class="pill ${s.k === 'ok' ? 'good' : s.k === 'bad' ? 'bad' : 'mute'}">${s.l}</span></b><span>${esc(sub)}${wyRest().length ? `${/[.!?]$/.test(sub) ? '' : '.'} ${esc(wyAnd(wyRest()))} : toujours par l'import Whysper.` : ''}</span>${un.length ? `<span class="wy-un">${un.slice(0, 3).map(u => `<em>${esc(u.raw)}</em> ${u.amt ? wyE(u.amt) : ''}`).join(' · ')}${un.length > 3 ? ` · et ${un.length - 3} autre${plS(un.length - 3)}` : ''}</span>` : ''}</div>
+    <div class="wy-acts">${un.length ? `<button class="btn sm warn" type="button" data-act="wyOpen">${IC.link}${un.length} nom${plS(un.length)} à relier</button>` : ''}<button class="btn sm" type="button" data-act="wyOpen" aria-label="Réglages Wysper en direct">Réglages</button></div></div>`;
+}
+HOOK.act.wyOpen = () => wyModal();
+HOOK.act.wyLinkName = el => wyModal({ extra: [{ kind: el.dataset.k || 'c', raw: el.dataset.n }] });
+// fenêtre « Wysper en direct » : état, noms à relier, vérifications des derniers jours, réglages
+function wyModal(o = {}) {
+  const st = { newN: null, busy: false };
+  const m = modal(`<div class="modal-h"><div><h2>Wysper en direct</h2><p class="hint">Les ventes Telegram des modèles de ton agence Wysper arrivent toutes seules, rangées par jour, shift et chatteur comme avec l'import.</p></div><button class="icon-btn" type="button" data-close aria-label="Fermer">${ICONS.x}</button></div><div class="wy-b"></div>
+    <div class="modal-f"><button class="btn" type="button" data-close>Fermer</button></div>`, 'wy-modal');
+  const body = $('.wy-b', m);
+  const draw = () => {
+    if (!body.isConnected) return;
+    const s = wyState(), w = S.wy || {}, un = wyUnknown(o.extra || []);
+    const line = (k, v) => v ? `<div><span>${k}</span><b>${v}</b></div>` : '';
+    let h = `<div class="wy-sec wy-stt ${s.k}"><span class="wy-dot" aria-hidden="true"></span><div class="wy-stx"><b>${esc(s.l)}</b>${s.why ? `<small>${esc(s.why)}</small>` : ''}</div>
+      <div class="wy-kv">${line('Modèles en direct', esc(wyCovL()) || 'aucune reliée pour l\'instant')}${line('Toujours à l\'import', esc(wyAnd(wyRest())))}${line('Dernière vente reçue', wyWhen(w.lastEvent))}${line('Dernière lecture complète', wyWhen(w.lastOk))}${line('Test de Wysper reçu', wyWhen(w.lastTest))}${line('En direct depuis le', wyFrom() ? esc(dShort(wyFrom())) : '')}</div></div>`;
+    if (un.length) {
+      const sel = u => { const all = u.kind === 'c' ? sortedBy(S.chatters) : sortedBy(S.models); const on = all.filter(x => x.active !== false), off = all.filter(x => x.active === false);
+        return `<select data-wl="${u.kind}" data-n="${esc(u.n)}" aria-label="À qui correspond ${esc(u.raw)}"><option value="">À choisir…</option>${u.kind === 'c' ? '<option value="+new">+ Nouveau chatteur…</option>' : ''}${on.map(x => `<option value="${x.id}">${esc(x.name)}</option>`).join('')}${off.length ? `<optgroup label="Inactifs">${off.map(x => `<option value="${x.id}">${esc(x.name)}</option>`).join('')}</optgroup>` : ''}<option value="-">Ignorer ce nom</option></select>`; };
+      const row = u => { const nw = st.newN === u.kind + '|' + u.n;
+        return `<div class="imp-map todo${nw ? ' nw' : ''}"><span><b>${esc(u.raw)}</b><small>${u.kind === 'm' ? 'Compte modèle · ' : ''}${u.cnt ? `${u.cnt} vente${plS(u.cnt)} · ${wyE(u.amt)} · ${esc(wyDaysTxt(u.days))}` : 'Vu dans les stats Wysper'}</small></span>${nw ? `<div class="imp-new"><input type="text" data-newname value="${esc(u.raw.replace(/\s*csc\s*$/i, ''))}" maxlength="60" aria-label="Nom du nouveau chatteur"><button class="btn primary sm" type="button" data-newok>Créer</button><button class="icon-btn" type="button" data-newno aria-label="Annuler">${ICONS.x}</button></div>` : sel(u)}</div>`; };
+      h += `<div class="wy-sec"><div class="imp-h"><b>Noms à relier</b><span class="hint">Choisis à qui correspond chaque nom Wysper : c'est retenu, et le bot range ses ventes dans les minutes qui suivent.</span></div><div class="imp-maps">${un.map(row).join('')}</div></div>`;
+    }
+    const cks = Object.entries(w.checks || {}).filter(([d]) => d >= wyFrom()).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 7);
+    if (cks.length) {
+      const why = c => { const l = []; const lst = x => Object.entries(x || {}).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ${wyE(v)}`).join(', ');
+        if (Object.keys(c.u || {}).length) l.push(`à relier : ${lst(c.u)}`); if (Object.keys(c.i || {}).length) l.push(`ignorés : ${lst(c.i)}`);
+        if (Math.abs(num(c.j)) >= .01) l.push(`corrigé à la main ${num(c.j) > 0 ? '+' : '−'}${wyE(Math.abs(num(c.j)))}`); if (num(c.m) >= .01) l.push(`tapé à la main ${wyE(num(c.m))}`); if (num(c.f) >= .01) l.push(`venu d'un fichier ${wyE(num(c.f))}`);
+        return l.join(' · '); };
+      h += `<div class="wy-sec"><div class="imp-h"><b>Vérifications avec Wysper</b><span class="hint">Le bot compare le total du jour avec le tableau de bord Wysper toutes les heures, et poste le récap de la veille à 0h20 dans le salon ventes.</span></div><div class="wy-cks">${cks.map(([d, c]) => { const wv = c.w ?? c.l, gap = r2(num(c.y) - num(wv)), r = why(c);
+        return `<div class="wy-ckr ${c.ok ? 'ok' : 'bad'}"><span class="wy-ckd">${esc(cap(fd(d, { weekday: 'short', day: 'numeric', month: 'short' })))}</span><span class="pill ${c.ok ? 'good' : 'warn'}">${c.ok ? 'OK' : `Écart ${gap > 0 ? '+' : '−'}${wyE(Math.abs(gap))}`}</span><span class="wy-ckv">Wysper <b>${wyE(num(wv))}</b> · app <b>${wyE(num(c.y))}</b></span><small>vérifié ${esc(wyWhen(c.at))}${r ? ' · ' + esc(r) : ''}</small></div>`; }).join('')}</div></div>`;
+    }
+    if (wyFrom()) h += `<div class="wy-sec wy-set"><div class="imp-h"><b>Réglages</b></div><div class="wy-setr"><label class="f"><span>Ventes Telegram en direct à partir du</span><input type="date" data-wfrom value="${esc(wyFrom())}" max="${today()}"></label>
+      <button class="btn ${S.wyCfg.on === false ? 'primary' : ''}" type="button" data-wpause>${S.wyCfg.on === false ? 'Reprendre le direct' : 'Mettre en pause'}</button></div>
+      <p class="hint">Les jours à partir de cette date sont remplis par Wysper : l'import d'un fichier Whysper n'y change rien. Pour les jours d'avant, l'import reste possible. En pause, rien n'est touché et l'import refonctionne.</p></div>`;
+    else h += `<div class="wy-sec"><p class="hint">Le direct démarre tout seul quand la clé Wysper est en place dans le bot (Railway) : il prend les ventes à partir de ce jour-là.</p></div>`;
+    body.innerHTML = h;
+  };
+  const create = async () => {
+    const i = $('[data-newname]', body), name = i && i.value.trim(); if (!name) { toast('Indique un nom.', true); return; }
+    const [kind, n] = [st.newN.slice(0, 1), st.newN.slice(2)];
+    const same = Object.entries(S.chatters).find(([, x]) => impNorm(x.name) === impNorm(name));
+    let cid = same?.[0];
+    if (!cid) { cid = 'c-' + uid(); const data = { name, rate: 10, method: 'USDC', notes: '', active: true, shift: null };
+      if (!await guard(() => db.doc('chatters/' + cid).set(data), `${name} ajouté à l'équipe`)) return; S.chatters[cid] ||= data; }
+    if (await wySaveLink(kind, n, cid)) { if (same) toast(`${name} est déjà dans l'équipe : nom relié.`); st.newN = null; draw(); }
+  };
+  body.addEventListener('change', async e => {
+    const t = e.target;
+    if (t.dataset.wl) {
+      if (t.value === '+new') { st.newN = t.dataset.wl + '|' + t.dataset.n; draw(); const i = $('[data-newname]', body); if (i) { i.focus(); i.select(); } return; }
+      if (!t.value) return;
+      const lbl = t.value === '-' ? 'ignoré' : 'relié à ' + (t.dataset.wl === 'c' ? cName(t.value) : mName(t.value));
+      if (await wySaveLink(t.dataset.wl, t.dataset.n, t.value)) { toast(`Nom ${lbl} : le bot range ses ventes dans les minutes qui suivent.`); draw(); }
+      return;
+    }
+    if (t.dataset.wfrom != null) {
+      const v = t.value; if (!v || v === wyFrom()) return;
+      if (v > today()) { t.value = wyFrom(); toast('Choisis une date passée ou aujourd\'hui.', true); return; }
+      if (await guard(() => db.doc('config/wysper').update({ from: v }), `Direct à partir du ${dShort(v)} : le bot refait ces jours-là.`)) { S.wyCfg = { ...S.wyCfg, from: v }; draw(); }
+    }
+  });
+  body.addEventListener('click', async e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if ('newok' in b.dataset) create();
+    else if ('newno' in b.dataset) { st.newN = null; draw(); }
+    else if ('wpause' in b.dataset) { const on = S.wyCfg.on === false;
+      if (await guard(() => db.doc('config/wysper').update({ on }), on ? 'Direct repris : le bot rattrape les ventes.' : 'Direct en pause.')) { S.wyCfg = { ...S.wyCfg, on }; draw(); render(); } }
+  });
+  body.addEventListener('keydown', e => {
+    if (e.target.dataset.newname == null) return;
+    if (e.key === 'Enter') { e.preventDefault(); create(); }
+    else if (e.key === 'Escape') { e.stopPropagation(); st.newN = null; draw(); }
+  });
+  wyM = draw; draw();
+}
 
 /* ================= PAIES ================= */
 /* pénalités saisies sur Discord (bouton Pénalités de #gestion), en €, retirées de la paie de leur quinzaine */
@@ -4437,18 +4880,99 @@ function viewTeam() {
       </tbody></table></div>` : '<div class="empty"><p>Aucun chatteur pour le moment.</p></div>'}
     </div>
     ${teamDiscord()}
+    ${teamNames()}
     <div class="grid g3 mt">
       <div class="card"><div class="card-head"><div><h2>Modèles</h2><p class="hint">Et leurs plateformes</p></div><button class="btn sm primary" type="button" data-act="addmodel">+ Modèle</button></div>
         ${ms.length ? `<table><tbody>${ms.map(m => `<tr class="click" data-act="editmodel" data-id="${m.id}"><td><span class="acct"><i style="background:${modelColor(m.id)}"></i>${esc(m.name)}</span>${m.active === false ? ' <span class="pill mute">Inactive</span>' : ''}</td><td class="right">${(m.platforms || []).map(p => `<span class="pill mute">${esc(pName(p))} ${sym(curOf(p))}</span>`).join(' ')}</td></tr>`).join('')}</tbody></table>` : '<div class="empty"><p>Aucune modèle.</p></div>'}
       </div>
       <div class="card"><div class="card-head"><div><h2>Plateformes</h2><p class="hint">Devise et frais prélevés</p></div><button class="btn sm primary" type="button" data-act="addplat">+ Plateforme</button></div>
-        ${ps.length ? `<table><tbody>${ps.map(p => `<tr class="click" data-act="editplat" data-id="${p.id}"><td><span class="acct"><i style="background:${platColor(p.id)}"></i>${esc(p.name)}</span></td><td class="n">${p.currency === 'EUR' ? '€' : '$'}</td><td class="n">frais ${pct(num(p.fee))}</td></tr>`).join('')}</tbody></table>` : '<div class="empty"><p>Aucune plateforme.</p></div>'}
+        ${ps.length ? `<table><tbody>${ps.map(p => `<tr class="click" data-act="editplat" data-id="${p.id}"><td><span class="acct"><i style="background:${platColor(p.id)}"></i>${esc(p.name)}</span></td><td class="n">${p.currency === 'EUR' ? '€' : '$'}</td><td class="n">${platInp(p.id) === 'net' ? '<span class="pill info inp-net">Saisie en net</span>' : ''}frais ${pct(num(p.fee))}</td></tr>`).join('')}</tbody></table>` : '<div class="empty"><p>Aucune plateforme.</p></div>'}
       </div>
       <div class="card"><div class="card-head"><div><h2>Réglages</h2></div><button class="btn sm" type="button" data-act="settings">Modifier</button></div>
         <dl class="kv"><dt>Taux € → $</dt><dd>1 € = $${num(st.eurUsd).toLocaleString('fr-FR')}</dd><dt>Day off / mois</dt><dd>${num(st.dayOffQuota) || 3}</dd><dt>Paie du 1 au 15</dt><dd>versée le 16</dd><dt>Paie du 16 à la fin</dt><dd>versée le 1er</dd></dl>
       </div>
     </div>`;
 }
+
+/* ---- Équipe › Noms des plateformes ---- */
+// lien nom -> chatteur / modèle (« - » = ignorer, vide = plus de lien) dans config/import.<crm>, comme l'import ;
+// le nom tel qu'il est écrit dans la plateforme est gardé dans config/import.<crm>.names pour l'afficher
+async function nmSaveLink(crm, kind, n, id, raw, okMsg) {
+  return guard(async () => {
+    const s = await db.doc('config/import').get(); const all = (s.exists && s.data()) || {};
+    const w = all[crm] || {}, key = kind === 'c' ? 'chatters' : 'models', map = { ...(w[key] || {}) };
+    if (id) map[n] = id; else delete map[n];
+    const names = raw ? { ...(w.names || {}), [kind]: { ...(w.names?.[kind] || {}), [n]: raw } } : w.names;
+    const next = { ...all, [crm]: { ...w, [key]: map, ...(names ? { names } : {}) } };
+    await db.doc('config/import').set(next); S.impCfg = next; impCfgAll = next;
+  }, okMsg);
+}
+const nmPretty = n => n.replace(/(^|\s)\S/g, x => x.toUpperCase());
+const NM_SRC = [['whysper', 'Wysper · Telegram'], ['inflow', 'Inflow · OnlyFans']];
+// plateformes sans import (Uncove, Twizz…) : ventes tapées à la main, au nom du chatteur de l'app
+const nmManual = () => sortedBy(S.platforms).filter(p => !CRMS.some(c => c.re.test(p.name || '')));
+const nmSrcs = () => [...NM_SRC, ...nmManual().map(p => ['p:' + p.id, `${p.name} · à la main`])];
+function nmManualBody(pid) {
+  const p = S.platforms[pid], ms = sortedBy(S.models).filter(m => (m.platforms || []).includes(pid) && m.active !== false);
+  const l = entries(monthStart(today()), today()).filter(e => e.platformId === pid && num(e.sales) + num(e.tips) > 0);
+  const by = groupBy(l, 'chatterId'), cs = Object.keys(by).filter(id => S.chatters[id]).sort((a, b) => by[b].length - by[a].length);
+  const chip = (c, n, x) => `<span class="nm-chip"><i style="background:${c}"></i>${esc(n)}${x ? `<small>${x}</small>` : ''}</span>`;
+  return `<p class="nm-note">${IC.check}<span>Pas d’import pour ${esc(p.name)} : les ventes sont tapées à la main dans Ventes, déjà au nom du chatteur et de la modèle de l’app. Rien à relier.</span></p>
+    <div class="nm-sec"><div class="nm-h"><b>Comptes ${esc(p.name)}</b><small>${ms.length} modèle${plS(ms.length)}</small></div>
+      <div class="nm-chips">${ms.map(m => chip(modelColor(m.id), m.name)).join('') || '<span class="muted">Aucune modèle sur cette plateforme (Équipe › Modèles).</span>'}</div></div>
+    <div class="nm-sec"><div class="nm-h"><b>Chatteurs ce mois-ci</b><small>ventes tapées depuis le 1er du mois</small></div>
+      <div class="nm-chips">${cs.map(id => chip(chatterColor(id), cName(id), `${by[id].length} vente${plS(by[id].length)}`)).join('') || '<span class="muted">Aucune vente ce mois-ci.</span>'}</div></div>`;
+}
+// tous les noms d'une plateforme : liens gardés (imports, liens faits dans l'app), membres et comptes vus par le bot
+function nmRows(crm, kind) {
+  const w = S.impCfg?.[crm] || {}, map = (kind === 'c' ? w.chatters : w.models) || {}, all = kind === 'c' ? S.chatters : S.models;
+  const rows = {};
+  const add = (n, raw, last, live) => { if (!n) return; const r = rows[n] ||= { n, raw: '', last: '', live: false }; if (raw && (!r.raw || live)) r.raw = raw; if (last && last > r.last) r.last = last; if (live) r.live = true; };
+  Object.keys(map).forEach(n => add(n, w.names?.[kind]?.[n]));
+  if (crm === 'whysper') {
+    Object.values((kind === 'c' ? S.wyNames?.u : S.wyNames?.a) || {}).forEach(x => Array.isArray(x) && add(impNorm(x[0]), x[0], x[1], true));
+    Object.entries(S.wy?.unknown?.[kind] || {}).forEach(([n, u]) => add(n, u.raw, Object.keys(u.byDay || {}).sort().pop() || '', true));
+  }
+  return Object.values(rows).map(r => {
+    const v = map[r.n], raw = r.raw || nmPretty(r.n);
+    const cur = crm === 'whysper' ? wyLink(kind, r.raw || r.n) : v === '-' ? '-' : v && all[v] ? v : '';
+    return { ...r, raw, cur, auto: !!cur && cur !== '-' && v !== cur };
+  }).sort((a, b) => (!!a.cur - !!b.cur) || a.raw.localeCompare(b.raw, 'fr'));
+}
+function teamNames() {
+  if (!S.nmSrc) { let v = ''; try { v = localStorage.getItem('kl_nmsrc') || ''; } catch (e) {} S.nmSrc = v; }
+  const src = nmSrcs(); if (!src.some(x => x[0] === S.nmSrc)) S.nmSrc = 'whysper';
+  const crm = S.nmSrc, wy = crm === 'whysper', pl = wy ? 'Wysper' : 'Inflow';
+  if (crm.startsWith('p:')) return `<div class="card mt nm-card">${secHead('Noms des plateformes', 'Chaque nom vu dans les plateformes, et à qui il est relié.', `<div class="nm-acts">${seg('nmSrc', crm, src)}</div>`)}${nmManualBody(crm.slice(2))}</div>`;
+  const hint = `Chaque nom vu dans ${wy ? 'Wysper (ventes en direct, stats et exports)' : 'tes exports Inflow'}, et à qui il est relié. Change-le ici : ${wy ? 'le bot range ses ventes dans les minutes qui suivent' : 'le prochain import en tient compte'}.`;
+  const when = r => r.last ? (r.last === today() ? 'aujourd’hui' : r.last === addDays(today(), -1) ? 'hier' : 'le ' + dShort(r.last)) : '';
+  const table = kind => {
+    const rows = nmRows(crm, kind), all = kind === 'c' ? sortedBy(S.chatters) : sortedBy(S.models), nm = kind === 'c' ? cName : mName;
+    const ok = rows.filter(r => r.cur && r.cur !== '-').length, ign = rows.filter(r => r.cur === '-').length;
+    const head = `<div class="nm-h"><b>${kind === 'c' ? 'Chatteurs' : 'Modèles'}</b>${rows.length ? `<small>${ok}/${rows.length - ign} relié${plS(ok)}${ign ? ` · ${ign} ignoré${plS(ign)}` : ''}</small>` : ''}</div>`;
+    if (!rows.length) return head + `<p class="hint nm-empty">${wy ? 'Aucun nom pour l’instant : ils arrivent dès que le bot relève Wysper ou au prochain import Whysper.' : 'Aucun nom pour l’instant : ils arrivent au premier import Inflow.'}</p>`;
+    return head + `<div class="tbl-wrap"><table class="dc-tbl nm-tbl"><thead><tr><th>Nom dans ${pl}</th>${wy ? '<th>Vu la dernière fois</th>' : ''}<th>${kind === 'c' ? 'Chatteur' : 'Modèle'} dans l'app</th></tr></thead><tbody>
+      ${rows.map(r => { const opts = all.filter(x => x.active !== false || x.id === r.cur);
+        const pill = r.cur === '-' ? '<span class="pill mute">Ignoré</span>' : !r.cur ? `<span class="pill warn">À relier</span>`
+          : r.auto ? `<span class="pill good" title="Relié tout seul : même nom dans l’app">${IC.check}Même nom</span>` : `<span class="pill good">${IC.check}Relié</span>`;
+        return `<tr class="${r.cur ? '' : 'dc-todo'}"><td><span class="dc-who"><b>${esc(r.raw)}</b>${r.n === 'sans membre' ? '<small>ventes envoyées depuis le téléphone de la modèle</small>' : ''}</span></td>
+          ${wy ? `<td class="nm-when">${when(r) || '<span class="muted">–</span>'}</td>` : ''}
+          <td><div class="dc-sel"><select data-nmlink="${kind}" data-crm="${crm}" data-n="${esc(r.n)}" data-raw="${esc(r.raw)}" aria-label="${kind === 'c' ? 'Chatteur' : 'Modèle'} de ${esc(r.raw)}">
+            <option value="" ${r.cur ? '' : 'selected'}>— À relier —</option>${opts.map(x => `<option value="${x.id}" ${x.id === r.cur ? 'selected' : ''}>${esc(x.name)}${x.active === false ? ' (inactif)' : ''}</option>`).join('')}
+            <option value="-" ${r.cur === '-' ? 'selected' : ''}>Ignorer ce nom</option></select>${pill}</div></td></tr>`; }).join('')}
+    </tbody></table></div>`;
+  };
+  return `<div class="card mt nm-card">${secHead('Noms des plateformes', hint, `<div class="nm-acts">${seg('nmSrc', crm, src)}</div>`)}
+    <div class="nm-sec">${table('c')}</div><div class="nm-sec">${table('m')}</div></div>`;
+}
+HOOK.seg.nmSrc = v => { S.nmSrc = v; try { localStorage.setItem('kl_nmsrc', v); } catch (e) {} };
+HOOK.change.push(async e => {
+  const t = e.target; if (!t.dataset || t.dataset.nmlink == null) return;
+  const kind = t.dataset.nmlink, crm = t.dataset.crm, raw = t.dataset.raw, v = t.value;
+  const who = v === '-' ? 'ignoré' : !v ? 'n’est plus relié' : 'relié à ' + (kind === 'c' ? cName(v) : mName(v));
+  const msg = `${raw} ${who}${crm === 'whysper' && v ? ' : le bot range ses ventes dans les minutes qui suivent' : ''}`;
+  if (await nmSaveLink(crm, kind, t.dataset.n, v, raw, msg)) render();
+});
 // comptes Discord du bot de clocking (config/discord, envoyé par le bot) reliés aux chatteurs (chatters.discordId)
 const dcMember = did => S.discord?.members?.[did] || null;
 const dcTag = c => { if (!c.discordId) return ''; const m = dcMember(c.discordId); return `<span class="dc-tag">${IC.link}${esc(m ? (m.username ? '@' + m.username : m.name) : 'Discord')}</span>`; };
@@ -4580,12 +5104,13 @@ function platModal(id) {
       <label class="f full">Nom<input type="text" name="name" value="${esc(c.name)}"></label>
       <label class="f">Devise<select name="cur"><option value="USD" ${c.currency !== 'EUR' ? 'selected' : ''}>Dollar $</option><option value="EUR" ${c.currency === 'EUR' ? 'selected' : ''}>Euro €</option></select></label>
       <label class="f">Frais plateforme (%)<input type="number" step="0.1" min="0" max="100" name="fee" value="${c.fee ?? 20}"></label>
+      ${!id || manualPlat(id) ? `<label class="f full">Montants tapés dans Ventes<select name="inp"><option value="gross" ${c.input !== 'net' ? 'selected' : ''}>Brut (avant les frais)</option><option value="net" ${c.input === 'net' ? 'selected' : ''}>Net (après les frais)</option></select></label>` : ''}
     </form>
-    <p class="hint" style="margin:0">Les ventes déjà saisies gardent la devise et les frais du moment où elles ont été entrées.</p>
+    <p class="hint" style="margin:0">${!id || manualPlat(id) ? 'En net, la paie et le Revenu perso partent du montant tapé, les frais servent juste à retrouver le CA brut (0 % = brut égal au net). ' : ''}Les ventes déjà saisies gardent les réglages du moment où elles ont été entrées.</p>
     <div class="modal-f">${id ? '<button class="btn danger left" type="button" data-del>Supprimer</button>' : ''}<button class="btn" type="button" data-close>Annuler</button><button class="btn primary" type="button" data-save>Enregistrer</button></div>`, 'sm');
   $('[data-save]', m).onclick = async () => {
     const f = $('#pForm', m); const name = f.name.value.trim(); if (!name) { toast('Indique un nom.', true); return; }
-    if (await guard(() => db.doc('platforms/' + (id || 'p-' + uid())).set({ name, currency: f.cur.value, fee: num(f.fee.value) }), 'Plateforme enregistrée')) closeModal();
+    if (await guard(() => db.doc('platforms/' + (id || 'p-' + uid())).set({ name, currency: f.cur.value, fee: num(f.fee.value), ...(f.inp ? { input: f.inp.value } : {}) }), 'Plateforme enregistrée')) closeModal();
   };
   if (id) $('[data-del]', m).onclick = () => confirmBox(`Supprimer ${c.name} ?`, 'Les ventes passées gardent leur devise. Les modèles ne pourront plus être planifiées sur cette plateforme.', 'Supprimer', () => guard(() => db.doc('platforms/' + id).delete(), 'Plateforme supprimée'));
 }
@@ -6014,6 +6539,29 @@ const dashModelsHtml = ids => ids.map(m => `<span class="dash-m"><i style="backg
 const dashModelsSel = () => (S.dash.models ??= lsGet('kl_dmodels', [])).filter(id => S.models[id]);
 MSEL.dashM = v => { S.dash.models = v; lsSet('kl_dmodels', v); };
 HOOK.seg.dmetric = v => { S.dash.metric = v; lsSet('kl_dmetric', v); };
+
+// libellé court de la période pour le téléphone : « Jeu. 5 nov. », « 1 – 15 nov. », « Novembre 2026 », « 28 oct. – 3 nov. »
+function dpLbl(f, t) {
+  const yr = s => s.slice(0, 4) !== today().slice(0, 4) ? ' ' + s.slice(0, 4) : '';
+  if (f === t) return cap(fd(f, { weekday: 'short', day: 'numeric', month: 'short' })) + yr(t);
+  if (f.slice(0, 7) === t.slice(0, 7)) {
+    if (f.endsWith('-01') && addDays(t, 1).endsWith('-01')) return cap(fd(f, { month: 'long' })) + yr(f);
+    return `${parse(f).getDate()} – ${fd(t, { day: 'numeric', month: 'short' })}${yr(t)}`;
+  }
+  return `${dShort(f)} – ${dShort(t)}${yr(t)}`;
+}
+const DP_IC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>';
+const DP_CHEV = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+function dashTools(D) {
+  const opts = D.preset === 'custom' ? [...PRESETS, ['custom', 'Dates choisies']] : PRESETS;
+  return `<div class="dtools ${D.dpOpen ? 'open' : ''}">${seg('dpreset', D.preset, PRESETS)}
+    <label class="dp-sel"><span>${esc((opts.find(x => x[0] === D.preset) || ['', 'Période'])[1])}</span>${DP_CHEV}<select data-dpsel aria-label="Période">${opts.map(([k, l]) => `<option value="${k}" ${k === D.preset ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+    <div class="stepper"><button class="navstep" type="button" data-act="dprev" aria-label="Période précédente">‹</button><input type="date" id="dfrom" value="${D.from}" aria-label="Du" style="width:128px"><span class="dp-ar">→</span><input type="date" id="dto" value="${D.to}" aria-label="Au" style="width:128px">`
+    + `<button class="dp-rl" type="button" data-act="dpOpen" aria-expanded="${!!D.dpOpen}" aria-label="Choisir les dates : ${esc(dashRangeTxt(D.from, D.to))}">${DP_IC}<span>${esc(dpLbl(D.from, D.to))}</span></button>`
+    + `<button class="navstep" type="button" data-act="dnext" aria-label="Période suivante">›</button></div></div>`;
+}
+HOOK.act.dpOpen = () => { S.dash.dpOpen = !S.dash.dpOpen; render(); };
+HOOK.toolsChange.push(e => { const t = e.target; if (t.dataset && t.dataset.dpsel != null && t.value !== 'custom') onSeg('dpreset', t.value); });
 function viewDash() {
   const v = dashModelsSel(); ENT_M = v.length ? new Set(v) : null;
   try { viewDash0(); } finally { ENT_M = null; }
@@ -6021,8 +6569,9 @@ function viewDash() {
 function viewDash0() {
   const D = S.dash; D.view ||= 'general'; if (D.view === 'models') D.view = 'general';
   const td = today();
-  $('#sub').textContent = `${dashRangeTxt(D.from, D.to)} · montants en € (1 € = $${num(S.settings.eurUsd).toLocaleString('fr-FR')})`;
-  $('#tools').innerHTML = seg('dpreset', D.preset, PRESETS) + `<div class="stepper"><button class="navstep" type="button" data-act="dprev" aria-label="Période précédente">‹</button><input type="date" id="dfrom" value="${D.from}" aria-label="Du" style="width:128px"><span>→</span><input type="date" id="dto" value="${D.to}" aria-label="Au" style="width:128px"><button class="navstep" type="button" data-act="dnext" aria-label="Période suivante">›</button></div>`;
+  { const ds = daysIn(D.from, D.to), dn = ds.filter(d => d <= td).length;
+    $('#sub').innerHTML = `<span class="sub-dt">${esc(dashRangeTxt(D.from, D.to))} · </span>${dn > 0 && dn < ds.length ? `<span class="sub-ph">Jour ${dn} sur ${ds.length} · </span>` : ''}montants en € (1 € = $${num(S.settings.eurUsd).toLocaleString('fr-FR')})`; }
+  $('#tools').innerHTML = dashTools(D);
   const list = entries(D.from, D.to); const t = agg(list);
   const days = daysIn(D.from, D.to); const done = days.filter(d => d <= td);
   // aujourd'hui n'est pas fini : on compare les jours terminés de chaque côté
@@ -6040,7 +6589,8 @@ function viewDash0() {
   const inProg = done.length > 0 && done.length < days.length;
   const prog = inProg ? `<div class="dash-prog" title="Jours écoulés sur la période"><span class="dash-prog-t"><b>Jour ${done.length}</b> sur ${days.length}</span><span class="dash-prog-b"><i style="width:${done.length / days.length * 100}%"></i></span></div>` : '';
   const cmpTxt = D._hasPrev ? `<span class="dash-cmp">Comparé ${prev[0] === prev[1] ? 'au ' + dShort(prev[0]) : 'du ' + dShort(prev[0]) + ' au ' + dShort(prev[1])}${cut ? ', jours terminés' : inProg ? ', même nombre de jours' : ''}</span>` : `<span class="dash-cmp">${days[0] > td ? 'Période à venir' : 'Aucune donnée avant cette période pour comparer'}</span>`;
-  let h = `<div class="subnav dash-subnav"><div class="dash-subl">${seg('dview', D.view, [['general', 'Général'], ['chatters', 'Par chatteur'], ['platforms', 'Par plateforme']])}${mselHtml('dashM', dashModelsSel())}</div><div class="dash-subr">${cmpTxt}${prog}</div></div>`;
+  let h = `<div class="subnav dash-subnav"><div class="dash-subl">${seg('dview', D.view, [['general', 'Général'], ['chatters', '<span class="dv-lg">Par chatteur</span><span class="dv-sm">Chatteurs</span>'], ['platforms', '<span class="dv-lg">Par plateforme</span><span class="dv-sm">Plateformes</span>'], ['tg', 'Telegram']])}${mselHtml('dashM', dashModelsSel())}</div><div class="dash-subr">${cmpTxt}${prog}</div></div>`;
+  if (D.view === 'tg') { $('#view').innerHTML = h + dashTg(); return; }
   h += tiles([
     tile('CA net', fmt0(t.net), D._hasPrev ? `${dd(tc.net, pt.net)} ${vs}` : `<span class="dash-vs">après ${fmt0(t.gross - t.net)} de frais</span>`, { hl: true, icon: 'money', spark: dashSpark(sp(a => a.net), 'var(--accent-fg)') }),
     tile('CA brut', fmt0(t.gross), `${dd(tc.gross, pt.gross)} <span class="dash-vs">frais ${fmt0(t.gross - t.net)}</span>`, { c: 'var(--s1)', icon: 'layers', spark: dashSpark(sp(a => a.gross), 'var(--s1)') }),
@@ -6050,7 +6600,7 @@ function viewDash0() {
   if (D.view === 'general') h += dashGeneral(list, t);
   if (D.view === 'chatters') {
     D.sort ||= 'gross';
-    h += `<div class="card dash-rank-card">${secHead('Classement des chatteurs', 'Présence et retards tirés du pointage. Les chatteurs inactifs sont masqués, leurs ventes restent dans les totaux.', `<div class="dash-sort"><span class="dash-lbl">Trier par</span>${seg('dashSort', D.sort, [['gross', 'CA brut'], ['per', 'CA / shift'], ['pres', 'Présence']])}</div>`)}${chatterRanking(list, D.from, D.to, 999, { full: true, sort: D.sort })}</div>`;
+    h += `<div class="card dash-rank-card">${secHead('Classement des chatteurs', `Présence et retards tirés du pointage${wyChatStats(D.from, D.to) ? ' ; messages, PPV, taux, réponse et en ligne : Telegram, chiffres Wysper' : ''}. Les chatteurs inactifs sont masqués, leurs ventes restent dans les totaux.`, `<div class="dash-sort"><span class="dash-lbl">Trier par</span>${seg('dashSort', D.sort, [['gross', 'CA brut'], ['per', 'CA / shift'], ['pres', 'Présence'], ...(wyChatStats(D.from, D.to) ? [['msg', 'Messages'], ['rate', 'Taux'], ['rt', 'Réponse']] : [])])}</div>`)}${chatterRanking(list, D.from, D.to, 999, { full: true, sort: D.sort })}</div>`;
   }
   if (D.view === 'platforms') h += dashPlatforms(list, t);
   $('#view').innerHTML = h; dashBind();
@@ -6058,6 +6608,121 @@ function viewDash0() {
 HOOK.seg.dashSort = v => { S.dash.sort = v; };
 HOOK.seg.teamBy = v => { S.teamBy = v; try { localStorage.setItem('kl_teamby', v); } catch (e) {} };
 HOOK.act.dashHl = el => { S.dash.hp = S.dash.hp === el.dataset.v ? '' : el.dataset.v; render(); };
+
+/* ---- Tableau de bord › Telegram : chiffres Wysper relevés par le bot toutes les 15 min (wystats/<jour de Paris>) ---- */
+// h : [heure, compte, reçus, envoyés, présence s, PPV envoyés, achats, brut €] · m : [heure, compte, membre, envoyés, présence s, PPV, achats, brut €]
+// rt : temps de réponse du jour [médiane s, 90e centile, réponses] en tout (t), par membre (m), par compte (a)
+function wyStatsSub() { if (!subs.wyst && S.loadStart) subColl('wystats', 'wyst', c => c.where('date', '>=', S.loadStart)); }
+const wySlotOfH = h => h < 2 ? 'soir' : h < 8 ? 'nuit' : h < 14 ? 'matin' : h < 20 ? 'aprem' : 'soir';
+const wyN = n => Math.round(num(n)).toLocaleString('fr-FR');
+const wyDur = s => { s = Math.round(num(s)); if (s < 60) return s + ' s'; if (s < 3600) { const m = Math.floor(s / 60), r = s % 60; return m + ' min' + (r && m < 10 ? ' ' + String(r).padStart(2, '0') : ''); } const h = Math.floor(s / 3600), m = Math.round(s % 3600 / 60); return h + ' h' + (m ? ' ' + String(m).padStart(2, '0') : ''); };
+const wyHrs = s => { const m = Math.round(num(s) / 60); return m < 60 ? m + ' min' : Math.floor(m / 60) + ' h' + (m % 60 ? ' ' + String(m % 60).padStart(2, '0') : ''); };
+const wyRate = x => x.sends ? x.unl / x.sends * 100 : null;
+const wyPerH = x => x.on >= 60 ? x.brut / (x.on / 3600) : null;
+const wyRt = x => x.rtn ? x.rt / x.rtn : null;
+// écart en points (taux)
+const wyDpt = (a, b) => { if (a == null || b == null) return ''; const p = a - b; if (Math.abs(p) < .05) return '<span class="delta flat">= stable</span>'; return `<span class="delta ${p > 0 ? 'up' : 'down'}">${p > 0 ? '▲' : '▼'} ${(Math.round(Math.abs(p) * 10) / 10).toLocaleString('fr-FR')} pt${Math.abs(p) >= 2 ? 's' : ''}</span>`; };
+function wyAgg(days) {
+  const z = () => ({ recv: 0, sent: 0, on: 0, sends: 0, unl: 0, brut: 0, rt: 0, rtn: 0 });
+  const plus = (x, v) => { for (const f in v) x[f] += num(v[f]); return x; };
+  const A = { n: 0, at: 0, t: z(), d: {}, slot: {}, c: {}, m: {}, names: {} };
+  const sel = ENT_M;
+  days.forEach(d => {
+    const doc = S.wyst?.[d]; if (!doc || doc.v !== 1) return;
+    A.n++; A.at = Math.max(A.at, num(doc.at)); const day = A.d[d] = z();
+    const accM = {}; const mOf = acc => accM[acc] ??= wyLink('m', doc.a?.[acc]);
+    const keep = acc => { const m = mOf(acc); return m !== '-' && (!sel || sel.has(m)); };
+    const mKey = acc => { const m = mOf(acc); if (m) return m; A.names['a:' + acc] = doc.a?.[acc] || acc; return 'a:' + acc; };
+    (doc.h || []).forEach(([H, acc, recv, sent, on, sends, unl, brut]) => {
+      if (!keep(acc)) return; const v = { recv, sent, sends, unl, brut };
+      plus(A.t, v); plus(day, v); plus(A.slot[wySlotOfH(H)] ||= z(), v); plus(A.m[mKey(acc)] ||= z(), { ...v, on });
+    });
+    // présence : par chatteur et par heure, au plus 1 h (ouvert sur deux comptes à la fois = 1 h, pas 2)
+    const pres = {};
+    (doc.m || []).forEach(([H, acc, uid, sent, on, sends, unl, brut]) => {
+      if (!keep(acc)) return;
+      const raw = doc.u?.[uid] || '', cid = wyLink('c', raw); if (cid === '-') return;
+      const k = cid || 'u:' + impNorm(raw || uid); if (!cid) A.names[k] = raw || 'Membre ' + uid;
+      plus(A.c[k] ||= z(), { sent, sends, unl, brut });
+      const pk = H + '|' + k; (pres[pk] ||= { H, k, on: 0 }).on += num(on);
+    });
+    Object.values(pres).forEach(({ H, k, on }) => { const v = { on: Math.min(3600, on) }; plus(A.c[k], v); plus(A.t, v); plus(day, v); plus(A.slot[wySlotOfH(H)] ||= z(), v); });
+    // temps de réponse : moyenne des médianes du jour, pondérée par le nombre de réponses
+    const rt = doc.rt || {}; const addRt = (x, r) => { if (r && r[2]) { x.rt += r[0] * r[2]; x.rtn += r[2]; } };
+    if (!sel) { addRt(A.t, rt.t); addRt(day, rt.t); }
+    Object.entries(rt.a || {}).forEach(([acc, r]) => { if (!keep(acc)) return; addRt(A.m[mKey(acc)] ||= z(), r); if (sel) { addRt(A.t, r); addRt(day, r); } });
+    Object.entries(rt.m || {}).forEach(([uid, r]) => { const raw = doc.u?.[uid] || '', cid = wyLink('c', raw); if (cid === '-') return; const k = cid || 'u:' + impNorm(raw || uid); if (A.c[k]) addRt(A.c[k], r); });
+  });
+  return A;
+}
+HOOK.seg.wySort = v => { S.dash.wySort = v; };
+function dashTg() {
+  wyStatsSub();
+  const D = S.dash, td = today();
+  if (!S.loaded.wyst) return `<div class="card empty wy-load"><h3>Chargement des chiffres Wysper…</h3></div>`;
+  const all = daysIn(D.from, D.to), days = all.filter(d => d <= td);
+  const A = wyAgg(days), t = A.t;
+  if (!A.n) return `<div class="card empty"><h3>${all[0] > td ? "Cette période n'a pas encore commencé" : 'Pas encore de chiffres Wysper sur cette période'}</h3><p>Le bot relève le tableau de bord Wysper toutes les 15 minutes dès que sa clé Wysper est en place, avec le mois passé (présence au chat suivie depuis le 20 octobre).</p></div>`;
+  // comparaison : jours terminés, contre la période précédente du même nombre de jours (si elle est complète)
+  const cut = td > D.from && td <= D.to, fin = cut ? days.filter(d => d < td) : days;
+  const C = cut ? wyAgg(fin) : A, pd = D._prevR ? daysIn(D._prevR[0], D._prevR[1]) : [], P = pd.length ? wyAgg(pd) : null;
+  const okP = P && P.n === pd.length && C.n > 0 && fin.some(d => d < td); // aujourd'hui seul (pas fini) : pas de comparaison
+  const dl = (f, inv) => okP ? dlt(f(C.t), f(P.t), inv) : '';
+  const vs = okP ? `<span class="dash-vs">vs ${D.from === D.to ? esc(fd(D._prevR[0], { weekday: 'short', day: 'numeric' })) : 'période préc.'}</span>` : '';
+  const sp = (f, c) => dashSpark(all.map(d => A.d[d] ? f(A.d[d]) : null), c);
+  const rt = wyRt(t), ph = wyPerH(t), rate = wyRate(t);
+  let h = tiles([
+    tile('Messages envoyés', wyN(t.sent), `${dl(x => x.sent)} <span class="dash-vs">${wyN(t.recv)} reçus</span>`, { hl: true, icon: 'send', spark: sp(x => x.sent, 'var(--accent-fg)') }),
+    tile('PPV envoyés', wyN(t.sends), `${dl(x => x.sends)} <span class="dash-vs">${wyN(t.unl)} débloqué${plS(t.unl)}</span>`, { c: 'var(--s1)', icon: 'layers', spark: sp(x => x.sends, 'var(--s1)') }),
+    tile('Taux de déblocage', rate == null ? '–' : pct(rate), `${okP ? wyDpt(wyRate(C.t), wyRate(P.t)) : ''} <span class="dash-vs">PPV payés sur envoyés</span>`, { c: 'var(--s3)', icon: 'percent', spark: sp(x => wyRate(x), 'var(--s3)') }),
+    tile('Temps de réponse', rt == null ? '–' : wyDur(rt), `${okP && wyRt(C.t) != null && wyRt(P.t) != null ? dlt(wyRt(C.t), wyRt(P.t), true) : ''} <span class="dash-vs">médiane${t.rtn ? ` · ${wyN(t.rtn)} réponses` : ''}</span>`, { c: 'var(--s5)', icon: 'clock', spark: sp(x => wyRt(x), 'var(--s5)') }),
+    tile('Heures en ligne', wyHrs(t.on), `${dl(x => x.on)} <span class="dash-vs">présence au chat</span>`, { c: 'var(--s6)', icon: 'users', spark: sp(x => x.on / 3600, 'var(--s6)') }),
+    tile('CA par heure', ph == null ? '–' : fmt0(ph), `${okP && wyPerH(C.t) != null && wyPerH(P.t) != null ? dlt(wyPerH(C.t), wyPerH(P.t)) : ''} <span class="dash-vs">en ligne · ${fmt0(t.brut)} de CA brut</span>`, { c: 'var(--s4)', icon: 'money', spark: sp(x => wyPerH(x), 'var(--s4)') })
+  ], 3).replace('class="tiles"', 'class="tiles t3 wy-tiles"');
+  h += `<p class="hint wy-src">Chiffres du tableau de bord Wysper (Telegram), relevés par le bot ${esc(wyWhen(A.at))}${A.n < days.length ? ` · ${A.n} jour${plS(A.n)} sur ${days.length} disponible${plS(A.n)}` : ''}${ENT_M ? ' · modèles choisies seulement' : ''}.</p>`;
+  const bar = (v, max, c) => `<span class="dr-tr"><i style="width:${(max ? v / max * 100 : 0).toFixed(1)}%;background:${c}"></i></span>`;
+  const cell = (l, v, cls = '') => `<td class="n ${cls}" data-l="${l}">${v}</td>`;
+  const caCell = (x, max, c) => `<td class="dr-ca"><div><b class="tn">${fmt0(x.brut)}</b>${bar(x.brut, max, c)}</div></td>`;
+  const rateH = x => { const r = wyRate(x); return r == null ? '<span class="muted">–</span>' : `<span class="wy-rate ${r >= 30 ? 'hi' : r >= 15 ? 'mid' : 'lo'}">${pct(r)}</span>`; };
+  // par shift
+  const sl = SLOTS.map(s => ({ s, x: A.slot[s.k] })).filter(r => r.x && (r.x.sent || r.x.sends || r.x.brut || r.x.on));
+  const maxS = Math.max(0, ...sl.map(r => r.x.brut));
+  h += `<div class="card dash-rank-card wy-card">${secHead('Par shift', `Heures de Paris : ${SLOTS.map(s => `${esc(s.l.toLowerCase())} ${esc(s.h)}`).join(', ')}. Le temps de réponse n'existe chez Wysper que par jour.`)}
+    <div class="tbl-wrap dr-wrap"><table class="dr wyt"><thead><tr><th class="dr-c1">Shift</th><th>CA brut</th><th class="n">Messages</th><th class="n">PPV</th><th class="n">Débloqués</th><th class="n">Taux</th><th class="n">En ligne</th><th class="n">CA / heure</th></tr></thead><tbody>
+    ${sl.map(({ s, x }) => `<tr><td class="dr-c1"><div class="dr-who">${slotPill(s.k)}<small class="muted">${esc(s.h)}</small></div></td>${caCell(x, maxS, slotVar(s.k))}${cell('Messages', wyN(x.sent))}${cell('PPV', wyN(x.sends))}${cell('Débloqués', wyN(x.unl))}${cell('Taux', rateH(x))}${cell('En ligne', x.on ? wyHrs(x.on) : '–')}${cell('CA / heure', wyPerH(x) == null ? '–' : fmt0(wyPerH(x)))}</tr>`).join('')}
+    </tbody></table></div></div>`;
+  // par chatteur
+  D.wySort ||= 'brut';
+  const sk = { brut: x => x.brut, sent: x => x.sent, rate: x => wyRate(x) ?? -1, rt: x => -(wyRt(x) ?? 1e9), ph: x => wyPerH(x) ?? -1 }[D.wySort] || (x => x.brut);
+  const cs = Object.entries(A.c).filter(([, x]) => x.sent || x.sends || x.brut || x.on >= 60).map(([k, x]) => ({ k, x })).sort((a, b) => sk(b.x) - sk(a.x) || b.x.brut - a.x.brut);
+  const maxC = Math.max(0, ...cs.map(r => r.x.brut));
+  const who = k => k.startsWith('u:') ? `<div class="who"><span class="av" style="background:var(--surface-2);color:var(--muted)">?</span><div style="min-width:0"><b>${esc(A.names[k])}</b><small><button class="wy-lk" type="button" data-act="wyLinkName" data-k="c" data-n="${esc(A.names[k])}">${IC.link}À relier</button></small></div></div>` : whoHtml(k, S.chatters[k]?.active === false ? 'inactif' : '');
+  h += `<div class="card dash-rank-card wy-card">${secHead('Par chatteur', 'Noms Wysper reliés comme pour les ventes (plusieurs connexions d\'un même chatteur comptent ensemble).', `<div class="dash-sort"><span class="dash-lbl">Trier par</span>${seg('wySort', D.wySort, [['brut', 'CA brut'], ['sent', 'Messages'], ['rate', 'Taux'], ['rt', 'Réponse'], ['ph', 'CA / heure']])}</div>`)}
+    <div class="tbl-wrap dr-wrap"><table class="dr wyt"><thead><tr><th class="dr-c1">Chatteur</th><th>CA brut</th><th class="n">Messages</th><th class="n">PPV</th><th class="n">Débloqués</th><th class="n">Taux</th><th class="n">Réponse</th><th class="n">En ligne</th><th class="n">CA / heure</th></tr></thead><tbody>
+    ${cs.map(({ k, x }, i) => `<tr><td class="dr-c1"><div class="dr-who"><span class="dr-rk">${i + 1}</span>${who(k)}</div></td>${caCell(x, maxC, k.startsWith('u:') ? 'var(--muted)' : chatterColor(k))}${cell('Messages', wyN(x.sent))}${cell('PPV', wyN(x.sends))}${cell('Débloqués', wyN(x.unl))}${cell('Taux', rateH(x))}${cell('Réponse', wyRt(x) == null ? '–' : wyDur(wyRt(x)))}${cell('En ligne', x.on ? wyHrs(x.on) : '–')}${cell('CA / heure', wyPerH(x) == null ? '–' : fmt0(wyPerH(x)))}</tr>`).join('') || `<tr><td colspan="9" class="muted">Aucun chatteur sur cette période.</td></tr>`}
+    </tbody></table></div></div>`;
+  // par modèle
+  const ms = Object.entries(A.m).map(([k, x]) => ({ k, x })).filter(r => r.x.recv || r.x.sent || r.x.brut).sort((a, b) => b.x.brut - a.x.brut);
+  const maxM = Math.max(0, ...ms.map(r => r.x.brut));
+  const mWho = k => k.startsWith('a:') ? `<div class="who"><div style="min-width:0"><b>${esc(A.names[k])}</b><small><button class="wy-lk" type="button" data-act="wyLinkName" data-k="m" data-n="${esc(A.names[k])}">${IC.link}À relier</button></small></div></div>` : `<h3 class="wy-mn">${modelDot(k)}</h3>`;
+  h += `<div class="card dash-rank-card wy-card">${secHead('Par modèle', 'Compte Telegram de chaque modèle. En ligne : temps des chatteurs ouverts sur ce compte, additionnés.')}
+    <div class="tbl-wrap dr-wrap"><table class="dr wyt"><thead><tr><th class="dr-c1">Modèle</th><th>CA brut</th><th class="n">Reçus</th><th class="n">Envoyés</th><th class="n">PPV</th><th class="n">Taux</th><th class="n">Réponse</th><th class="n">En ligne</th></tr></thead><tbody>
+    ${ms.map(({ k, x }) => `<tr><td class="dr-c1"><div class="dr-who">${mWho(k)}</div></td>${caCell(x, maxM, k.startsWith('a:') ? 'var(--muted)' : modelColor(k))}${cell('Reçus', wyN(x.recv))}${cell('Envoyés', wyN(x.sent))}${cell('PPV', wyN(x.sends))}${cell('Taux', rateH(x))}${cell('Réponse', wyRt(x) == null ? '–' : wyDur(wyRt(x)))}${cell('En ligne', x.on ? wyHrs(x.on) : '–')}</tr>`).join('')}
+    </tbody></table></div></div>`;
+  return h;
+}
+
+// stats Wysper (Telegram) de chaque chatteur sur une période, pour les classements ; null tant qu'il n'y a pas de chiffres
+function wyChatStats(from, to) { wyStatsSub(); if (!S.loaded.wyst) return null; const A = wyAgg(daysIn(from, to).filter(d => d <= today())); return A.n ? A.c : null; }
+const WY_COLS = [['Messages', 'Messages envoyés sur Telegram'], ['PPV', 'PPV envoyés'], ['Taux', 'Taux de déblocage : PPV payés sur envoyés'], ['Réponse', 'Temps de réponse médian'], ['En ligne', 'Présence au chat Wysper']];
+const wyThs = perH => WY_COLS.map(([l, t]) => `<th class="n wyh" title="${t} (Wysper)">${l}</th>`).join('') + (perH ? '<th class="n wyh" title="CA Telegram par heure en ligne (Wysper)">CA / heure</th>' : '');
+function wyTds(x, perH) {
+  const no = '<span class="muted">–</span>', r = x ? wyRate(x) : null, rt = x ? wyRt(x) : null, ph = x ? wyPerH(x) : null, c = x ? 'n wyc' : 'n wyc wy0';
+  return `<td class="${c}" data-l="Messages">${x && x.sent ? wyN(x.sent) : no}</td><td class="${c}" data-l="PPV">${x && x.sends ? wyN(x.sends) : no}</td>`
+    + `<td class="${c}" data-l="Taux"${x && x.sends ? ` title="${wyN(x.unl)} PPV débloqué${plS(x.unl)} sur ${wyN(x.sends)}"` : ''}>${r == null ? no : `<span class="wy-rate ${r >= 30 ? 'hi' : r >= 15 ? 'mid' : 'lo'}">${pct(r)}</span>`}</td>`
+    + `<td class="${c}" data-l="Réponse">${rt == null ? no : wyDur(rt)}</td><td class="${c}" data-l="En ligne">${x && x.on >= 60 ? wyHrs(x.on) : no}</td>`
+    + (perH ? `<td class="${c}" data-l="CA / heure">${ph == null ? no : fmt0(ph)}</td>` : '');
+}
 /* --- graphique journalier empilé par plateforme (HTML/CSS, lisible à toutes les largeurs) --- */
 let dashCD = { rows: [], series: [], weekly: false };
 function dashDaily(list) {
@@ -6175,7 +6840,9 @@ function chatterRanking(list, from, to, limit = 999, o = {}) {
     const s = agg(l); return { id, s, per: s.gross / (s.shifts || 1), a, pres: a.length ? pres / a.length : null, models: [...new Set(l.map(e => e.modelId))] };
   });
   const hidden = all.filter(r => !live(r.id)); const hidT = hidden.reduce((x, r) => x + r.s.gross, 0);
-  const key = o.sort === 'per' ? r => r.per : o.sort === 'pres' ? r => (r.pres ?? -1) * 1e9 + r.s.gross : r => r.s.gross;
+  const W = o.full ? wyChatStats(from, to) : null, wx = id => W?.[id];
+  const wk = { msg: r => wx(r.id)?.sent ?? -1, rate: r => (wx(r.id) && wyRate(wx(r.id))) ?? -1, rt: r => -((wx(r.id) && wyRt(wx(r.id))) ?? 1e9), ph: r => (wx(r.id) && wyPerH(wx(r.id))) ?? -1 }[o.sort];
+  const key = wk ? r => wk(r) * 1e6 + r.s.gross / 1e3 : o.sort === 'per' ? r => r.per : o.sort === 'pres' ? r => (r.pres ?? -1) * 1e9 + r.s.gross : r => r.s.gross;
   const rows = all.filter(r => live(r.id)).sort((a, b) => key(b) - key(a)).slice(0, limit);
   const maxG = Math.max(1, ...all.filter(r => live(r.id)).map(r => r.s.gross));
   const presP = p => p == null ? '<span class="pill mute">Pas de pointage</span>' : `<span class="pill ${p >= .95 ? 'good' : p >= .85 ? 'warn' : 'bad'}">${pct(p * 100)}</span>`;
@@ -6183,12 +6850,12 @@ function chatterRanking(list, from, to, limit = 999, o = {}) {
     const out = [re ? `<span class="pill warn">${re} retard${re > 1 ? 's' : ''}</span>` : '', ab ? `<span class="pill bad">${ab} absence${ab > 1 ? 's' : ''}</span>` : '', co ? `<span class="pill info">${co} coupure${co > 1 ? 's' : ''}</span>` : ''].filter(Boolean);
     return out.length ? `<span class="dr-chips">${out.join('')}</span>` : `<span class="pill good">${IC.check}Rien à signaler</span>`; };
   const medal = i => i < 3 ? `<span class="dr-rk m${i + 1}" aria-label="${i + 1}${i ? 'e' : 'er'}">${i + 1}</span>` : `<span class="dr-rk">${i + 1}</span>`;
-  return `<div class="tbl-wrap dr-wrap"><table class="dr"><thead><tr><th class="dr-c1">Chatteur</th><th class="n">Shifts</th><th>CA brut</th>${o.full ? '<th class="n">Ventes</th><th class="n">Tips</th>' : ''}<th class="n">CA / shift</th><th class="n">Paie</th>${hasAtt ? '<th class="n">Présence</th><th>Ponctualité</th>' : ''}</tr></thead><tbody>
+  return `<div class="tbl-wrap dr-wrap"><table class="dr ${W ? 'wyon' : ''}"><thead><tr><th class="dr-c1">Chatteur</th><th class="n">Shifts</th><th>CA brut</th>${o.full && !W ? '<th class="n">Ventes</th><th class="n">Tips</th>' : ''}<th class="n">CA / shift</th><th class="n">Paie</th>${W ? wyThs(true) : ''}${hasAtt ? '<th class="n">Présence</th><th>Ponctualité</th>' : ''}</tr></thead><tbody>
     ${rows.map((r, i) => `<tr><td class="dr-c1"><div class="dr-who">${medal(i)}${whoHtml(r.id, dashModelsHtml(r.models))}</div></td>
       <td class="n" data-l="Shifts">${r.s.shifts}</td>
-      <td class="dr-ca"><div><b class="tn">${fmt0(r.s.gross)}</b><span class="dr-tr"><i style="width:${(r.s.gross / maxG * 100).toFixed(1)}%;background:${chatterColor(r.id)}"></i></span></div></td>
-      ${o.full ? `<td class="n muted dr-x" data-l="Ventes">${fmt0(r.s.sales)}</td><td class="n muted dr-x" data-l="Tips">${fmt0(r.s.tips)}</td>` : ''}
-      <td class="n" data-l="CA / shift">${fmt0(r.per)}</td><td class="n" data-l="Paie">${fmtC(r.s.com)}</td>${hasAtt ? `<td class="n dr-pr" data-l="Présence">${presP(r.pres)}</td><td class="dr-pu">${punct(r.a)}</td>` : ''}</tr>`).join('')}
+      <td class="dr-ca"><div><b class="tn">${fmt0(r.s.gross)}</b>${W && r.s.tips ? `<small class="dr-vt">dont ${fmt0(r.s.tips)} de tips</small>` : ''}<span class="dr-tr"><i style="width:${(r.s.gross / maxG * 100).toFixed(1)}%;background:${chatterColor(r.id)}"></i></span></div></td>
+      ${o.full && !W ? `<td class="n muted dr-x" data-l="Ventes">${fmt0(r.s.sales)}</td><td class="n muted dr-x" data-l="Tips">${fmt0(r.s.tips)}</td>` : ''}
+      <td class="n" data-l="CA / shift">${fmt0(r.per)}</td><td class="n" data-l="Paie">${fmtC(r.s.com)}</td>${W ? wyTds(wx(r.id), true) : ''}${hasAtt ? `<td class="n dr-pr" data-l="Présence">${presP(r.pres)}</td><td class="dr-pu">${punct(r.a)}</td>` : ''}</tr>`).join('')}
     </tbody></table></div>
     ${!hasAtt ? '<p class="hint dr-note">Pas de pointage sur cette période : présence et retards non disponibles.</p>' : ''}
     ${hidden.length ? `<p class="hint dr-note">${hidden.length} chatteur${hidden.length > 1 ? 's' : ''} inactif${hidden.length > 1 ? 's' : ''} ou supprimé${hidden.length > 1 ? 's' : ''} masqué${hidden.length > 1 ? 's' : ''} : ${fmt0(hidT)} de CA, compté${hidT ? 's' : ''} dans les totaux.</p>` : ''}`;
@@ -6471,16 +7138,20 @@ function payDetail(r, rate) {
   const byD = groupBy(r.l, 'date');
   const amax = Math.max(1, ...byA.map(x => x.s.com));
   const dk = Object.keys(byD).sort(); const ds = dk.map(d => agg(byD[d], rate)); const dmax = Math.max(1, ...ds.map(s => s.com));
+  const fees = Object.entries(groupBy(r.l, 'platformId')).map(([pid, l]) => pName(pid) + ' ' + [...new Set(l.map(e => e.inp === 'net' ? 'tapé en net' : pct(num(e.fee ?? S.platforms[pid]?.fee ?? 20))))].join(' ou '));
+  const crs = [...new Set(r.l.map(e => num(e.rate ?? S.chatters[e.chatterId]?.rate ?? 10)))].sort((a, b) => a - b);
+  const eur = r.l.some(e => (e.cur || curOf(e.platformId)) === 'EUR');
+  const how = r.l.length ? `<p class="pay-how"><b>Net</b> = CA brut moins les frais de la plateforme (${esc(fees.join(', '))}). <b>Paie</b> = ${crs.map(x => pct(x)).join(' ou ')} du net${eur ? `, payée en $ au taux de la quinzaine : 1 € = $${num(rate).toLocaleString('fr-FR')}` : ''}.</p>` : '';
   const best = dk.length ? dk[ds.reduce((bi, s, i) => s.com > ds[bi].com ? i : bi, 0)] : '';
   return `<div class="pay-dt">
-    <div class="pay-dsum"><span><b>${byA.length}</b> compte${payS(byA.length)}</span><span><b>${dk.length}</b> jour${payS(dk.length)} travaillé${payS(dk.length)}</span><span><b>${r.s.shifts}</b> shift${payS(r.s.shifts)}</span><span>Moyenne <b>${fmtC(r.total / Math.max(1, r.s.shifts))}</b> par shift</span>${best ? `<span>Meilleur jour <b>${esc(dShort(best))}</b></span>` : ''}</div>
+    <div class="pay-dsum">${r.l.length ? `<span class="pay-dsb">CA brut <b>${payE(r.s.gross, rate)}</b></span><span class="pay-dsb">Net <b>${payE(r.s.net, rate)}</b></span>` : ''}<span><b>${byA.length}</b> compte${payS(byA.length)}</span><span><b>${dk.length}</b> jour${payS(dk.length)} travaillé${payS(dk.length)}</span><span><b>${r.s.shifts}</b> shift${payS(r.s.shifts)}</span><span>Moyenne <b>${fmtC(r.total / Math.max(1, r.s.shifts))}</b> par shift</span>${best ? `<span>Meilleur jour <b>${esc(dShort(best))}</b></span>` : ''}</div>
     <div class="pay-dcols">
       <div class="pay-dbox"><div class="pay-dh">Par compte</div>
         <div class="pay-dl pay-da"><div class="pay-dlh" aria-hidden="true"><span>Compte</span><span class="n">CA brut</span><span class="n">Net</span><span class="n">Paie</span></div>
-        ${byA.map(({ k, s }) => { const a = splitAcct(k); const c = curOf(a.platformId); return `<div class="pay-dr" style="--c:${modelColor(a.modelId)}"><span class="pay-dn">${modelDot(a.modelId)}${platBadge(a.platformId)}</span><span class="n" data-l="CA brut">${fmtC(s[c].gross, c)}</span><span class="n" data-l="Net">${fmtC(s[c].net, c)}</span><span class="n pay-dv">${fmtC(s[c].com, c)}</span><span class="pay-dbar"><i style="width:${(s.com / amax * 100).toFixed(1)}%"></i></span></div>`; }).join('')}</div></div>
+        ${byA.map(({ k, s }) => { const a = splitAcct(k); const c = curOf(a.platformId); return `<div class="pay-dr" style="--c:${modelColor(a.modelId)}"><span class="pay-dn">${modelDot(a.modelId)}${platBadge(a.platformId)}</span><span class="n" data-l="CA brut">${fmtC(s[c].gross, c)}</span><span class="n" data-l="Net">${fmtC(s[c].net, c)}</span><span class="n pay-dv">${fmtC(s[c].com, c)}</span><span class="pay-dbar"><i style="width:${(s.com / amax * 100).toFixed(1)}%"></i></span></div>`; }).join('')}</div>${how}</div>
       <div class="pay-dbox"><div class="pay-dh">Par jour</div>
-        <div class="pay-dl pay-dd"><div class="pay-dlh" aria-hidden="true"><span>Jour</span><span>Shift</span><span class="n">CA</span><span class="n">Paie $</span></div>
-        ${dk.map((d, i) => { const l = byD[d]; const s = ds[i]; const sl = [...new Set(l.map(e => e.slot))].sort((a, b) => slotIdx(a) - slotIdx(b)); return `<div class="pay-dr ${d === best ? 'best' : ''}"><span class="pay-dn pay-date">${esc(cap(fd(d, { weekday: 'short' })).replace('.', ''))} <b>${parse(d).getDate()}</b></span><span class="pay-sl">${sl.map(x => slotPill(x)).join('')}</span><span class="n" data-l="CA">${[...new Set(l.map(e => e.cur || curOf(e.platformId)))].map(c => fmtC(s[c].gross, c)).join(' + ')}</span><span class="n pay-dv">${fmtC(s.com)}</span><span class="pay-dbar day"><i style="width:${(s.com / dmax * 100).toFixed(1)}%"></i></span></div>`; }).join('')}</div></div>
+        <div class="pay-dl pay-dd"><div class="pay-dlh" aria-hidden="true"><span>Jour</span><span>Shift</span><span class="n">CA brut</span><span class="n">Net</span><span class="n">Paie $</span></div>
+        ${dk.map((d, i) => { const l = byD[d]; const s = ds[i]; const sl = [...new Set(l.map(e => e.slot))].sort((a, b) => slotIdx(a) - slotIdx(b)); return `<div class="pay-dr ${d === best ? 'best' : ''}"><span class="pay-dn pay-date">${esc(cap(fd(d, { weekday: 'short' })).replace('.', ''))} <b>${parse(d).getDate()}</b></span><span class="pay-sl">${sl.map(x => slotPill(x)).join('')}</span><span class="n" data-l="CA">${[...new Set(l.map(e => e.cur || curOf(e.platformId)))].map(c => fmtC(s[c].gross, c)).join(' + ')}</span><span class="n" data-l="Net">${[...new Set(l.map(e => e.cur || curOf(e.platformId)))].map(c => fmtC(s[c].net, c)).join(' + ')}</span><span class="n pay-dv">${fmtC(s.com)}</span><span class="pay-dbar day"><i style="width:${(s.com / dmax * 100).toFixed(1)}%"></i></span></div>`; }).join('')}</div></div>
       ${r.pens.length || r.primes.length ? `<div class="pay-dbox pay-dpen"><div class="pay-dh">${[r.pens.length && `Pénalités · ${r.pens.length} avertissement${payS(r.pens.length)}`, r.primes.length && `Primes · ${r.primes.length}`].filter(Boolean).join(' · ')}</div>
         <div class="pay-dl pay-dp"><div class="pay-dlh" aria-hidden="true"><span>Jour</span><span>Faute ou raison</span><span class="n">Montant</span></div>
         ${r.pens.map(p => `<div class="pay-dr"><span class="pay-dn pay-date">${esc(cap(fd(p.date, { weekday: 'short' })).replace('.', ''))} <b>${parse(p.date).getDate()}</b></span><span class="pay-pl">${esc(p.label || p.fault)} <span class="muted">· N°${esc(p.n)}</span>${p.note ? `<small>${esc(p.note)}</small>` : ''}</span><span class="n pay-dv ${num(p.amount) ? 'bad' : 'muted'}">${num(p.amount) ? '−' + esc(pAmt(p)) : 'Avertissement'}</span></div>`).join('')}
@@ -6531,6 +7202,7 @@ function histChip(a, b) {
 // prevR = période de comparaison [du, au] (ou null)
 function podiumRanking(from, to, prevR) {
   const rank = l => Object.entries(groupBy(l.filter(e => histShown(e.chatterId)), 'chatterId')).map(([id, x]) => ({ id, s: agg(x), models: [...new Set(x.map(e => e.modelId))] })).sort((a, b) => b.s.gross - a.s.gross);
+  const W = wyChatStats(from, to);
   const cur = rank(entries(from, to)), prev = prevR ? rank(entries(prevR[0], prevR[1])) : []; const pos = Object.fromEntries(prev.map((r, i) => [r.id, i])); const pg = Object.fromEntries(prev.map(r => [r.id, r.s.gross]));
   const hidden = new Set(entries(from, to).map(e => e.chatterId).filter(id => !histShown(id))).size;
   const att = groupBy(attIn(from, to), 'chatterId');
@@ -6550,10 +7222,10 @@ function podiumRanking(from, to, prevR) {
         ${hasPrev ? `<span class="hist-pod-d">${mv(r.id, i)}${pg[r.id] ? histChip(r.s.gross, pg[r.id]) : ''}</span>` : ''}
         <small>${r.s.shifts} shifts · ${fmt0(r.s.gross / (r.s.shifts || 1))} / shift</small></div>
       <div class="hist-pod-base"><span>${i + 1}</span></div></div>`).join('')}</div>`;
-  h += `<div class="tbl-wrap"><table class="hist-rt"><thead><tr><th>#</th><th>Chatteur</th><th>CA brut</th><th class="n">Paie</th><th class="n">Shifts</th><th class="n">CA / shift</th><th class="n">Rang</th><th>Pointage</th></tr></thead><tbody>
-    ${cur.map((r, i) => `<tr class="${i < 3 ? 'top' : ''}"><td><span class="hist-rk ${i < 3 ? 'm' + (i + 1) : ''}">${i + 1}</span></td><td>${whoHtml(r.id, models(r))}</td>
-      <td><div class="hist-cab"><b>${fmt0(r.s.gross)}</b><span class="hist-tr"><span style="width:${(r.s.gross / max * 100).toFixed(1)}%;background:${chatterColor(r.id)}"></span></span></div></td>
-      <td class="n">${fmt0(r.s.com)}</td><td class="n">${r.s.shifts}</td><td class="n">${fmt0(r.s.gross / (r.s.shifts || 1))}</td><td class="n">${mv(r.id, i)}</td><td><div class="hist-inc">${inc(r.id)}</div></td></tr>`).join('')}
+  h += `<div class="tbl-wrap"><table class="hist-rt ${W ? 'wyon' : ''}"><thead><tr><th>#</th><th>Chatteur</th><th>CA brut</th><th class="n">Paie</th><th class="n">Shifts</th><th class="n">CA / shift</th>${W ? wyThs(false) : ''}<th class="n">Rang</th><th>Pointage</th></tr></thead><tbody>
+    ${cur.map((r, i) => `<tr class="${i < 3 ? 'top' : ''}"><td class="hr-rk"><span class="hist-rk ${i < 3 ? 'm' + (i + 1) : ''}">${i + 1}</span></td><td class="hr-who">${whoHtml(r.id, models(r))}</td>
+      <td class="hr-ca"><div class="hist-cab"><b>${fmt0(r.s.gross)}</b><span class="hist-tr"><span style="width:${(r.s.gross / max * 100).toFixed(1)}%;background:${chatterColor(r.id)}"></span></span></div></td>
+      <td class="n" data-l="Paie">${fmt0(r.s.com)}</td><td class="n" data-l="Shifts">${r.s.shifts}</td><td class="n" data-l="CA / shift">${fmt0(r.s.gross / (r.s.shifts || 1))}</td>${W ? wyTds(W[r.id], false) : ''}<td class="n hr-mv" data-l="Rang">${mv(r.id, i)}</td><td class="hr-pt"><div class="hist-inc">${inc(r.id)}</div></td></tr>`).join('')}
   </tbody></table></div>`;
   if (hidden) h += `<p class="hint hist-foot">${hidden} chatteur${hidden > 1 ? 's' : ''} inactif${hidden > 1 ? 's' : ''} ou supprimé${hidden > 1 ? 's' : ''} masqué${hidden > 1 ? 's' : ''} du classement. Leurs ventes restent comptées dans les totaux.</p>`;
   return h;
@@ -6567,15 +7239,15 @@ const PERSO_FEE_DEF = [[/^(anna|axelle)\b/i, /telegram|whysper/i, 15]];
 const persoPct = mid => { const v = S.perso?.shares?.[mid]; if (v != null && v !== '') return num(v); const n = S.models[mid]?.name || ''; return PERSO_DEF.find(([re]) => re.test(n))?.[1] || 0; };
 const persoFee = (mid, pid) => { const f = S.perso?.fees, k = mid + '|' + pid; if (f && k in f) return f[k] === '' || f[k] == null ? null : num(f[k]);
   const n = S.models[mid]?.name || '', pn = S.platforms[pid]?.name || ''; return PERSO_FEE_DEF.find(([re, rp]) => re.test(n) && rp.test(pn))?.[2] ?? null; };
-const persoNet = (l, fee) => { const s = agg(l); return fee == null ? s.net : s.gross * (1 - fee / 100); };
+const persoNet = (l, fee) => { if (fee == null) return agg(l).net; const n = l.filter(e => e.inp === 'net'); return agg(n).net + agg(l.filter(e => e.inp !== 'net')).gross * (1 - fee / 100); };
 // plateformes réglées pour la modèle dans « Régler les parts » (config/perso.plats), sinon celles de sa fiche
 const persoPlats = mid => { const l = S.perso?.plats?.[mid]; return (Array.isArray(l) ? l : S.models[mid]?.platforms || []).filter(pid => S.platforms[pid]); };
-// « 10 % du net · Telegram 8,5 % du brut »
+// « 50 % du net » ; en long, les frais retirés pour passer du brut au net : « 50 % du net (frais : Telegram 15 %, Uncove 20 %) »
 const persoRule = (mid, long) => {
-  const p = persoPct(mid), all = [...new Set([...(S.models[mid]?.platforms || []), ...persoPlats(mid)])].filter(pid => S.platforms[pid]), ov = all.filter(pid => persoFee(mid, pid) != null);
-  const o = ov.map(pid => `${pName(pid)}${long ? ' :' : ''} ${pct(p * (1 - persoFee(mid, pid) / 100))} du brut`).join(long ? ', ' : ' · ');
-  const base = `${pct(p)} du net${long ? ' après frais de la plateforme' : ''}`;
-  return !ov.length ? base : ov.length === all.length ? o : base + (long ? ', sauf ' : ' · ') + o;
+  const p = persoPct(mid), all = [...new Set([...(S.models[mid]?.platforms || []), ...persoPlats(mid)])].filter(pid => S.platforms[pid]);
+  if (!long) return `${pct(p)} du net`;
+  const fees = all.map(pid => platInp(pid) === 'net' ? `${pName(pid)} tapé en net` : `${pName(pid)} ${pct(persoFee(mid, pid) ?? num(S.platforms[pid]?.fee ?? 20))}`);
+  return `${pct(p)} du net${fees.length ? ` (frais : ${fees.join(', ')})` : ' après frais de la plateforme'}`;
 };
 const persoN = () => Math.max(1, Math.round(num(S.perso?.partners) || 2));
 function persoOf(list) {
@@ -6684,7 +7356,7 @@ HOOK.act.psEdit = () => {
     const inL = new Set(E.list.map(x => x.mid).filter(Boolean)); const rest = sortedBy(S.models).filter(x => !inL.has(x.id));
     f.innerHTML = E.list.map((x, i) => { const nm = x.mid ? S.models[x.mid]?.name || x.mid : ''; const left = sortedBy(S.platforms).filter(p => !x.plats.some(l => l.pid === p.id));
       return `<div class="f full ps-row"><span class="ps-in ps-mh">${x.mid ? `<span class="ps-rn">${esc(nm)}</span>` : `<input type="text" data-i="${i}" data-k="name" value="${esc(x.name || '')}" placeholder="Nom de la modèle" aria-label="Nom de la nouvelle modèle" style="width:170px">`}<input type="number" step="0.5" min="0" max="100" data-i="${i}" data-k="pct" value="${esc(x.pct)}" aria-label="Part sur ${esc(nm || 'la nouvelle modèle')}"><span>% du net</span><button type="button" class="icon-btn ps-x" data-rmm="${i}" aria-label="Retirer ${esc(nm || 'cette modèle')}" title="Retirer">${ICONS.x}</button></span>
-        ${x.plats.map((l, j) => `<span class="ps-in ps-fee"><span>${esc(pName(l.pid))} : net = CA −</span><input type="number" step="0.5" min="0" max="100" data-i="${i}" data-j="${j}" data-k="fee" value="${esc(l.fee)}" placeholder="${num(S.platforms[l.pid]?.fee ?? 20)}" aria-label="Frais déduits sur ${esc(nm)} ${esc(pName(l.pid))}"><span>%</span><button type="button" class="icon-btn ps-x" data-rmp="${i}|${j}" aria-label="Retirer ${esc(pName(l.pid))}" title="Retirer">${ICONS.x}</button></span>`).join('')}
+        ${x.plats.map((l, j) => platInp(l.pid) === 'net' ? `<span class="ps-in ps-fee"><span>${esc(pName(l.pid))} : tapé en net, rien à retirer</span><button type="button" class="icon-btn ps-x" data-rmp="${i}|${j}" aria-label="Retirer ${esc(pName(l.pid))}" title="Retirer">${ICONS.x}</button></span>` : `<span class="ps-in ps-fee"><span>${esc(pName(l.pid))} : net = CA −</span><input type="number" step="0.5" min="0" max="100" data-i="${i}" data-j="${j}" data-k="fee" value="${esc(l.fee)}" placeholder="${num(S.platforms[l.pid]?.fee ?? 20)}" aria-label="Frais déduits sur ${esc(nm)} ${esc(pName(l.pid))}"><span>%</span><button type="button" class="icon-btn ps-x" data-rmp="${i}|${j}" aria-label="Retirer ${esc(pName(l.pid))}" title="Retirer">${ICONS.x}</button></span>`).join('')}
         ${left.length ? `<span class="ps-in ps-fee"><select data-addp="${i}" aria-label="Ajouter une plateforme à ${esc(nm || 'cette modèle')}"><option value="">+ Plateforme…</option>${left.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></span>` : ''}</div>`; }).join('')
       + `<div class="f full ps-row"><select data-addm aria-label="Ajouter une modèle"><option value="">+ Ajouter une modèle…</option>${rest.map(x => `<option value="${x.id}">${esc(x.name)}${x.active === false ? ' (inactive)' : ''}</option>`).join('')}<option value="__new">Nouvelle modèle…</option></select></div>
       <label class="f">Nombre d'associés<input type="number" step="1" min="1" data-k="n" value="${esc(String(E.n))}"></label>`;
