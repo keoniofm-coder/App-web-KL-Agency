@@ -6537,7 +6537,7 @@ function dashRangeTxt(f, t) {
 }
 const dashDl = (a, b) => S.dash._hasPrev ? dlt(a, b) : '';
 // CA d'une entité sur les jours terminés seulement (aujourd'hui exclu des comparaisons)
-const dashCur = (k, id) => agg(S.dash._cG?.[k]?.[id] || []).gross;
+const dashCur = (k, id, m = 'gross') => agg(S.dash._cG?.[k]?.[id] || [])[m];
 const dashPctTxt = (a, b) => b ? pct(a / b * 100) : '–';
 const dashModelsHtml = ids => ids.map(m => `<span class="dash-m"><i style="background:${modelColor(m)}"></i>${esc(mName(m))}</span>`).join('');
 // modèles choisies sur le tableau de bord (vide = toutes) : tout le tableau est filtré
@@ -6804,11 +6804,18 @@ function dashBind() {
   c.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') hide(); });
   c.addEventListener('focusin', pick); c.addEventListener('focusout', hide);
 }
+
+// cartes Par modèle / Par plateforme / Par créneau : Net ou Brut, chacune le sien (retenu sur l'appareil)
+const DS_LS = { m: 'kl_dsm', p: 'kl_dsp', s: 'kl_dss' };
+const dsMet = k => (S.dash['ds' + k] ??= lsGet(DS_LS[k], 'gross')) === 'net' ? 'net' : 'gross';
+Object.keys(DS_LS).forEach(k => { HOOK.seg['ds' + k] = v => { S.dash['ds' + k] = v === 'net' ? 'net' : 'gross'; lsSet(DS_LS[k], S.dash['ds' + k]); }; });
+const dsSeg = k => seg('ds' + k, dsMet(k), [['net', 'Net'], ['gross', 'Brut']]);
 /* --- répartition (barre segmentée + lignes) --- */
 function dashShare(title, hint, rows, o = {}) {
   const wide = o.wide ? ' ds-wide' : '';
   const tot = rows.reduce((a, r) => a + r.val, 0) || 1; const max = Math.max(1, ...rows.map(r => r.val));
-  return `<div class="card dash-share${wide}">${secHead(title, hint)}
+  const head = o.seg ? `<div class="card-head"><div><div class="dc-hl"><h2>${title}</h2>${o.seg}</div>${hint ? `<p class="hint">${hint}</p>` : ''}</div></div>` : secHead(title, hint);
+  return `<div class="card dash-share${wide}">${head}
     <div class="ds-bar" role="img" aria-label="${esc(title)}">${rows.map(r => `<span style="flex-grow:${r.val.toFixed(2)};background:${r.color}" title="${esc(r.name)} : ${pct(r.val / tot * 100)}">${r.val / tot >= .11 ? Math.round(r.val / tot * 100) + ' %' : ''}</span>`).join('')}</div>
     <div class="ds-rows" style="--r:${Math.ceil(rows.length / 2)}">${rows.map((r, i) => `<div class="ds-row ${i && i === Math.ceil(rows.length / 2) ? 'c2' : ''}" style="--c:${r.color}"><span class="ds-n">${r.mark}</span><span class="ds-tr"><i style="width:${(r.val / max * 100).toFixed(1)}%"></i></span><span class="ds-v"><b class="tn">${fmt0(r.val)}</b>${r.sub ? `<small>${r.sub}</small>` : ''}</span><span class="ds-p tn">${pct(r.val / tot * 100)}</span></div>`).join('')}</div>
     ${o.foot || ''}</div>`;
@@ -6820,9 +6827,11 @@ function dashGeneral(list, t) {
   const bySlot = groupBy(list, e => SLOTS.some(s => s.k === e.slot) ? e.slot : '');
   const srows = [...SLOTS.map(s => s.k), ''].filter(k => bySlot[k]).map(k => ({ k, s: agg(bySlot[k]) }));
   const pM = groupBy(D._prev || [], 'modelId'), pP = groupBy(D._prev || [], 'platformId');
-  const share = dashShare('Par modèle', 'Part du CA brut, en €', mrows.map(r => ({ name: mName(r.id), color: modelColor(r.id), val: r.s.gross, mark: modelDot(r.id), sub: dashDl(dashCur('modelId', r.id), agg(pM[r.id] || []).gross) })))
-    + dashShare('Par plateforme', 'Part du CA brut, convertie en €', prow.map(r => { const c = curOf(r.id); return { name: pName(r.id), color: platColor(r.id), val: r.s.gross, mark: platBadge(r.id), sub: (c !== BASE ? `<span class="ds-cur">${fmt0(r.s[c].gross, c)}</span>` : '') + dashDl(dashCur('platformId', r.id), agg(pP[r.id] || []).gross) }; }))
-    + dashShare('Par créneau', 'CA brut et rendement par shift', srows.map(r => ({ name: slotL(r.k), color: slotVar(r.k), val: r.s.gross, mark: slotPill(r.k), sub: `${r.s.shifts} shifts · ${fmt0(r.s.gross / (r.s.shifts || 1))} / shift` })));
+  const mM = dsMet('m'), mP = dsMet('p'), mS = dsMet('s'), lb = m => m === 'net' ? 'net' : 'brut';
+  const byV = m => (a, b) => b.s[m] - a.s[m];
+  const share = dashShare('Par modèle', `Part du CA ${lb(mM)}, en €`, [...mrows].sort(byV(mM)).map(r => ({ name: mName(r.id), color: modelColor(r.id), val: r.s[mM], mark: modelDot(r.id), sub: dashDl(dashCur('modelId', r.id, mM), agg(pM[r.id] || [])[mM]) })), { seg: dsSeg('m') })
+    + dashShare('Par plateforme', `Part du CA ${lb(mP)}, convertie en €`, [...prow].sort(byV(mP)).map(r => { const c = curOf(r.id); return { name: pName(r.id), color: platColor(r.id), val: r.s[mP], mark: platBadge(r.id), sub: (c !== BASE ? `<span class="ds-cur">${fmt0(r.s[c][mP], c)}</span>` : '') + dashDl(dashCur('platformId', r.id, mP), agg(pP[r.id] || [])[mP]) }; }), { seg: dsSeg('p') })
+    + dashShare('Par créneau', `CA ${lb(mS)} et rendement par shift`, srows.map(r => ({ name: slotL(r.k), color: slotVar(r.k), val: r.s[mS], mark: slotPill(r.k), sub: `${r.s.shifts} shifts · ${fmt0(r.s[mS] / (r.s.shifts || 1))} / shift` })), { seg: dsSeg('s') });
   // une seule journée : pas de graphique jour par jour, le classement complet du jour passe en premier
   if (D.from === D.to) return `${dashPodium()}
     <div class="dash-three">${share}</div>`;
