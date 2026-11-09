@@ -1384,66 +1384,66 @@ tr.inact td { opacity: .55 }
 }
 
 /* graphique journalier */
-.v-dash .dash-daily { margin-bottom: 16px }
-.v-dash .dc-stats { display: flex; gap: 6px 22px; flex-wrap: wrap; margin: 0 }
-.v-dash .dc-stats div { display: flex; flex-direction: column; min-width: 0 }
-.v-dash .dc-stats dt { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; color: var(--muted) }
-.v-dash .dc-stats dd { margin: 0; font: 700 18px/1.25 var(--f-display); white-space: nowrap }
-.v-dash .dc-stats dd small { font: 600 11.5px var(--f-body); color: var(--muted); margin-left: 2px }
-.v-dash .dc-leg { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 14px }
-.v-dash .dc-lg { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; min-height: 30px; box-sizing: border-box; padding: 4px 11px 4px 9px; border-radius: 999px; font-size: 12.5px; font-weight: 700; border: 1px solid var(--line); background: var(--surface) }
-.v-dash .dc-lg i { width: 10px; height: 10px; border-radius: 3px; background: var(--c) }
-.v-dash .dc-lg em { font-style: normal; color: var(--muted); font-weight: 700; font-size: 11.5px; font-variant-numeric: tabular-nums }
-.v-dash .dc-lg:hover { background: var(--surface-2) }
-.v-dash .dc-lg.on { background: color-mix(in srgb, var(--c) 14%, var(--surface)); border-color: color-mix(in srgb, var(--c) 55%, transparent) }
-.v-dash .dc-lg.dim { opacity: .5 }
-.v-dash .dc-lg.all { color: var(--muted); border-style: dashed }
-.v-dash .dc-lg:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+:is(.v-dash, .v-perso) .dash-daily { margin-bottom: 16px }
+:is(.v-dash, .v-perso) .dc-stats { display: flex; gap: 6px 22px; flex-wrap: wrap; margin: 0 }
+:is(.v-dash, .v-perso) .dc-stats div { display: flex; flex-direction: column; min-width: 0 }
+:is(.v-dash, .v-perso) .dc-stats dt { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; color: var(--muted) }
+:is(.v-dash, .v-perso) .dc-stats dd { margin: 0; font: 700 18px/1.25 var(--f-display); white-space: nowrap }
+:is(.v-dash, .v-perso) .dc-stats dd small { font: 600 11.5px var(--f-body); color: var(--muted); margin-left: 2px }
+:is(.v-dash, .v-perso) .dc-leg { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 14px }
+:is(.v-dash, .v-perso) .dc-lg { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; min-height: 30px; box-sizing: border-box; padding: 4px 11px 4px 9px; border-radius: 999px; font-size: 12.5px; font-weight: 700; border: 1px solid var(--line); background: var(--surface) }
+:is(.v-dash, .v-perso) .dc-lg i { width: 10px; height: 10px; border-radius: 3px; background: var(--c) }
+:is(.v-dash, .v-perso) .dc-lg em { font-style: normal; color: var(--muted); font-weight: 700; font-size: 11.5px; font-variant-numeric: tabular-nums }
+:is(.v-dash, .v-perso) .dc-lg:hover { background: var(--surface-2) }
+:is(.v-dash, .v-perso) .dc-lg.on { background: color-mix(in srgb, var(--c) 14%, var(--surface)); border-color: color-mix(in srgb, var(--c) 55%, transparent) }
+:is(.v-dash, .v-perso) .dc-lg.dim { opacity: .5 }
+:is(.v-dash, .v-perso) .dc-lg.all { color: var(--muted); border-style: dashed }
+:is(.v-dash, .v-perso) .dc-lg:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
 
-.v-dash .dc { position: relative; padding-left: 44px }
-.v-dash .dc-plot { position: relative; height: 250px; margin-top: 8px }
-.v-dash .dc-g { position: absolute; left: 0; right: 0; height: 0; border-top: 1px dashed var(--line) }
-.v-dash .dc-g.z { border-top: 1px solid color-mix(in srgb, var(--muted) 40%, var(--line)) }
-.v-dash .dc-g span { position: absolute; right: calc(100% + 8px); top: -8px; font-size: 11px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap }
-.v-dash .dc-avg { position: absolute; left: 0; right: 0; height: 0; border-top: 1.5px dashed color-mix(in srgb, var(--fg) 55%, transparent); z-index: 2; pointer-events: none }
-.v-dash .dc-avgk { margin-left: auto; display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700; color: var(--muted); padding: 0 2px }
-.v-dash .dc-avgk i { width: 18px; height: 0; border-top: 1.5px dashed color-mix(in srgb, var(--fg) 55%, transparent) }
-.v-dash .dc-cols { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); z-index: 1 }
-.v-dash .dc-col { position: relative; display: flex; align-items: flex-end; justify-content: center; height: 100%; cursor: pointer; border-radius: 6px; outline: none }
-.v-dash .dc-col.fut { cursor: help }
-.v-dash .dc-ghost { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 64%; max-width: 30px; border: 1.5px dashed color-mix(in srgb, var(--muted) 45%, transparent); border-bottom: 0; border-radius: 5px 5px 0 0 }
-.v-dash .dc-col.fut + .dc-col.fut .dc-ghost, .v-dash .dc-col.fut .dc-ghost { opacity: .9 }
-.v-dash .dc-x .fut b, .v-dash .dc-x .fut small { opacity: .55 }
-.v-dash .dc-col::before { content: ""; position: absolute; inset: -6px 1px 0; border-radius: 6px; background: var(--surface-2); opacity: 0; transition: opacity .12s }
-.v-dash .dc-col.on::before, .v-dash .dc-col:focus-visible::before { opacity: .85 }
-.v-dash .dc-col:focus-visible::before { box-shadow: inset 0 0 0 2px var(--accent) }
-.v-dash .dc-stack { position: relative; width: 64%; max-width: 30px; min-width: 3px; display: flex; flex-direction: column-reverse; gap: 1.5px; border-radius: 5px 5px 2px 2px; overflow: hidden }
-.v-dash .dc-stack i { display: block; flex: 1 1 0; min-height: 0 }
-.v-dash .dc-col.tdy .dc-stack { box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px color-mix(in srgb, var(--fg) 35%, transparent) }
+:is(.v-dash, .v-perso) .dc { position: relative; padding-left: 44px }
+:is(.v-dash, .v-perso) .dc-plot { position: relative; height: 250px; margin-top: 8px }
+:is(.v-dash, .v-perso) .dc-g { position: absolute; left: 0; right: 0; height: 0; border-top: 1px dashed var(--line) }
+:is(.v-dash, .v-perso) .dc-g.z { border-top: 1px solid color-mix(in srgb, var(--muted) 40%, var(--line)) }
+:is(.v-dash, .v-perso) .dc-g span { position: absolute; right: calc(100% + 8px); top: -8px; font-size: 11px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap }
+:is(.v-dash, .v-perso) .dc-avg { position: absolute; left: 0; right: 0; height: 0; border-top: 1.5px dashed color-mix(in srgb, var(--fg) 55%, transparent); z-index: 2; pointer-events: none }
+:is(.v-dash, .v-perso) .dc-avgk { margin-left: auto; display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700; color: var(--muted); padding: 0 2px }
+:is(.v-dash, .v-perso) .dc-avgk i { width: 18px; height: 0; border-top: 1.5px dashed color-mix(in srgb, var(--fg) 55%, transparent) }
+:is(.v-dash, .v-perso) .dc-cols { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); z-index: 1 }
+:is(.v-dash, .v-perso) .dc-col { position: relative; display: flex; align-items: flex-end; justify-content: center; height: 100%; cursor: pointer; border-radius: 6px; outline: none }
+:is(.v-dash, .v-perso) .dc-col.fut { cursor: help }
+:is(.v-dash, .v-perso) .dc-ghost { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 64%; max-width: 30px; border: 1.5px dashed color-mix(in srgb, var(--muted) 45%, transparent); border-bottom: 0; border-radius: 5px 5px 0 0 }
+:is(.v-dash, .v-perso) .dc-col.fut + .dc-col.fut .dc-ghost, :is(.v-dash, .v-perso) .dc-col.fut .dc-ghost { opacity: .9 }
+:is(.v-dash, .v-perso) .dc-x .fut b, :is(.v-dash, .v-perso) .dc-x .fut small { opacity: .55 }
+:is(.v-dash, .v-perso) .dc-col::before { content: ""; position: absolute; inset: -6px 1px 0; border-radius: 6px; background: var(--surface-2); opacity: 0; transition: opacity .12s }
+:is(.v-dash, .v-perso) .dc-col.on::before, :is(.v-dash, .v-perso) .dc-col:focus-visible::before { opacity: .85 }
+:is(.v-dash, .v-perso) .dc-col:focus-visible::before { box-shadow: inset 0 0 0 2px var(--accent) }
+:is(.v-dash, .v-perso) .dc-stack { position: relative; width: 64%; max-width: 30px; min-width: 3px; display: flex; flex-direction: column-reverse; gap: 1.5px; border-radius: 5px 5px 2px 2px; overflow: hidden }
+:is(.v-dash, .v-perso) .dc-stack i { display: block; flex: 1 1 0; min-height: 0 }
+:is(.v-dash, .v-perso) .dc-col.tdy .dc-stack { box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px color-mix(in srgb, var(--fg) 35%, transparent) }
 .v-dash .weekly .dc-stack { max-width: 44px }
-.v-dash .dc-x { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); margin-top: 6px }
-.v-dash .dc-x span { display: flex; flex-direction: column; align-items: center; line-height: 1.15; visibility: hidden; white-space: nowrap; min-width: 0 }
-.v-dash .dc-x span.kd { visibility: visible }
-.v-dash .dc-x small { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase }
-.v-dash .dc-x b { font-size: 11.5px; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums }
-.v-dash .dc-x .we b { color: color-mix(in srgb, var(--muted) 70%, transparent) }
-.v-dash .dc-x .tdy b, .v-dash .dc-x .tdy small { color: var(--fg); font-weight: 800 }
-.v-dash .dc-x .tdy b { background: var(--fg); color: var(--bg); border-radius: 5px; padding: 0 4px }
+:is(.v-dash, .v-perso) .dc-x { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); margin-top: 6px }
+:is(.v-dash, .v-perso) .dc-x span { display: flex; flex-direction: column; align-items: center; line-height: 1.15; visibility: hidden; white-space: nowrap; min-width: 0 }
+:is(.v-dash, .v-perso) .dc-x span.kd { visibility: visible }
+:is(.v-dash, .v-perso) .dc-x small { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase }
+:is(.v-dash, .v-perso) .dc-x b { font-size: 11.5px; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums }
+:is(.v-dash, .v-perso) .dc-x .we b { color: color-mix(in srgb, var(--muted) 70%, transparent) }
+:is(.v-dash, .v-perso) .dc-x .tdy b, :is(.v-dash, .v-perso) .dc-x .tdy small { color: var(--fg); font-weight: 800 }
+:is(.v-dash, .v-perso) .dc-x .tdy b { background: var(--fg); color: var(--bg); border-radius: 5px; padding: 0 4px }
 
-.v-dash .dc-tip { position: absolute; z-index: 6; pointer-events: none; min-width: 210px; max-width: 280px; background: var(--fg); color: var(--bg); border: 0; border-radius: 10px; padding: 10px 12px; box-shadow: var(--shadow); font-size: 12.5px }
-.v-dash .dc-tip[hidden] { display: none }
-.v-dash .dt-h { font-weight: 800; font-size: 12.5px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; justify-content: space-between }
-.v-dash .dt-h .pill { font-size: 10.5px; padding: 1px 7px }
-.v-dash .dt-tot { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--line); margin-bottom: 6px }
-.v-dash .dt-tot span { color: var(--muted); font-weight: 700 }
-.v-dash .dt-tot b { font: 700 20px/1.1 var(--f-display); font-variant-numeric: tabular-nums }
-.v-dash .dt-rows div { display: grid; grid-template-columns: minmax(0, 1fr) auto 44px; gap: 10px; align-items: center; padding: 2px 0 }
-.v-dash .dt-rows span { display: flex; align-items: center; gap: 7px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
-.v-dash .dt-rows i { width: 9px; height: 9px; border-radius: 3px; flex: none }
-.v-dash .dt-rows b { font-variant-numeric: tabular-nums; font-weight: 800 }
-.v-dash .dt-rows em { font-style: normal; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; font-size: 11.5px }
-.v-dash .dt-f { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 7px; padding-top: 7px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11.5px; font-weight: 700; font-variant-numeric: tabular-nums }
-.v-dash .dt-e { margin: 0; color: var(--muted) }
+:is(.v-dash, .v-perso) .dc-tip { position: absolute; z-index: 6; pointer-events: none; min-width: 210px; max-width: 280px; background: var(--fg); color: var(--bg); border: 0; border-radius: 10px; padding: 10px 12px; box-shadow: var(--shadow); font-size: 12.5px }
+:is(.v-dash, .v-perso) .dc-tip[hidden] { display: none }
+:is(.v-dash, .v-perso) .dt-h { font-weight: 800; font-size: 12.5px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; justify-content: space-between }
+:is(.v-dash, .v-perso) .dt-h .pill { font-size: 10.5px; padding: 1px 7px }
+:is(.v-dash, .v-perso) .dt-tot { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-bottom: 6px; border-bottom: 1px solid var(--line); margin-bottom: 6px }
+:is(.v-dash, .v-perso) .dt-tot span { color: var(--muted); font-weight: 700 }
+:is(.v-dash, .v-perso) .dt-tot b { font: 700 20px/1.1 var(--f-display); font-variant-numeric: tabular-nums }
+:is(.v-dash, .v-perso) .dt-rows div { display: grid; grid-template-columns: minmax(0, 1fr) auto 44px; gap: 10px; align-items: center; padding: 2px 0 }
+:is(.v-dash, .v-perso) .dt-rows span { display: flex; align-items: center; gap: 7px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+:is(.v-dash, .v-perso) .dt-rows i { width: 9px; height: 9px; border-radius: 3px; flex: none }
+:is(.v-dash, .v-perso) .dt-rows b { font-variant-numeric: tabular-nums; font-weight: 800 }
+:is(.v-dash, .v-perso) .dt-rows em { font-style: normal; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; font-size: 11.5px }
+:is(.v-dash, .v-perso) .dt-f { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 7px; padding-top: 7px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11.5px; font-weight: 700; font-variant-numeric: tabular-nums }
+:is(.v-dash, .v-perso) .dt-e { margin: 0; color: var(--muted) }
 
 /* répartitions */
 .v-dash .dash-three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 16px }
@@ -1537,13 +1537,13 @@ tr.inact td { opacity: .55 }
 @media (max-width: 760px) {
   .v-dash .dash-three { grid-template-columns: minmax(0, 1fr) }
   .v-dash .dash-subr { justify-content: flex-start }
-  .v-dash .dc-plot { height: 200px }
-  .v-dash .dc { padding-left: 36px }
-  .v-dash .dc-x span.kd { visibility: hidden }
-  .v-dash .dc-x span.km { visibility: visible }
-  .v-dash .dc-stack { width: 72% }
-  .v-dash .dc-stats { gap: 6px 16px }
-  .v-dash .dc-stats dd { font-size: 16px }
+  :is(.v-dash, .v-perso) .dc-plot { height: 200px }
+  :is(.v-dash, .v-perso) .dc { padding-left: 36px }
+  :is(.v-dash, .v-perso) .dc-x span.kd { visibility: hidden }
+  :is(.v-dash, .v-perso) .dc-x span.km { visibility: visible }
+  :is(.v-dash, .v-perso) .dc-stack { width: 72% }
+  :is(.v-dash, .v-perso) .dc-stats { gap: 6px 16px }
+  :is(.v-dash, .v-perso) .dc-stats dd { font-size: 16px }
 }
 @media (max-width: 600px) {
   .v-dash .card { padding: 16px 14px }
@@ -1579,9 +1579,9 @@ tr.inact td { opacity: .55 }
 }
 
 /* intégration : bulle inversée comme les autres onglets, ventilation lisible */
-.v-dash .dc-tip .muted, .v-dash .dc-tip small, .v-dash .dc-tip .dt-e { color: color-mix(in srgb, var(--bg) 70%, transparent) }
-.v-dash .dc-tip .delta.up { color: color-mix(in srgb, var(--good) 62%, var(--bg)) }
-.v-dash .dc-tip .delta.down { color: color-mix(in srgb, var(--bad) 62%, var(--bg)) }
+:is(.v-dash, .v-perso) .dc-tip .muted, :is(.v-dash, .v-perso) .dc-tip small, :is(.v-dash, .v-perso) .dc-tip .dt-e { color: color-mix(in srgb, var(--bg) 70%, transparent) }
+:is(.v-dash, .v-perso) .dc-tip .delta.up { color: color-mix(in srgb, var(--good) 62%, var(--bg)) }
+:is(.v-dash, .v-perso) .dc-tip .delta.down { color: color-mix(in srgb, var(--bad) 62%, var(--bg)) }
 .v-dash .ds-row > :nth-child(3) { min-width: 0; text-align: right }
 .v-dash .ds-bar span[style*="--sl-"] { color: var(--surface); text-shadow: none }
 
@@ -2435,10 +2435,10 @@ tr.dc-todo td:first-child { box-shadow: inset 3px 0 0 var(--warn) }
 
 /* v57 tableau de bord */
 .v-dash .dash-subl { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; min-width: 0 }
-.v-dash .dash-daily .card-head { align-items: flex-start }
-.v-dash .dc-hl { display: flex; align-items: center; gap: 12px; flex-wrap: wrap }
-.v-dash .dc-hl h2 { margin: 0 }
-.v-dash .dc-hl .seg button { padding: 5px 14px; font-size: 12.5px }
+:is(.v-dash, .v-perso) .dash-daily .card-head { align-items: flex-start }
+:is(.v-dash, .v-perso) .dc-hl { display: flex; align-items: center; gap: 12px; flex-wrap: wrap }
+:is(.v-dash, .v-perso) .dc-hl h2 { margin: 0 }
+:is(.v-dash, .v-perso) .dc-hl .seg button { padding: 5px 14px; font-size: 12.5px }
 .v-dash .tiles.t3 .tile { min-height: 132px }
 .v-dash .tiles.t3 .tile-v { font-size: 30px }
 @media (max-width: 1100px) {
@@ -2779,9 +2779,9 @@ input[type=text], input[type=number], input[type=date], input[type=email], input
 .v-dash .dash-rank-card:has(.hist-podium)::after { content: ""; position: absolute; top: 14px; right: 18px; width: 70px; height: 70px; background: var(--ill-trophy) center / contain no-repeat; transform: rotate(8deg); filter: drop-shadow(0 10px 20px rgba(232, 174, 82, .4)); pointer-events: none }
 
 /* graphique : barres arrondies en dégradé, avec un léger halo */
-.v-dash .dc-stack { border-radius: 9px 9px 3px 3px; max-width: 34px; box-shadow: 0 0 24px -8px color-mix(in srgb, var(--s1) 70%, transparent) }
-.v-dash .dc-stack::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(255, 255, 255, .16), transparent 30%) }
-:root[data-theme="dark"] .v-dash .dc-stack::after { background: linear-gradient(180deg, rgba(255, 255, 255, .16), transparent 30%, rgba(11, 11, 14, .55)) }
+:is(.v-dash, .v-perso) .dc-stack { border-radius: 9px 9px 3px 3px; max-width: 34px; box-shadow: 0 0 24px -8px color-mix(in srgb, var(--s1) 70%, transparent) }
+:is(.v-dash, .v-perso) .dc-stack::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(255, 255, 255, .16), transparent 30%) }
+:root[data-theme="dark"] :is(.v-dash, .v-perso) .dc-stack::after { background: linear-gradient(180deg, rgba(255, 255, 255, .16), transparent 30%, rgba(11, 11, 14, .55)) }
 
 /* encadrés d'info teintés, comme « Le plus gros trou » */
 .banner { border-radius: 14px; padding: 12px 16px }
@@ -3189,6 +3189,9 @@ input[type=text], input[type=number], input[type=date], input[type=email], input
 /* v65 : une agence Wysper ne répond pas, les autres oui */
 .wy-bar.warn { background: color-mix(in srgb, var(--warn) 7%, var(--surface)); border-color: color-mix(in srgb, var(--warn) 30%, var(--line)) }
 .warn > .wy-dot { background: var(--warn); box-shadow: 0 0 0 4px color-mix(in srgb, var(--warn) 18%, transparent) }
+
+/* v67 Revenu perso : revenu net par jour (dessin du tableau de bord) */
+.v-perso .ps-daily { margin-top: 18px }
 </style>
 </head>
 <body>
@@ -6789,6 +6792,10 @@ function dashTip(i) {
       ${dashCD.series.length > 1 ? `<div class="dt-rows">${rows.map(s => `<div><span><i style="background:${s.color}"></i>${esc(s.label)}</span><b>${fmt0(r.parts[s.k])}</b><em>${pct(r.parts[s.k] / r.total * 100)}</em></div>`).join('')}</div>` : ''}
       <div class="dt-f"><span>${r.s.shifts} shift${r.s.shifts > 1 ? 's' : ''}</span><span>${dashCD.M === 'net' ? 'Brut ' + fmt0(r.s.gross) : 'Net ' + fmt0(r.s.net)}</span><span>Paie ${fmt0(r.s.com)}</span></div>`);
   tip.hidden = false;
+  dcPlace(c, col, tip);
+}
+// bulle à côté de la barre, sans sortir du graphique (tableau de bord et Revenu perso)
+function dcPlace(c, col, tip) {
   const cr = c.getBoundingClientRect(); const br = (col || c).getBoundingClientRect(); const st = col ? $('.dc-stack', col).getBoundingClientRect() : br;
   const w = tip.offsetWidth, hh = tip.offsetHeight; const cx = br.left + br.width / 2 - cr.left;
   const half = br.width / 2 + 8; let left = cx + half; if (left + w > cr.width) left = cx - half - w; if (left < 0) left = Math.max(0, Math.min(cx - w / 2, cr.width - w));
@@ -7293,6 +7300,78 @@ function persoChart(m, n, stop) {
   [1, 8, 15, 22, nd].forEach(d => { s += `<text x="${X(d - 1).toFixed(1)}" y="${H - 6}" text-anchor="${d === 1 ? 'start' : d === nd ? 'end' : 'middle'}">${d}</text>`; });
   return s + '</svg>';
 }
+
+// ---- Revenu perso : revenu net par jour, pour chacun, en barres empilées (même dessin que « CA net par jour ») ----
+let psCD = { rows: [], series: [] };
+const psBy = () => (S.persoV.by ??= lsGet('kl_psby', 'p')) === 'm' ? 'm' : 'p';
+HOOK.seg.psBy = v => { S.persoV.by = v === 'm' ? 'm' : 'p'; S.persoV.hl = ''; lsSet('kl_psby', S.persoV.by); };
+HOOK.act.psHl = el => { S.persoV.hl = S.persoV.hl === el.dataset.v ? '' : el.dataset.v; render(); };
+function persoDaily(n, m) {
+  const V = S.persoV, by = psBy(), td = today();
+  if (m > td) return '';
+  // comme au tableau de bord : le mois en cours s'arrête à aujourd'hui
+  const days = daysIn(m, [monthEnd(m), td].sort()[0]);
+  const rows = days.map(d => {
+    const P = persoOf(entries(d, d)), parts = {};
+    (by === 'm' ? P.rows.map(r => [r.mid, r.v]) : P.plats.map(x => [x.pid, x.v])).forEach(([k, v]) => { parts[k] = (parts[k] || 0) + v / n; });
+    return { from: d, tdy: d === td, parts };
+  });
+  const tot = {}; rows.forEach(r => Object.entries(r.parts).forEach(([k, v]) => { tot[k] = (tot[k] || 0) + v; }));
+  const allSeries = Object.keys(tot).filter(k => tot[k] > 0).sort((a, b) => tot[b] - tot[a])
+    .map(k => ({ k, label: by === 'm' ? (S.models[k]?.name || k) : pName(k), color: by === 'm' ? modelColor(k) : platColor(k), tot: tot[k] }));
+  if (!allSeries.length) return '';
+  if (V.hl && !tot[V.hl]) V.hl = '';
+  const series = V.hl ? allSeries.filter(s => s.k === V.hl) : allSeries;
+  rows.forEach(r => { r.total = series.reduce((a, s) => a + Math.max(0, r.parts[s.k] || 0), 0); });
+  // aujourd'hui (pas fini) reste hors de la moyenne et du meilleur jour
+  const fin = rows.filter(r => !r.tdy), past = fin.length ? fin : rows;
+  const avg = past.reduce((a, r) => a + r.total, 0) / past.length, best = past.reduce((a, r) => (!a || r.total > a.total) ? r : a, null);
+  psCD = { rows, series, avg, n, by };
+  const max = Math.max(1, ...rows.map(r => r.total));
+  let step = niceStep(max / 4); while (Math.ceil(max / step) * step / max > 1.3 && max / (step / 2) <= 6) step /= 2; const top = Math.ceil(max / step) * step;
+  const N = rows.length, ev = Math.ceil(N / 22), evm = Math.ceil(N / 7);
+  let g = ''; for (let v = 0; v <= top + 1e-6; v += step) g += `<div class="dc-g ${v ? '' : 'z'}" style="bottom:${v / top * 100}%"><span>${v ? short(v) + ' €' : '0'}</span></div>`;
+  const plot = `<div class="dc-plot">${g}
+      ${avg && past.length > 1 ? `<div class="dc-avg" style="bottom:${avg / top * 100}%"></div>` : ''}
+      <div class="dc-cols" style="--n:${N}">${rows.map((r, i) => `<div class="dc-col ${r.tdy ? 'tdy' : ''}" data-i="${i}" tabindex="0" role="img" aria-label="${esc(cap(dLong(r.from)))} : ${fmt0(r.total)}"><span class="dc-stack" style="height:${r.total / top * 100}%">${series.map(s => r.parts[s.k] > 0 ? `<i style="flex-grow:${r.parts[s.k].toFixed(2)};background:${s.color}"></i>` : '').join('')}</span></div>`).join('')}</div>
+    </div>`;
+  const xs = `<div class="dc-x" style="--n:${N}">${rows.map((r, i) => `<span class="${i % ev === 0 || r.tdy ? 'kd' : ''} ${i % evm === 0 || r.tdy ? 'km' : ''} ${r.tdy ? 'tdy' : ''} ${[0, 6].includes(parse(r.from).getDay()) ? 'we' : ''}"><small>${fd(r.from, { weekday: 'narrow' })}</small><b>${parse(r.from).getDate()}</b></span>`).join('')}</div>`;
+  const totAll = allSeries.reduce((a, s) => a + s.tot, 0) || 1, what = by === 'm' ? 'modèle' : 'plateforme';
+  const legend = `<div class="dc-leg" role="group" aria-label="${by === 'm' ? 'Modèles' : 'Plateformes'} : clique pour isoler">${allSeries.map(s => `<button type="button" class="dc-lg ${V.hl === s.k ? 'on' : ''} ${V.hl && V.hl !== s.k ? 'dim' : ''}" data-act="psHl" data-v="${esc(s.k)}" aria-pressed="${V.hl === s.k}" style="--c:${s.color}"><i></i>${esc(s.label)}<em>${pct(s.tot / totAll * 100)}</em></button>`).join('')}${V.hl ? `<button type="button" class="dc-lg all" data-act="psHl" data-v="${esc(V.hl)}">Tout afficher</button>` : ''}${avg && past.length > 1 ? '<span class="dc-avgk"><i></i>Moyenne</span>' : ''}</div>`;
+  const sum = rows.reduce((a, r) => a + r.total, 0);
+  const stats = [
+    [V.hl ? 'Total ' + esc(allSeries.find(s => s.k === V.hl).label) : 'Total', fmt0(sum)],
+    ['Moyenne / jour', fmt0(avg)],
+    best && best.total ? ['Meilleur jour', `${fmt0(best.total)} <small>${esc(fd(best.from, { weekday: 'short', day: 'numeric', month: 'short' }))}</small>`] : null
+  ].filter(Boolean);
+  return `<div class="card dash-daily ps-daily">
+    <div class="card-head"><div><div class="dc-hl"><h2>Revenu net par jour</h2>${seg('psBy', by, [['p', 'Plateformes'], ['m', 'Modèles']])}</div><p class="hint">Pour chacun, en €, empilé par ${what}, après les frais et vos parts. Survole ou touche une barre pour le détail. Clique sur une ${what} pour l'isoler.</p></div>
+      <dl class="dc-stats">${stats.map(([k, v]) => `<div><dt>${k}</dt><dd class="tn">${v}</dd></div>`).join('')}</dl></div>
+    ${legend}
+    <div class="dc" id="psChart">${plot}${xs}<div class="dc-tip" role="tooltip" hidden></div></div>
+  </div>`;
+}
+function persoTip(i) {
+  const c = $('#psChart'); if (!c) return; const r = psCD.rows[i]; const tip = $('.dc-tip', c); if (!r || !tip) return;
+  $$('.dc-col.on', c).forEach(x => x.classList.remove('on'));
+  const col = $(`.dc-col[data-i="${i}"]`, c); col && col.classList.add('on');
+  const one = psCD.series.length === 1, list = psCD.series.filter(s => r.parts[s.k] > 0).sort((a, b) => r.parts[b.k] - r.parts[a.k]), n = psCD.n;
+  tip.innerHTML = `<div class="dt-h">${esc(cap(dLong(r.from)))}${r.tdy ? ' <span class="pill info">En cours</span>' : ''}</div>`
+    + (!r.total ? '<p class="dt-e">Aucune vente ce jour-là</p>'
+    : `<div class="dt-tot"><span>Pour chacun${one ? ' · ' + esc(psCD.series[0].label) : ''}</span><b>${fmt0(r.total)}</b></div>
+      ${one ? '' : `<div class="dt-rows">${list.map(s => `<div><span><i style="background:${s.color}"></i>${esc(s.label)}</span><b>${fmt0(r.parts[s.k])}</b><em>${pct(r.parts[s.k] / r.total * 100)}</em></div>`).join('')}</div>`}
+      <div class="dt-f"><span>À ${n === 2 ? 'deux' : n} : ${fmt0(r.total * n)}</span>${psCD.avg ? `<span>Moyenne ${fmt0(psCD.avg)}</span>` : ''}</div>`);
+  tip.hidden = false;
+  dcPlace(c, col, tip);
+}
+function persoBind() {
+  const c = $('#psChart'); if (!c) return;
+  const hide = () => { const t = $('.dc-tip', c); if (t) t.hidden = true; $$('.dc-col.on', c).forEach(x => x.classList.remove('on')); };
+  const pick = e => { const col = e.target.closest('.dc-col'); if (col) persoTip(+col.dataset.i); };
+  c.addEventListener('pointerover', pick); c.addEventListener('pointerdown', pick);
+  c.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') hide(); });
+  c.addEventListener('focusin', pick); c.addEventListener('focusout', hide);
+}
 function viewPerso() {
   const V = S.persoV ||= { m: monthStart(today()) };
   const td = today(), m = V.m, me = monthEnd(m), n = persoN(), isCur = m === monthStart(td);
@@ -7343,6 +7422,7 @@ function viewPerso() {
   const months = []; for (let i = 5; i >= 0; i--) months.push(addMonths(isCur ? m : monthStart(td), -i));
   if (!months.includes(m)) { months.shift(); months.push(m); months.sort(); }
   const mv = months.map(x => persoOf(entries(x, monthEnd(x))).tot / n); const mmax = Math.max(1, ...mv);
+  h += persoDaily(n, m);
   h += `<div class="grid g2e mt ps-low">
     <section class="card">${secHead('Cumul du mois', `Ce que chacun a gagné jour après jour. En pointillés : ${esc(fd(pm, { month: 'long' }))}.`)}
       <div class="ps-chart">${persoChart(m, n, isCur ? td : '')}</div>
@@ -7351,7 +7431,7 @@ function viewPerso() {
       <div class="ps-mo">${months.map((x, i) => `<button type="button" class="ps-mb ${x === m ? 'on' : ''} ${x === monthStart(td) ? 'now' : ''}" data-act="psMonth" data-m="${x}" aria-label="${esc(cap(mLabel(x)))} : ${esc(fmt0(mv[i]))}"><em>${mv[i] ? esc(short(mv[i])) + ' €' : '–'}</em><span class="ps-mt"><span style="height:${(mv[i] / mmax * 100).toFixed(1)}%"></span></span><small>${esc(cap(fd(x, { month: 'short' })).replace('.', ''))}</small></button>`).join('')}</div></section>
   </div>
   <p class="hint ps-foot">Calcul : ${shares.map(md => `${esc(md.name)} ${esc(persoRule(md.id, true))}`).join(' ; ')}. Divisé par ${n}. Montants en € (dollars convertis à 1 € = $${num(S.settings.eurUsd).toLocaleString('fr-FR')}).${S.me ? (accList('perso').length ? ` Page visible par ${accList('perso').length} personne${accList('perso').length > 1 ? 's' : ''}, à régler dans « Gérer les accès ».` : ' Page visible par tous les membres : choisis qui la voit dans « Gérer les accès ».') : ''}</p>`;
-  $('#view').innerHTML = h;
+  $('#view').innerHTML = h; persoBind();
 }
 HOOK.act.psPrev = () => { S.persoV.m = addMonths(S.persoV.m, -1); ensureRange(S.persoV.m); render(); };
 HOOK.act.psNext = () => { const nx = addMonths(S.persoV.m, 1); if (nx <= monthStart(today())) S.persoV.m = nx; render(); };
