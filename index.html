@@ -4789,8 +4789,8 @@ const curTot = l => { const t = { EUR: 0, USD: 0 }; l.forEach(p => { t[curOfP(p)
 const curUsd = (l, rate) => r2(l.reduce((a, p) => a + usd(num(p.amount), curOfP(p), rate), 0));
 const curTxt = (t, sign = '', sep = ' et ') => [t.EUR && sign + penE(t.EUR), t.USD && sign + fmtC(t.USD, 'USD', t.USD % 1 ? 2 : 0)].filter(Boolean).join(sep) || '0 €';
 const pAmt = p => fmtC(num(p.amount), curOfP(p), num(p.amount) % 1 ? 2 : 0);
-// primes données sur Discord (🛠️ Admin › 💸 Primes), ajoutées à la paie de leur quinzaine
-const primeOf = key => Object.entries(S.primes || {}).map(([id, p]) => ({ ...p, id, cid: penChatter(p) })).filter(p => p.date && halfKey(p.date) === key).sort((a, b) => (a.at || 0) - (b.at || 0));
+// primes données sur Discord (🛠️ Admin › 💸 Primes) : payées en fin de mois, toutes dans la paie du 16 à la fin (versée le 1er)
+const primeOf = key => key.endsWith('-B') ? Object.entries(S.primes || {}).map(([id, p]) => ({ ...p, id, cid: penChatter(p) })).filter(p => p.date && p.date.slice(0, 7) === key.slice(0, 7)).sort((a, b) => (a.at || 0) - (b.at || 0)) : [];
 // modèles choisies dans Paies (vide = toutes)
 const payModels = () => (S.pay.models ??= lsGet('kl_pmodels', [])).filter(id => S.models[id]);
 const paySel = () => { const v = payModels(); return v.length ? new Set(v) : null; };
@@ -7103,13 +7103,14 @@ function payPenSection(k, pens, rows, rate) {
       <div class="pay-pr pay-pft" role="row"><span role="cell">Total · ${by.length} chatteur${payS(by.length)}</span><span class="n" role="cell" data-l="Avertissements">${pens.length}</span><span class="n" role="cell" data-l="Avec amende">${penFines(pens)}</span><span role="cell"></span><span class="n pay-pv" role="cell" data-l="Pénalité">${U ? '−' + esc(curTxt(T, '', ' −')) : '0 €'}</span><span class="n muted" role="cell" data-l="En $">${U ? '−' + esc(fmtC(U)) : '–'}</span></div>
     </div></section>`;
 }
-// primes de la quinzaine (données sur Discord), ajoutées à la paie
+// primes du mois (données sur Discord), ajoutées à la paie de fin de mois
 function payPrimeSection(k, prs, rows, rate) {
-  const head = secHead('Primes de la quinzaine', `Données sur Discord (🛠️ Admin › 💸 Primes), ajoutées à la paie du ${esc(dLong(halfPayday(k)))}.`, prs.length ? `<span class="pill good">+${esc(curTxt(curTot(prs), '', ' +'))}</span>` : '');
-  if (!prs.length) return `<section class="card mt pay-pen">${head}<div class="pay-none">Aucune prime sur cette quinzaine.</div></section>`;
+  const end = k.slice(0, 7) + '-B', mo = fd(k.slice(0, 7) + '-01', { month: 'long' }), dmo = (/^[aeiouyhâéè]/i.test(mo) ? 'd’' : 'de ') + mo;
+  const head = secHead('Primes du mois', `Données sur Discord (🛠️ Admin › 💸 Primes). Elles se paient en fin de mois : toutes celles ${esc(dmo)} sont dans la paie du ${esc(dLong(halfPayday(end)))}.`, prs.length ? `<span class="pill good">+${esc(curTxt(curTot(prs), '', ' +'))}</span>` : '');
+  if (!prs.length) return `<section class="card mt pay-pen">${head}<div class="pay-none">${k === end ? 'Aucune prime ce mois-ci.' : 'Pas de prime dans cette paie.'}</div></section>`;
   const outIds = new Set(rows.filter(r => !r.adjIn).map(r => r.id)), U = curUsd(prs, rate);
   return `<section class="card mt pay-pen">${head}
-    <div class="pay-pt pay-prt" role="table" aria-label="Primes de la quinzaine">
+    <div class="pay-pt pay-prt" role="table" aria-label="Primes du mois">
       <div class="pay-ph" role="row"><span role="columnheader">Jour</span><span role="columnheader">Chatteur</span><span role="columnheader">Raison</span><span class="n" role="columnheader">Prime</span><span class="n" role="columnheader">En $</span></div>
       ${prs.map(p => `<div class="pay-pr ${p.cid && outIds.has(p.cid) ? 'out' : ''}" role="row">
         <span class="pay-date" role="cell">${esc(cap(fd(p.date, { weekday: 'short' })).replace('.', ''))} <b>${parse(p.date).getDate()}</b></span>
