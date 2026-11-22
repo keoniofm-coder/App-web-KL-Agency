@@ -2401,6 +2401,20 @@ tr.dc-todo td:first-child { box-shadow: inset 3px 0 0 var(--warn) }
 .v-pay .pay-prt .pay-pv { color: var(--good) }
 .v-pay .pay-prt .pay-date b { font-size: 14px }
 .v-pay .pay-pr.out { opacity: .55 }
+/* v74 : primes du mois dans Paies, chatteur par chatteur */
+.v-pay .pay-pgr .pay-pv { color: var(--good) }
+.v-pay .pay-pgr .pay-pf .good { color: var(--good) }
+.v-pay .pay-pills { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: flex-end }
+.v-pay .pay-live i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: wyPulse 2.4s ease-in-out infinite }
+.v-pay .pay-pnote { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 12px; font-size: 12.5px; color: var(--muted) }
+.v-pay .pay-pnote > span:first-child { margin-right: 2px }
+.v-pay .pay-pnote .pay-pf s { color: var(--muted) }
+.v-pay .pay-dp .pay-pl small.live { color: var(--info) }
+@media (max-width: 760px) {
+  .v-pay .pay-pgr .pay-pr > [data-l="À la main"] { order: 1 }
+  .v-pay .pay-pgr .pay-pr > [data-l="Prime"] { order: 2 }
+  .v-pay .card-head .pay-pills { justify-content: flex-start }
+}
 /* v71 onglet Primes / Pénalités (vue .v-bonus, qui reprend les styles de Paies) */
 .v-pay .pay-aut-t .pay-ph, .v-pay .pay-aut-t .pay-pr { grid-template-columns: minmax(180px, 1.4fr) repeat(5, minmax(84px, 1fr)) 92px }
 .v-pay .pay-aut-t .pay-ph small { display: block; margin-top: 2px; font-size: 10.5px; font-weight: 600; text-transform: none; letter-spacing: 0 }
@@ -4859,8 +4873,20 @@ const curTot = l => { const t = { EUR: 0, USD: 0 }; l.forEach(p => { t[curOfP(p)
 const curUsd = (l, rate) => r2(l.reduce((a, p) => a + usd(num(p.amount), curOfP(p), rate), 0));
 const curTxt = (t, sign = '', sep = ' et ') => [t.EUR && sign + penE(t.EUR), t.USD && sign + fmtC(t.USD, 'USD', t.USD % 1 ? 2 : 0)].filter(Boolean).join(sep) || '0 €';
 const pAmt = p => fmtC(num(p.amount), curOfP(p), num(p.amount) % 1 ? 2 : 0);
-// primes données sur Discord (🛠️ Admin › 💸 Primes) : payées en fin de mois, toutes dans la paie du 16 à la fin (versée le 1er)
-const primeOf = key => key.endsWith('-B') ? Object.entries(S.primes || {}).map(([id, p]) => ({ ...p, id, cid: penChatter(p) })).filter(p => p.date && p.date.slice(0, 7) === key.slice(0, 7)).sort((a, b) => (a.at || 0) - (b.at || 0)) : [];
+// primes du barème en cours (primesLive/<mois>, recalculées par le bot toutes les 30 min) : dans la paie de fin de mois
+// tant que le bot ne les a pas écrites (le 1er à 10 h, il marque alors le mois writtenAt). Seulement ceux qui ont leurs jours.
+function primeLive(m) {
+  const d = S.primesLive?.[m];
+  if (!d?.rows || d.writtenAt || Object.values(S.primes || {}).some(p => p.auto && String(p.date || p.month || '').slice(0, 7) === m)) return [];
+  const bar = Object.fromEntries((d.bareme || []).filter(b => !b.manual).map(b => [b.k, b])), end = halfRange(m + '-B')[1];
+  return Object.entries(d.rows).filter(([, r]) => r.elig).flatMap(([cid, r]) => (r.ok || []).filter(k => bar[k]).map(k => {
+    const b = bar[k], t = b.tiers ? [...b.tiers].reverse().find(([x]) => num(r.rate) >= x) : null;
+    return { id: `live-${m}-${cid}-${k}`, month: m, date: end, at: d.at || 0, auto: k, live: true, chatterId: cid, name: r.name, currency: 'EUR',
+      amount: b.tiers ? (t ? num(t[1]) : 0) : num(b.amount), reason: `${b.e} ${b.tiers && t ? String(b.short || b.l).replace(/\d[\d/]* ?%.*$/, `${t[0]} %+`) : b.short || b.l}` };
+  })).filter(p => p.amount > 0);
+}
+// primes (barème du bot, en cours ou écrites, et données sur Discord) : payées en fin de mois, toutes dans la paie du 16 à la fin (versée le 1er)
+const primeOf = key => key.endsWith('-B') ? [...Object.entries(S.primes || {}).map(([id, p]) => ({ ...p, id })), ...primeLive(key.slice(0, 7))].map(p => ({ ...p, cid: penChatter(p) })).filter(p => p.date && p.date.slice(0, 7) === key.slice(0, 7)).sort((a, b) => (a.at || 0) - (b.at || 0)) : [];
 // modèles choisies dans Paies (vide = toutes)
 const payModels = () => (S.pay.models ??= lsGet('kl_pmodels', [])).filter(id => S.models[id]);
 const paySel = () => { const v = payModels(); return v.length ? new Set(v) : null; };
@@ -4918,7 +4944,7 @@ async function exportCsv() {
   const st = r => r.abandon ? 'abandon' : r.paid ? 'paye' : r.part ? 'en partie' : 'a payer';
   let csv = `Paies du ${from} au ${to};Taux EUR/USD;${n2(rate)}${sel ? ';Modeles;' + q(paySelName()) : ''}\nChatteur;Moyen de paiement;Wallet;Shifts;Paie EUR;Paie USD;Paie avant ajustements USD;Penalites EUR;Penalites USD;Primes EUR;Primes USD;A verser USD;Statut\n` + rows.map(r => { const c = S.chatters[r.id] || {}, p = r.adjIn ? curTot(r.pens) : { EUR: 0, USD: 0 }, b = r.adjIn ? curTot(r.primes) : { EUR: 0, USD: 0 }; return [q(cName(r.id)), q(c.method || ''), q(walOf(r.id)), r.s.shifts, n2(r.eur), n2(r.usdPart), n2(r.base), n2(p.EUR), n2(p.USD), n2(b.EUR), n2(b.USD), n2(r.total), st(r)].join(';'); }).join('\n');
   if (pens.length) csv += '\n\nPenalites\nDate;Chatteur;Faute;Numero;Montant;Devise;Detail\n' + pens.map(p => [p.date, q(p.cid ? cName(p.cid) : p.name || ''), q(p.label || p.fault), p.n, n2(num(p.amount)), curOfP(p), q(p.note || '')].join(';')).join('\n');
-  if (prs.length) csv += '\n\nPrimes\nDate;Chatteur;Raison;Montant;Devise\n' + prs.map(p => [p.date, q(p.cid ? cName(p.cid) : p.name || ''), q(p.reason || ''), n2(num(p.amount)), curOfP(p)].join(';')).join('\n');
+  if (prs.length) csv += '\n\nPrimes\nDate;Chatteur;Raison;Montant;Devise\n' + prs.map(p => [p.date, q(p.cid ? cName(p.cid) : p.name || ''), q((p.reason || '') + (p.live ? ' (en cours)' : '')), n2(num(p.amount)), curOfP(p)].join(';')).join('\n');
   csv += '\n\nDetail\nDate;Creneau;Chatteur;Modele;Plateforme;Devise;Ventes;Tips;Brut;Net;Paie\n' + list.sort((a, b) => a.date.localeCompare(b.date)).map(e => { const c = calc(e, rate); return [e.date, q(slotL(e.slot)), q(cName(e.chatterId)), q(mName(e.modelId)), q(pName(e.platformId)), c.cur, n2(c.sales), n2(c.tips), n2(c.gross), n2(c.net), n2(c.com)].join(';'); }).join('\n');
   try { await downloads.save({ filename: `paies_KL_${from}_${to}${sel ? '_' + payModels().map(m => impNorm(mName(m)).replace(/\s+/g, '-')).join('-') : ''}.csv`, data: '﻿' + csv }); toast('Export téléchargé'); }
   catch (e) { if (e?.code !== 'declined') toast('Export impossible ici.', true); }
@@ -7086,7 +7112,7 @@ function viewPay() {
     rateTile
   ], 5);
   const selNote = sel ? `<div class="pay-sel">${IC.layers}<span>Paie de <b>${esc(paySelName())}</b> seulement : cocher Payé ne règle que ${payModels().length > 1 ? 'ces modèles' : 'cette modèle'}. Les pénalités et primes comptent avec la modèle principale de chaque chatteur.</span></div>` : '';
-  if (!rows.length) { $('#view').innerHTML = h + selNote + `<div class="card empty"><h3>Aucune vente sur cette quinzaine${sel ? ' pour ' + esc(paySelName()) : ''}</h3><p>Les paies apparaîtront ici dès que des ventes seront saisies.</p></div>` + payPenSection(k, vPens, rows, rate) + payPrimeSection(k, vPrs, rows, rate); return; }
+  if (!rows.length) { $('#view').innerHTML = h + selNote + `<div class="card empty"><h3>Aucune vente sur cette quinzaine${sel ? ' pour ' + esc(paySelName()) : ''}</h3><p>Les paies apparaîtront ici dès que des ventes seront saisies.</p></div>` + payPenSection(k, vPens, rows, rate) + payPrimeSection(k, vPrs, rows, rate, sel); return; }
   // ---- liste de paie
   const todo = live.filter(r => !r.paid), done = live.filter(r => r.paid);
   const late = st.c === 'bad';
@@ -7118,7 +7144,7 @@ function viewPay() {
       <div class="pay-br pay-brm"><div class="pay-brh" aria-hidden="true"><span>Modèle</span><span class="n">CA net</span><span class="n">CA brut</span><span class="n">Paie</span></div>
       ${byM.map(({ m, s }) => `<div class="pay-bri" style="--c:${modelColor(m)}"><span class="pay-brn">${modelDot(m)}</span><span class="n" data-l="CA net">${payE(s.net, rate)}</span><span class="n" data-l="CA brut">${payE(s.gross, rate)}</span><span class="n pay-brv">${fmtC(s.com)}</span><span class="pay-brbar"><span class="pay-trk"><i style="width:${(s.com / mmax * 100).toFixed(1)}%"></i></span><em>${Math.round(s.com / ptot * 100)} %</em></span></div>`).join('')}</div></section>
   </div>`;
-  h += payPenSection(k, vPens, rows, rate) + payPrimeSection(k, vPrs, rows, rate);
+  h += payPenSection(k, vPens, rows, rate) + payPrimeSection(k, vPrs, rows, rate, sel);
   $('#view').innerHTML = h;
 }
 // montant en $ redit en € au taux de la quinzaine, en petit
@@ -7131,7 +7157,7 @@ function payAdj(pens, prs, inView, main) {
   if (!pens.length && !prs.length) return '<span class="muted">–</span>';
   if (!inView) return `<span class="pay-adj"><small title="Pénalités et primes comptées avec sa paie de ${esc(mName(main))}">avec ${esc(mName(main))}</small></span>`;
   const p = curTot(pens), q = curTot(prs);
-  return `<span class="pay-adj">${p.EUR || p.USD ? `<b class="bad">${esc(curTxt(p, '−', ' '))}</b>` : pens.length ? `<small>${pens.length} avertissement${payS(pens.length)}</small>` : ''}${q.EUR || q.USD ? `<b class="good">${esc(curTxt(q, '+', ' '))}</b>` : ''}</span>`;
+  return `<span class="pay-adj">${p.EUR || p.USD ? `<b class="bad">${esc(curTxt(p, '−', ' '))}</b>` : pens.length ? `<small>${pens.length} avertissement${payS(pens.length)}</small>` : ''}${q.EUR || q.USD ? `<b class="good"${prs.some(p => p.live) ? ' title="Avec les primes du barème en cours (recalculées toutes les 30 min)"' : ''}>${esc(curTxt(q, '+', ' '))}</b>` : ''}</span>`;
 }
 // wallet crypto (fiche Discord ou Équipe), rangé à part dans wallets/<id> : seuls le propriétaire et ceux qu'il
 // autorise (Gérer les accès) le voient. S.canWallets = false : on ne montre rien, même pas « Pas de wallet »
@@ -7173,24 +7199,36 @@ function payPenSection(k, pens, rows, rate) {
       <div class="pay-pr pay-pft" role="row"><span role="cell">Total · ${by.length} chatteur${payS(by.length)}</span><span class="n" role="cell" data-l="Avertissements">${pens.length}</span><span class="n" role="cell" data-l="Avec amende">${penFines(pens)}</span><span role="cell"></span><span class="n pay-pv" role="cell" data-l="Pénalité">${U ? '−' + esc(curTxt(T, '', ' −')) : '0 €'}</span><span class="n muted" role="cell" data-l="En $">${U ? '−' + esc(fmtC(U)) : '–'}</span></div>
     </div></section>`;
 }
-// primes du mois (données sur Discord), ajoutées à la paie de fin de mois
-function payPrimeSection(k, prs, rows, rate) {
-  const end = k.slice(0, 7) + '-B', mo = fd(k.slice(0, 7) + '-01', { month: 'long' }), dmo = (/^[aeiouyhâéè]/i.test(mo) ? 'd’' : 'de ') + mo;
-  const head = secHead('Primes du mois', `Données sur Discord (🛠️ Admin › 💸 Primes). Elles se paient en fin de mois : toutes celles ${esc(dmo)} sont dans la paie du ${esc(dLong(halfPayday(end)))}.`, prs.length ? `<span class="pill good">+${esc(curTxt(curTot(prs), '', ' +'))}</span>` : '');
-  if (!prs.length) return `<section class="card mt pay-pen">${head}<div class="pay-none">${k === end ? 'Aucune prime ce mois-ci.' : 'Pas de prime dans cette paie.'}</div></section>`;
-  const outIds = new Set(rows.filter(r => !r.adjIn).map(r => r.id)), U = curUsd(prs, rate);
+// primes du mois (barème du bot + données sur Discord), ajoutées à la paie de fin de mois, rangées chatteur par chatteur
+function payPrimeSection(k, prs, rows, rate, sel) {
+  const m = k.slice(0, 7), end = m + '-B', mo = fd(m + '-01', { month: 'long' }), dmo = (/^[aeiouyhâéè]/i.test(mo) ? 'd’' : 'de ') + mo;
+  const d = S.primesLive?.[m], live = prs.some(p => p.live), min = num(d?.minDays) || 20;
+  const liveTxt = live ? ` Celles du barème sont en cours (Pointage et Wysper jusqu’au ${esc(dShort(d.upTo || today()))}) : le bot les recalcule toutes les 30 min et les fige le 1er à 10 h.` : '';
+  const pills = `<span class="pay-pills">${live ? `<span class="pill info pay-live" title="Dernier calcul du bot"><i aria-hidden="true"></i>En cours · ${esc(wyHm(d.at))}</span>` : ''}${prs.length ? `<span class="pill good">+${esc(curTxt(curTot(prs), '', ' +'))}</span>` : ''}</span>`;
+  const head = secHead('Primes du mois', `Primes du barème (${min} jours travaillés minimum) et primes données sur Discord (🛠️ Admin › 💸 Primes). Elles se paient en fin de mois : toutes celles ${esc(dmo)} sont dans la paie du ${esc(dLong(halfPayday(end)))}.${liveTxt}`, pills);
+  // pas encore assez de jours : pas dans la paie, juste pour info (barré : il ne peut plus les avoir ce mois-ci)
+  const short = k === end && d?.rows && !d.writtenAt && !Object.values(S.primes || {}).some(p => p.auto && String(p.date || p.month || '').slice(0, 7) === m)
+    ? Object.entries(d.rows).filter(([cid, r]) => !r.elig && num(r.total) > 0 && (!sel || rows.some(x => x.id === cid))).sort(([, a], [, b]) => num(b.total) - num(a.total)) : [];
+  const note = short.length ? `<div class="pay-pnote"><span>🗓️ Pas comptées, moins de ${min} jours travaillés :</span>${short.map(([cid, r]) => `<span class="pay-pf" title="${r.reach ? 'Encore possible d’ici la fin du mois' : 'Plus possible ce mois-ci'}">${esc(S.chatters[cid] ? cName(cid) : r.name || '?')} <b>${num(r.days)} / ${min} j</b> ${r.reach ? `+${esc(penE(num(r.total)))}` : `<s>+${esc(penE(num(r.total)))}</s>`}</span>`).join('')}</div>` : '';
+  if (!prs.length) return `<section class="card mt pay-pen">${head}<div class="pay-none">${k === end ? 'Aucune prime ce mois-ci pour l’instant.' : 'Pas de prime dans cette paie : elles sont toutes dans celle de fin de mois.'}</div>${note}</section>`;
+  const payIds = new Set(rows.map(r => r.id)), outIds = new Set(rows.filter(r => !r.adjIn).map(r => r.id));
+  const by = Object.values(groupBy(prs, p => p.cid || 'd:' + (p.uid || p.name))).map(l => ({ cid: l[0].cid, name: l[0].cid ? cName(l[0].cid) : l[0].name || 'Inconnu', l, na: l.filter(p => p.auto).length, nm: l.filter(p => !p.auto).length, t: curTot(l), u: curUsd(l, rate) }))
+    .sort((a, b) => b.u - a.u || a.name.localeCompare(b.name, 'fr'));
+  const chips = l => Object.values(groupBy(l, p => p.reason || 'Prime')).map(x => `<span class="pay-pf">${esc(x[0].reason || 'Prime')}${x.length > 1 ? ` <b>×${x.length}</b>` : ''} <b class="good">+${esc(curTxt(curTot(x), '', ' +'))}</b></span>`).join('');
+  const T = curTot(prs), U = curUsd(prs, rate);
   return `<section class="card mt pay-pen">${head}
-    <div class="pay-pt pay-prt" role="table" aria-label="Primes du mois">
-      <div class="pay-ph" role="row"><span role="columnheader">Jour</span><span role="columnheader">Chatteur</span><span role="columnheader">Raison</span><span class="n" role="columnheader">Prime</span><span class="n" role="columnheader">En $</span></div>
-      ${prs.map(p => `<div class="pay-pr ${p.cid && outIds.has(p.cid) ? 'out' : ''}" role="row">
-        <span class="pay-date" role="cell">${esc(cap(fd(p.date, { weekday: 'short' })).replace('.', ''))} <b>${parse(p.date).getDate()}</b></span>
-        <span class="pay-who" role="cell"><span class="av" style="background:${p.cid ? chatterColor(p.cid) : 'var(--muted)'}">${esc(initials(p.cid ? cName(p.cid) : p.name || '?'))}</span><span class="pay-wn"><b>${esc(p.cid ? cName(p.cid) : p.name || 'Inconnu')}</b>${!p.cid ? '<span class="pay-chips"><span class="pill mute">Pas relié à l\'app</span></span>' : ''}</span></span>
-        <span role="cell" data-l="Raison">${esc(p.reason || '')}</span>
-        <span class="n pay-pv" role="cell" data-l="Prime">+${esc(pAmt(p))}</span>
-        <span class="n muted" role="cell" data-l="En $">+${esc(fmtC(usd(num(p.amount), curOfP(p), rate)))}</span>
+    <div class="pay-pt pay-pgr" role="table" aria-label="Primes du mois">
+      <div class="pay-ph" role="row"><span role="columnheader">Chatteur</span><span class="n" role="columnheader">Du barème</span><span class="n" role="columnheader">À la main</span><span role="columnheader">Primes</span><span class="n" role="columnheader">Prime</span><span class="n" role="columnheader">En $</span></div>
+      ${by.map(x => `<div class="pay-pr ${x.cid && outIds.has(x.cid) ? 'out' : ''}" role="row">
+        <span class="pay-who" role="cell"><span class="av" style="background:${x.cid ? chatterColor(x.cid) : 'var(--muted)'}">${esc(initials(x.name))}</span><span class="pay-wn"><b>${esc(x.name)}</b>${!x.cid ? '<span class="pay-chips"><span class="pill mute">Pas relié à l\'app</span></span>' : outIds.has(x.cid) ? `<span class="pay-chips"><span class="pill mute">Avec sa paie de ${esc(mName(rows.find(r => r.id === x.cid).main))}</span></span>` : !payIds.has(x.cid) ? '<span class="pay-chips"><span class="pill warn">Pas de paie ici</span></span>' : ''}</span></span>
+        <span class="n" role="cell" data-l="Du barème">${x.na}</span>
+        <span class="n" role="cell" data-l="À la main">${x.nm}</span>
+        <span class="pay-pfs" role="cell">${chips(x.l)}</span>
+        <span class="n pay-pv" role="cell" data-l="Prime">+${esc(curTxt(x.t, '', ' +'))}</span>
+        <span class="n muted" role="cell" data-l="En $">+${esc(fmtC(x.u))}</span>
       </div>`).join('')}
-      <div class="pay-pr pay-pft" role="row"><span role="cell"></span><span role="cell">Total · ${prs.length} prime${payS(prs.length)}</span><span role="cell"></span><span class="n pay-pv" role="cell" data-l="Prime">+${esc(curTxt(curTot(prs), '', ' +'))}</span><span class="n muted" role="cell" data-l="En $">+${esc(fmtC(U))}</span></div>
-    </div></section>`;
+      <div class="pay-pr pay-pft" role="row"><span role="cell">Total · ${by.length} chatteur${payS(by.length)}</span><span class="n" role="cell" data-l="Du barème">${prs.filter(p => p.auto).length}</span><span class="n" role="cell" data-l="À la main">${prs.filter(p => !p.auto).length}</span><span role="cell"></span><span class="n pay-pv" role="cell" data-l="Prime">+${esc(curTxt(T, '', ' +'))}</span><span class="n muted" role="cell" data-l="En $">+${esc(fmtC(U))}</span></div>
+    </div>${note}</section>`;
 }
 /* ================= PRIMES / PÉNALITÉS (v71) ================= */
 // Un mois : primes automatiques (le bot écrit primesLive/<mois> toutes les 30 min : où en est chaque chatteur, critère
@@ -7343,7 +7381,7 @@ function viewBonus() {
   const nElig = rows.filter(r => r.elig).length, nWait = rows.filter(r => !r.elig && r.reach).length;
   // bilan vu de la caisse : les pénalités rentrent, les primes à payer sortent
   const net = r2(nT.EUR - pT.EUR), netAll = r2(nT.EUR - pAll);
-  const sg = v => `${v < 0 ? '−' : '+'}${paE(Math.abs(v))}`;
+  const sg = v => Math.abs(v) < 0.005 ? '0 €' : `${v < 0 ? '−' : '+'}${paE(Math.abs(v))}`;
   const h = tiles([
     tile('Primes à payer', pT.EUR || pT.USD ? '+' + esc(curTxt(pT, '', ' +')) : '0 €', `${pAll !== pT.EUR ? `Possible : +${esc(paE(pAll))} · ` : ''}${nPay} chatteur${payS(nPay)} au barème · ${man.length} à la main`, { c: 'var(--good)', icon: 'star' }),
     tile('Pénalités', nT.EUR || nT.USD ? '−' + esc(curTxt(nT, '', ' −')) : '0 €', `${pens.length} avertissement${payS(pens.length)} · ${penFines(pens)} avec amende`, { c: 'var(--bad)', icon: 'alert' }),
@@ -7418,7 +7456,7 @@ function payDetail(r, rate) {
       ${r.pens.length || r.primes.length ? `<div class="pay-dbox pay-dpen"><div class="pay-dh">${[r.pens.length && `Pénalités · ${r.pens.length} avertissement${payS(r.pens.length)}`, r.primes.length && `Primes · ${r.primes.length}`].filter(Boolean).join(' · ')}</div>
         <div class="pay-dl pay-dp"><div class="pay-dlh" aria-hidden="true"><span>Jour</span><span>Faute ou raison</span><span class="n">Montant</span></div>
         ${r.pens.map(p => `<div class="pay-dr"><span class="pay-dn pay-date">${esc(cap(fd(p.date, { weekday: 'short' })).replace('.', ''))} <b>${parse(p.date).getDate()}</b></span><span class="pay-pl">${esc(p.label || p.fault)} <span class="muted">· N°${esc(p.n)}</span>${p.note ? `<small>${esc(p.note)}</small>` : ''}</span><span class="n pay-dv ${num(p.amount) ? 'bad' : 'muted'}">${num(p.amount) ? '−' + esc(pAmt(p)) : 'Avertissement'}</span></div>`).join('')}
-        ${r.primes.map(p => `<div class="pay-dr"><span class="pay-dn pay-date">${esc(cap(fd(p.date, { weekday: 'short' })).replace('.', ''))} <b>${parse(p.date).getDate()}</b></span><span class="pay-pl">💸 ${esc(p.reason || 'Prime')}</span><span class="n pay-dv good">+${esc(pAmt(p))}</span></div>`).join('')}</div>
+        ${r.primes.map(p => `<div class="pay-dr"><span class="pay-dn pay-date">${esc(cap(fd(p.date, { weekday: 'short' })).replace('.', ''))} <b>${parse(p.date).getDate()}</b></span><span class="pay-pl">💸 ${esc(p.reason || 'Prime')}${p.live ? '<small class="live">Du barème, en cours (recalculée toutes les 30 min)</small>' : ''}</span><span class="n pay-dv good">+${esc(pAmt(p))}</span></div>`).join('')}</div>
         <div class="pay-dcalc">${r.adjIn ? `${esc(fmtC(r.base))}${r.penUsd ? ` <b class="bad">− ${esc(fmtC(r.penUsd))}</b>` : ''}${r.primeUsd ? ` <b class="good">+ ${esc(fmtC(r.primeUsd))}</b>` : ''} = <b>${esc(fmtC(r.total))}</b>` : `<span class="muted">Comptées avec sa paie de ${esc(mName(r.main))}</span>`}</div></div>` : ''}
     </div></div>`;
 }
