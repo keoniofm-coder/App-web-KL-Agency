@@ -7196,7 +7196,12 @@ function payPrimeSection(k, prs, rows, rate) {
 // Un mois : primes automatiques (le bot écrit primesLive/<mois> toutes les 30 min : où en est chaque chatteur, critère
 // par critère ; le 1er à 10 h il les ajoute dans primes/ et envoie le récap sur Discord), primes données à la main,
 // pénalités par chatteur et leur détail.
-const PA_COLS = [['abs', 'Absences', 'max 1'], ['ret', 'Retards', 'moins de 3'], ['cut', 'Coupures', 'moins de 5'], ['unlock', 'Unlock PPV', '25 % ou plus', 'Unlock'], ['rt', 'Réponse', 'sous 2 min']];
+// colonnes du barème (la règle et les montants viennent du bot : primesLive.bareme[].rule / amount / tiers)
+const PA_COLS = [['abs', 'Absences', '0 absence'], ['ret', 'Retards', 'moins de 2'], ['cut', 'Coupures', 'moins de 5'], ['unlock', 'Unlock PPV', '25 % ou plus', 'Unlock'], ['rt', 'Réponse', 'sous 1 min 30']];
+// montant d'un critère : paliers « 25 % : 1,50 € · 30 % : 2,50 € » ou « règle · montant »
+const paAmt = b => b.tiers ? b.tiers.map(([, a]) => paE(a)).join(' / ') : paE(b.amount);
+const paRule = (b, rule) => b.tiers ? b.tiers.map(([m, a]) => `${m} % : ${paE(a)}`).join(' · ') : `${b.rule || rule} · ${paE(b.amount)}`;
+const paTier = (b, r) => b?.tiers ? [...b.tiers].reverse().find(([m]) => num(r.rate) >= m) : null;
 const paE = v => fmtC(num(v), 'EUR', num(v) % 1 ? 2 : 0);
 function paVal(k, r) {
   if (k === 'unlock') return r.rate == null ? ['–', 'Pas de PPV envoyé sur Wysper'] : [pct(r.rate), `${wyN(r.unl)} payé${payS(r.unl)} sur ${wyN(r.sends)} PPV envoyé${payS(r.sends)}`];
@@ -7239,12 +7244,12 @@ function payAutoSection(m) {
     ? `Mois fini : elles vont le 1er à 10 h dans la paie du ${esc(pd)} et le récap part sur Discord.`
     : `En cours : Pointage et Wysper du 1er au ${esc(dShort(d.upTo || today()))}, mis à jour à ${esc(wyHm(d.at))}. Le 1er à 10 h, elles vont dans la paie du ${esc(pd)} et le récap part sur Discord.`;
   const head = secHead(title, hint, `<span class="pa-tots"><span class="pill good" title="${min ? `Chatteurs qui ont leurs ${min} jours travaillés` : 'À payer'}">À payer · +${esc(paE(tot))}</span>${all !== tot ? `<span class="pill mute" title="Si tout le monde avait ses ${min} jours travaillés">Possible · +${esc(paE(all))}</span>` : ''}</span>`);
-  const legend = `<div class="pa-bar">${min ? `<span class="pa-min" title="Jours avec un shift pointé (présent, retard ou coupure)">🗓️ Au moins <b>${min} jours</b> travaillés</span>` : ''}${(d.bareme || []).map(b => `<span title="${esc(b.l || '')}">${esc(b.e || '')} ${esc(b.short || b.l || '')} <b>${esc(paE(b.amount))}</b>${b.manual ? '<small>à la main sur Discord</small>' : ''}</span>`).join('')}</div>`;
+  const legend = `<div class="pa-bar">${min ? `<span class="pa-min" title="Jours avec un shift pointé (présent, retard ou coupure)">🗓️ Au moins <b>${min} jours</b> travaillés</span>` : ''}${(d.bareme || []).map(b => `<span title="${esc(b.l || '')}">${esc(b.e || '')} ${esc(b.short || b.l || '')} <b>${esc(paAmt(b))}</b>${b.manual ? '<small>à la main sur Discord</small>' : ''}</span>`).join('')}</div>`;
   if (!list.length) return `<section class="card mt pay-pen pay-aut">${head}${legend}<div class="pay-none">Aucun chatteur avec un shift pointé ${esc(dmo)}.</div></section>`;
-  const cell = (c, l, r) => { const [v, t, sv] = paVal(c, r); const s = r.okS.has(c) ? 'ok' : v === '–' ? 'na' : 'no'; return `<span class="n" role="cell" data-l="${esc(l)}"><span class="pa-c ${s}" title="${esc(t)}">${s === 'ok' ? ICONS.check : ''}${sv && sv !== v ? `<i class="pa-lg">${esc(v)}</i><i class="pa-sm">${esc(sv)}</i>` : esc(v)}</span></span>`; };
+  const cell = (c, l, r) => { const [v, t0, sv] = paVal(c, r); const s = r.okS.has(c) ? 'ok' : v === '–' ? 'na' : 'no'; const tr = s === 'ok' && paTier(bar[c], r); const t = tr ? `${t0} · palier ${tr[0]} % : ${paE(tr[1])}` : t0; return `<span class="n" role="cell" data-l="${esc(l)}"><span class="pa-c ${s}" title="${esc(t)}">${s === 'ok' ? ICONS.check : ''}${sv && sv !== v ? `<i class="pa-lg">${esc(v)}</i><i class="pa-sm">${esc(sv)}</i>` : esc(v)}</span></span>`; };
   return `<section class="card mt pay-pen pay-aut">${head}${legend}
     <div class="pay-pt pay-aut-t" role="table" aria-label="${title}">
-      <div class="pay-ph" role="row"><span role="columnheader">Chatteur</span>${cols.map(([c, l, rule]) => `<span class="n" role="columnheader" title="${esc(bar[c].l || '')}">${esc(l)}<small>${esc(rule)} · ${esc(paE(bar[c].amount))}</small></span>`).join('')}<span class="n" role="columnheader">Prime</span></div>
+      <div class="pay-ph" role="row"><span role="columnheader">Chatteur</span>${cols.map(([c, l, rule]) => `<span class="n" role="columnheader" title="${esc(bar[c].l || '')}">${esc(l)}<small>${esc(paRule(bar[c], rule))}</small></span>`).join('')}<span class="n" role="columnheader">Prime</span></div>
       ${list.map(r => `<div class="pay-pr" role="row">
         <span class="pay-who" role="cell"><span class="av" style="background:${r.known ? chatterColor(r.cid) : 'var(--muted)'}">${esc(initials(r.name))}</span><span class="pay-wn"><b>${esc(r.name)}</b>${paDays(r, min)}</span></span>
         ${cols.map(([c, l, , sh]) => cell(c, sh || l, r)).join('')}
