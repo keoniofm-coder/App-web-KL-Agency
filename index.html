@@ -2401,6 +2401,58 @@ tr.dc-todo td:first-child { box-shadow: inset 3px 0 0 var(--warn) }
 .v-pay .pay-prt .pay-pv { color: var(--good) }
 .v-pay .pay-prt .pay-date b { font-size: 14px }
 .v-pay .pay-pr.out { opacity: .55 }
+/* v71 onglet Primes / Pénalités (vue .v-bonus, qui reprend les styles de Paies) */
+.v-pay .pay-aut-t .pay-ph, .v-pay .pay-aut-t .pay-pr { grid-template-columns: minmax(180px, 1.4fr) repeat(5, minmax(84px, 1fr)) 92px }
+.v-pay .pay-aut-t .pay-ph small { display: block; margin-top: 2px; font-size: 10.5px; font-weight: 600; text-transform: none; letter-spacing: 0 }
+.v-pay .pay-aut-t .pay-pv { color: var(--good) }
+.v-pay .pay-aut-t .pay-pv.zero { color: var(--muted) }
+.v-pay .pay-aut-t .pay-wn small { font-size: 11.5px; font-weight: 600; color: var(--muted) }
+.v-pay .pay-aut-t .pay-pft .n { font-size: 12.5px; color: var(--muted) }
+.v-pay .pay-aut-t .pay-pft .n b { color: var(--fg) }
+.v-pay .pay-aut-t .pay-pft .pay-pv { font-size: 16px; color: var(--good) }
+.v-pay .pay-aut-t.pa-pen .pay-pv, .v-pay .pay-aut-t.pa-pen .pay-pft .pay-pv { color: var(--bad) }
+.v-pay .pay-aut-t.pa-pen .pay-pv.zero { color: var(--muted) }
+.v-pay .pa-c { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 9px; border-radius: 999px; background: var(--surface-2); color: var(--muted); font-size: 12.5px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap }
+.v-pay .pa-c svg { width: 12px; height: 12px; flex: none }
+.v-pay .pa-c i { font-style: normal }
+.v-pay .pa-c .pa-sm { display: none }
+.v-pay .pa-c.ok { background: var(--good-soft); color: var(--good) }
+.v-pay .pa-c.no { background: var(--bad-soft); color: var(--bad) }
+.v-pay .pa-c.warn { background: var(--warn-soft); color: var(--warn) }
+.v-pay .pa-c.zero { background: none; opacity: .55 }
+.v-pay .pa-bar { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px }
+.v-pay .pa-bar > span { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; background: var(--surface-2); font-size: 12px; font-weight: 600; color: var(--muted) }
+.v-pay .pa-bar b { color: var(--fg); font-weight: 800 }
+.v-pay .pa-bar small { font-size: 11px; font-style: italic }
+.v-pay .pa-bar > .pa-min { background: var(--info-soft); color: var(--info) }
+.v-pay .pa-bar > .pa-min b { color: inherit }
+.v-pay .pa-dw { display: flex; align-items: center; gap: 7px; flex-wrap: wrap }
+.v-pay .pa-c.pa-d { height: 20px; padding: 0 7px; font-size: 11.5px }
+.v-pay .pay-aut-t .pay-pv.wait { color: var(--muted); display: inline-flex; flex-direction: column; align-items: flex-end; line-height: 1.15 }
+.v-pay .pay-aut-t .pay-pv.wait small { font: 600 10.5px var(--f-body) }
+.v-pay .pay-aut-t .pay-pv s { text-decoration-thickness: 1.5px }
+.v-pay .pa-pl .pay-pr > [data-l="Faute"] small { display: block; font-size: 11.5px; color: var(--muted) }
+.v-pay .pa-pl .pay-pv { color: var(--bad) }
+.v-pay .pa-pl .pay-pv.zero { font: 700 12.5px var(--f-body); color: var(--warn) }
+.v-pay .pa-pl .pay-pr > [data-l="N°"] { color: var(--muted); font-size: 12.5px }
+.v-bonus .pa-more { display: flex; justify-content: center; padding: 12px 0 2px }
+@media (max-width: 760px) {
+  .v-pay .pay-aut-t .pay-pr { grid-template-columns: repeat(5, minmax(0, 1fr)); column-gap: 6px }
+  .v-pay .pay-aut-t .pay-pr > .pay-who, .v-pay .pay-aut-t .pay-pft > :first-child { grid-column: 1 / 5; grid-row: 1 }
+  .v-pay .pay-aut-t .pay-pr > .pay-pv { grid-column: 5; grid-row: 1; text-align: right }
+  .v-pay .pay-aut-t .pay-pr > .pay-pv::before { content: none }
+  .v-pay .pay-aut-t .pay-pft > :nth-child(4) { display: block }
+  .v-pay .pay-aut-t .pa-c { height: 22px; padding: 0 6px; font-size: 11.5px }
+  .v-pay .pay-aut-t .pa-c svg, .v-pay .pa-c .pa-lg { display: none }
+  .v-pay .pay-aut-t .pa-d svg { display: inline }
+  .v-pay .pay-aut-t .pay-pr > .pay-pv.wait { display: flex }
+  .v-pay .pa-c .pa-sm { display: inline }
+  .v-pay .pa-bar { gap: 5px }
+  .v-pay .pa-bar > span { padding: 2px 8px; font-size: 11.5px; white-space: nowrap }
+  .v-pay .pa-bar small { display: none }
+  .v-pay .pa-pl .pay-pr > [data-l="N°"] { display: none }
+  .v-pay .pa-pl .pay-pr > [data-l="Faute"] { grid-column: 2 / -1; grid-row: 2; font-size: 12.5px }
+}
 #tools .msel + .stepper { margin-left: 2px }
 @media (max-width: 1180px) {
   .v-pay .pay-tbl { --cols: 42px 52px minmax(170px, 1.2fr) minmax(160px, 1.5fr) 112px 122px 32px }
@@ -3483,7 +3535,7 @@ async function connect() {
   try { downloads = window.claude && await window.claude.use('downloads'); } catch (e) { downloads = null; }
   }
   try { const user = window.claude && await window.claude.use('user'); if (user && user.can) { const w = await user.can('data.write'); if (w === false) S.canWrite = false; } } catch (e) {}
-  ['chatters', 'models', 'platforms', 'offs', 'payouts', 'penalties', 'primes', 'reattrib', 'wallets'].forEach(n => subColl(n, n, c => c));
+  ['chatters', 'models', 'platforms', 'offs', 'payouts', 'penalties', 'primes', 'primesLive', 'reattrib', 'wallets'].forEach(n => subColl(n, n, c => c));
   db.doc('config/settings').onSnapshot(s => { if (s.exists) S.settings = { ...S.settings, ...s.data() }; S.loaded.settings = true; schedule(); }, onErr);
   db.doc('config/perso').onSnapshot(s => { S.perso = s.exists ? s.data() : {}; schedule(); }, onErr);
   db.doc('config/access').onSnapshot(s => { S.access = s.exists ? s.data() : {}; schedule(); }, onErr);
@@ -3733,16 +3785,17 @@ const ICONS = {
   x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
   check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
 };
-const TABS = [['dash', 'Tableau de bord'], ['plan', 'Planning'], ['sales', 'Ventes/Import'], ['pay', 'Paies'], ['team', 'Équipe']];
+const TABS = [['dash', 'Tableau de bord'], ['plan', 'Planning'], ['sales', 'Ventes/Import'], ['pay', 'Paies'], ['bonus', 'Primes / Pénalités'], ['team', 'Équipe']];
+ICONS.bonus = ICONS.gift;
 // sous-onglets de Planning, accessibles directement depuis le menu
 const PL_SUBS = [['att', 'Pointage'], ['off', 'Day off']];
 // onglets affichés en retrait sous l'onglet précédent (Paies sous Ventes)
-const SUB_TABS = ['pay'];
+const SUB_TABS = ['pay', 'bonus'];
 // onglets du bas du menu, juste au-dessus du choix du thème
 const FOOT_TABS = [['perso', 'Revenu perso']];
 // accès par onglet, réglé dans « Gérer les accès » : config/access.tabs[onglet] = e-mails autorisés (liste vide = tous les membres)
-const ACCESS_KEYS = [['dash', 'Tableau de bord'], ['plan', 'Planning'], ['off', 'Day off'], ['att', 'Pointage'], ['sales', 'Ventes/Import'], ['pay', 'Paies'], ['team', 'Équipe'], ['perso', 'Revenu perso'], ['access', 'Gérer les accès']];
-const accList = k => { const t = S.access?.tabs || {}; const l = Array.isArray(t[k]) ? t[k] : k === 'perso' && Array.isArray(S.access?.perso) ? S.access.perso : []; return l.map(x => String(x).toLowerCase()); };
+const ACCESS_KEYS = [['dash', 'Tableau de bord'], ['plan', 'Planning'], ['off', 'Day off'], ['att', 'Pointage'], ['sales', 'Ventes/Import'], ['pay', 'Paies'], ['bonus', 'Primes/Pénalités'], ['team', 'Équipe'], ['perso', 'Revenu perso'], ['access', 'Gérer les accès']];
+const accList = k => { const t = S.access?.tabs || {}; const l = Array.isArray(t[k]) ? t[k] : k === 'perso' && Array.isArray(S.access?.perso) ? S.access.perso : k === 'bonus' && Array.isArray(t.pay) ? t.pay : []; return l.map(x => String(x).toLowerCase()); };
 const canSee = k => !S.me || !accList(k).length || accList(k).includes(S.me);
 const viewKey = () => S.tab === 'plan' ? (plIsSub() ? S.pl.mode : 'plan') : S.tab;
 // onglet affiché non autorisé : on bascule sur le premier autorisé (false s'il n'y en a aucun)
@@ -3770,7 +3823,7 @@ $('#nav').onclick = $('#mnav').onclick = $('#navFoot').onclick = e => {
 // menu de gauche : Tableau de bord et Revenu perso en haut, puis des groupes repliables (retenus sur cet appareil)
 const NAV_GROUPS = [
   { g: 'gestion', l: 'Gestion', icon: 'gest', items: [['plan', 'Planning', ''], ['plan', 'Pointage', 'att'], ['plan', 'Day off', 'off'], ['team', 'Équipe', '']] },
-  { g: 'ventes', l: 'Ventes & paies', icon: 'cash', items: [['sales', 'Ventes/Import', ''], ['pay', 'Paies', '']] },
+  { g: 'ventes', l: 'Ventes & paies', icon: 'cash', items: [['sales', 'Ventes/Import', ''], ['pay', 'Paies', ''], ['bonus', 'Primes / Pénalités', '']] },
 ];
 const navClosed = () => { try { return JSON.parse(localStorage.getItem('kl_navc') || '{}') || {}; } catch (e) { return {}; } };
 function navTree(cur) {
@@ -3838,7 +3891,7 @@ const MOBI = {
 };
 // les 3 onglets de la barre : Accueil, Pointage, Ventes (ou les suivants si l'accès manque)
 const MOB_TABS = [['dash', '', 'Accueil'], ['plan', 'att', 'Pointage'], ['sales', '', 'Ventes'], ['plan', '', 'Planning'], ['pay', '', 'Paies'], ['team', '', 'Équipe'], ['plan', 'off', 'Day off'], ['perso', '', 'Revenu']];
-const MOB_COL = { dash: '#6C8CF5', plan: '#E0A23B', att: '#3FB27F', off: '#E26D5A', sales: '#3D9BE9', pay: '#9C7CF0', team: '#E05A9A', perso: '#E8B04A', access: '#8D8D99', theme: '#8D8D99', logout: '#E26D5A' };
+const MOB_COL = { dash: '#6C8CF5', plan: '#E0A23B', att: '#3FB27F', off: '#E26D5A', sales: '#3D9BE9', pay: '#9C7CF0', bonus: '#3FB27F', team: '#E05A9A', perso: '#E8B04A', access: '#8D8D99', theme: '#8D8D99', logout: '#E26D5A' };
 const mobCur = (k, pm) => k === 'plan' ? S.tab === 'plan' && (pm ? S.pl.mode === pm : !plIsSub()) : S.tab === k;
 function mobShell() {
   const tabs = MOB_TABS.filter(([k, pm]) => canSee(pm || k)).slice(0, 3);
@@ -3856,7 +3909,7 @@ function mobGo(k, pm) {
 const mobSheet = (title, body) => modal(`<div class="modal-h"><h2>${title}</h2><button class="icon-btn" type="button" data-close aria-label="Fermer">${ICONS.x}</button></div>${body}`, 'sm sheet-menu');
 // Menu : toutes les pages en tuiles, plus le thème (et les accès / la déconnexion sur le vrai site)
 function mobMenu() {
-  const its = [['dash', '', 'Tableau de bord'], ['plan', '', 'Planning'], ['plan', 'att', 'Pointage'], ['plan', 'off', 'Day off'], ['sales', '', 'Ventes / Import'], ['pay', '', 'Paies'], ['team', '', 'Équipe'], ['perso', '', 'Revenu perso']].filter(([k, pm]) => canSee(pm || k));
+  const its = [['dash', '', 'Tableau de bord'], ['plan', '', 'Planning'], ['plan', 'att', 'Pointage'], ['plan', 'off', 'Day off'], ['sales', '', 'Ventes / Import'], ['pay', '', 'Paies'], ['bonus', '', 'Primes / Pénalités'], ['team', '', 'Équipe'], ['perso', '', 'Revenu perso']].filter(([k, pm]) => canSee(pm || k));
   const tile = (attrs, ic, l, c, on) => `<button type="button" class="mm-t ${on ? 'on' : ''}" ${attrs} style="--c:${c}"><span class="mm-i">${ic}</span><span>${l}</span></button>`;
   let h = its.map(([k, pm, l]) => tile(`data-mnav="${k}" ${pm ? `data-pm="${pm}"` : ''}`, pm ? ICONS[pm] : ICONS[k], l, MOB_COL[pm || k], mobCur(k, pm))).join('');
   const acc = $('#access'), out = $('#logout'); const dk = themeNow() === 'dark';
@@ -3918,7 +3971,7 @@ function render() {
   const sx = window.scrollY;
   v.className = 'v-' + S.tab;
   // si un onglet plante, on le dit clairement (avec l'erreur) au lieu de laisser l'écran précédent
-  try { ({ dash: viewDash, plan: viewPlan, sales: viewSales, pay: viewPay, team: viewTeam, perso: viewPerso })[S.tab](); }
+  try { ({ dash: viewDash, plan: viewPlan, sales: viewSales, pay: viewPay, bonus: viewBonus, team: viewTeam, perso: viewPerso })[S.tab](); }
   catch (err) {
     console.error(err);
     const where = String(err && err.stack || '').split('\n').slice(1, 3).map(x => x.trim().replace(/\(?(https?|file):[^)]*\/([^/)]+)\)?/g, '$2')).join(' ← ');
@@ -7137,6 +7190,161 @@ function payPrimeSection(k, prs, rows, rate) {
       <div class="pay-pr pay-pft" role="row"><span role="cell"></span><span role="cell">Total · ${prs.length} prime${payS(prs.length)}</span><span role="cell"></span><span class="n pay-pv" role="cell" data-l="Prime">+${esc(curTxt(curTot(prs), '', ' +'))}</span><span class="n muted" role="cell" data-l="En $">+${esc(fmtC(U))}</span></div>
     </div></section>`;
 }
+/* ================= PRIMES / PÉNALITÉS (v71) ================= */
+// Un mois : primes automatiques (le bot écrit primesLive/<mois> toutes les 30 min : où en est chaque chatteur, critère
+// par critère ; le 1er à 10 h il les ajoute dans primes/ et envoie le récap sur Discord), primes données à la main,
+// pénalités par chatteur et leur détail.
+const PA_COLS = [['abs', 'Absences', 'max 1'], ['ret', 'Retards', 'moins de 3'], ['cut', 'Coupures', 'moins de 5'], ['unlock', 'Unlock PPV', '25 % ou plus', 'Unlock'], ['rt', 'Réponse', 'sous 2 min']];
+const paE = v => fmtC(num(v), 'EUR', num(v) % 1 ? 2 : 0);
+function paVal(k, r) {
+  if (k === 'unlock') return r.rate == null ? ['–', 'Pas de PPV envoyé sur Wysper'] : [pct(r.rate), `${wyN(r.unl)} payé${payS(r.unl)} sur ${wyN(r.sends)} PPV envoyé${payS(r.sends)}`];
+  if (k === 'rt') { if (r.rt == null) return ['–', 'Pas de chiffres Wysper']; const t = Math.round(num(r.rt)); return [wyDur(t), 'Temps de réponse médian du mois', t < 60 ? t + ' s' : t < 3600 ? Math.floor(t / 60) + '′' + String(t % 60).padStart(2, '0') : wyDur(t)]; }
+  const n = num(r[k]), w = { abs: 'absence', ret: 'retard', cut: 'coupure' }[k];
+  return [String(n), `${n} ${w}${payS(n)}`];
+}
+// jours travaillés sous le nom : vert = minimum atteint, gris = encore possible, rouge = trop tard
+function paDays(r, min) {
+  const n = num(r.days ?? r.shifts), sh = `${num(r.shifts)} shift${payS(num(r.shifts))}`;
+  if (!min || r.days == null) return `<small>${sh}</small>`;
+  const s = r.elig ? 'ok' : r.reach ? 'na' : 'no';
+  const t = r.elig ? `${n} jours travaillés : minimum de ${min} atteint` : r.reach ? `${n} jours travaillés sur ${min} : encore possible d'ici la fin du mois` : `${n} jours travaillés sur ${min} : pas de primes ce mois-ci`;
+  return `<small class="pa-dw"><span class="pa-c pa-d ${s}" title="${esc(t)}">${s === 'ok' ? ICONS.check : ''}${r.elig ? n : n + ' / ' + min} jours</span>${esc(sh)}</small>`;
+}
+// la prime : verte si le minimum est atteint, grise s'il est encore possible, barrée sinon
+function paPrime(r, min) {
+  const v = num(r.total);
+  if (!v) return '<span class="n pay-pv zero" role="cell" data-l="Prime">0 €</span>';
+  if (r.elig) return `<span class="n pay-pv" role="cell" data-l="Prime">+${esc(paE(v))}</span>`;
+  if (r.reach) return `<span class="n pay-pv wait" role="cell" data-l="Prime" title="Si ${min} jours travaillés d'ici la fin du mois">+${esc(paE(v))}<small>si ${min} jours</small></span>`;
+  return `<span class="n pay-pv zero" role="cell" data-l="Prime" title="Moins de ${min} jours travaillés : pas de primes"><s>+${esc(paE(v))}</s></span>`;
+}
+const paRows = d => Object.entries(d?.rows || {})
+  .map(([cid, r]) => ({ ...r, cid, known: !!S.chatters[cid], name: S.chatters[cid] ? cName(cid) : r.name || 'Inconnu', okS: new Set(r.ok || []), elig: r.elig ?? true, reach: r.reach ?? true }))
+  .sort((a, b) => b.reach - a.reach || num(b.total) - num(a.total) || a.name.localeCompare(b.name, 'fr'));
+const paTot = d => r2(paRows(d).reduce((a, r) => a + (r.reach ? num(r.total) : 0), 0));
+const bonMo = m => { const mo = fd(m + '-01', { month: 'long' }); return { mo, dmo: (/^[aeiouyhâéè]/i.test(mo) ? 'd’' : 'de ') + mo }; };
+function payAutoSection(m) {
+  const d = S.primesLive?.[m], cur = today().slice(0, 7), { mo, dmo } = bonMo(m);
+  const title = 'Primes automatiques';
+  if (!d) return m === cur ? `<section class="card mt pay-pen pay-aut">${secHead(title, 'Calculées par le bot avec le Pointage et Wysper.')}<div class="pay-none">Pas encore de chiffres pour ${esc(mo)} : le bot les met à jour toutes les 30 minutes.</div></section>` : '';
+  const bar = Object.fromEntries((d.bareme || []).map(b => [b.k, b]));
+  const cols = PA_COLS.filter(([c]) => bar[c]);
+  const list = paRows(d);
+  const min = num(d.minDays), tot = paTot(d), pd = dLong(halfPayday(m + '-B'));
+  const hint = d.done
+    ? `Mois fini : elles vont le 1er à 10 h dans la paie du ${esc(pd)} et le récap part sur Discord.`
+    : `Pointage et Wysper du 1er au ${esc(dShort(d.upTo || today()))}, mis à jour à ${esc(wyHm(d.at))}. Le 1er à 10 h, elles vont dans la paie du ${esc(pd)} et le récap part sur Discord.`;
+  const head = secHead(title, hint, `<span class="pill ${d.done ? 'good' : 'info'}">${d.done ? 'Mois fini' : 'En cours'}${tot ? ' · +' + esc(paE(tot)) : ''}</span>`);
+  const legend = `<div class="pa-bar">${min ? `<span class="pa-min" title="Jours avec un shift pointé (présent, retard ou coupure)">🗓️ Au moins <b>${min} jours</b> travaillés</span>` : ''}${(d.bareme || []).map(b => `<span title="${esc(b.l || '')}">${esc(b.e || '')} ${esc(b.short || b.l || '')} <b>${esc(paE(b.amount))}</b>${b.manual ? '<small>à la main sur Discord</small>' : ''}</span>`).join('')}</div>`;
+  if (!list.length) return `<section class="card mt pay-pen pay-aut">${head}${legend}<div class="pay-none">Aucun chatteur avec un shift pointé ${esc(dmo)}.</div></section>`;
+  const cell = (c, l, r) => { const [v, t, sv] = paVal(c, r); const s = r.okS.has(c) ? 'ok' : v === '–' ? 'na' : 'no'; return `<span class="n" role="cell" data-l="${esc(l)}"><span class="pa-c ${s}" title="${esc(t)}">${s === 'ok' ? ICONS.check : ''}${sv && sv !== v ? `<i class="pa-lg">${esc(v)}</i><i class="pa-sm">${esc(sv)}</i>` : esc(v)}</span></span>`; };
+  return `<section class="card mt pay-pen pay-aut">${head}${legend}
+    <div class="pay-pt pay-aut-t" role="table" aria-label="${title}">
+      <div class="pay-ph" role="row"><span role="columnheader">Chatteur</span>${cols.map(([c, l, rule]) => `<span class="n" role="columnheader" title="${esc(bar[c].l || '')}">${esc(l)}<small>${esc(rule)} · ${esc(paE(bar[c].amount))}</small></span>`).join('')}<span class="n" role="columnheader">Prime</span></div>
+      ${list.map(r => `<div class="pay-pr" role="row">
+        <span class="pay-who" role="cell"><span class="av" style="background:${r.known ? chatterColor(r.cid) : 'var(--muted)'}">${esc(initials(r.name))}</span><span class="pay-wn"><b>${esc(r.name)}</b>${paDays(r, min)}</span></span>
+        ${cols.map(([c, l, , sh]) => cell(c, sh || l, r)).join('')}
+        ${paPrime(r, min)}
+      </div>`).join('')}
+      <div class="pay-pr pay-pft" role="row"><span role="cell">Total · ${list.length} chatteur${payS(list.length)}</span>${cols.map(([c, l, , sh]) => `<span class="n" role="cell" data-l="${esc(sh || l)}" title="Chatteurs qui ont cette prime"><b>${list.filter(r => r.okS.has(c)).length}</b> / ${list.length}</span>`).join('')}<span class="n pay-pv" role="cell" data-l="Prime">+${esc(paE(tot))}</span></div>
+    </div></section>`;
+}
+// ---- pénalités du mois : une colonne par famille de fautes (barème du bot)
+const PEN_COLS = [['ret', 'Retards', ['retard'], '⏰'], ['abs', 'Absences', ['absence'], '📅'], ['cut', 'Coupures', ['coupure'], '🔌'], ['chat', 'Chatting', ['erreur', 'inactif', 'dort', 'kyc', 'relance'], '💬 ⏸️ 😴 📝 📜'], ['autre', 'Autres', null, '👤 🛡️ ✏️']];
+const penCol = p => (PEN_COLS.find(c => c[2] && c[2].includes(p.fault)) || PEN_COLS[PEN_COLS.length - 1])[0];
+const penLbl = p => `${p.e || ''} ${p.label || p.fault || 'Pénalité'}`.trim();
+const penMonth = m => Object.entries(S.penalties || {}).map(([id, p]) => ({ ...p, id, cid: penChatter(p) })).filter(p => String(p.date || p.month || '').slice(0, 7) === m)
+  .sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')) || (b.at || 0) - (a.at || 0));
+const primeMonth = m => Object.entries(S.primes || {}).map(([id, p]) => ({ ...p, id, cid: penChatter(p) })).filter(p => String(p.date || p.month || '').slice(0, 7) === m)
+  .sort((a, b) => String(a.date || '').localeCompare(String(b.date || '')) || (a.at || 0) - (b.at || 0));
+const penWho = (cid, name, sub) => `<span class="pay-who" role="cell"><span class="av" style="background:${cid ? chatterColor(cid) : 'var(--muted)'}">${esc(initials(name))}</span><span class="pay-wn"><b>${esc(name)}</b>${sub}</span></span>`;
+function penMonthSection(m, pens, rate) {
+  const { dmo } = bonMo(m);
+  const T = curTot(pens);
+  const head = secHead('Pénalités du mois', 'Données sur Discord (🛠️ Admin › ⚠️ Pénalités) et retirées de la paie de leur quinzaine. Le compteur d\'avertissements repart à zéro le 1er.', pens.length ? `<span class="pill bad">${penFines(pens) ? '−' + esc(curTxt(T, '', ' −')) : pens.length + ' avert.'}</span>` : '');
+  if (!pens.length) return `<section class="card mt pay-pen">${head}<div class="pay-none">${ICONS.check} Aucune pénalité ni avertissement ${esc(dmo)}.</div></section>`;
+  const by = Object.values(groupBy(pens, p => p.cid || 'd:' + (p.uid || p.name))).map(l => ({ cid: l[0].cid, name: l[0].cid ? cName(l[0].cid) : l[0].name || 'Inconnu', l, t: curTot(l), u: curUsd(l, rate) }))
+    .sort((a, b) => b.u - a.u || b.l.length - a.l.length || a.name.localeCompare(b.name, 'fr'));
+  const cell = (c, l, lbl) => {
+    const x = l.filter(p => penCol(p) === c), fines = penFines(x);
+    const s = !x.length ? 'zero' : fines ? 'no' : 'warn';
+    const t = Object.values(groupBy(x, penLbl)).map(g => `${penLbl(g[0])} ×${g.length}${penFines(g) ? ' : −' + curTxt(curTot(g), '', ' −') : ''}`).join('\n') || 'Aucune';
+    return `<span class="n" role="cell" data-l="${esc(lbl)}"><span class="pa-c ${s}" title="${esc(t)}">${x.length}</span></span>`;
+  };
+  const amt = l => penFines(l) ? `<span class="n pay-pv" role="cell" data-l="Pénalité">−${esc(curTxt(curTot(l), '', ' −'))}</span>` : '<span class="n pay-pv zero" role="cell" data-l="Pénalité">0 €</span>';
+  return `<section class="card mt pay-pen">${head}
+    <div class="pay-pt pay-aut-t pa-pen" role="table" aria-label="Pénalités du mois">
+      <div class="pay-ph" role="row"><span role="columnheader">Chatteur</span>${PEN_COLS.map(([, l, , e]) => `<span class="n" role="columnheader">${esc(l)}<small>${esc(e)}</small></span>`).join('')}<span class="n" role="columnheader">Pénalité</span></div>
+      ${by.map(x => `<div class="pay-pr" role="row">
+        ${penWho(x.cid, x.name, `<small class="pa-dw"><span title="${penFines(x.l)} avec amende">${x.l.length} avertissement${payS(x.l.length)}</span>${!x.cid ? '<span class="pill mute">Pas relié à l\'app</span>' : ''}</small>`)}
+        ${PEN_COLS.map(([c, l]) => cell(c, x.l, l)).join('')}
+        ${amt(x.l)}
+      </div>`).join('')}
+      <div class="pay-pr pay-pft" role="row"><span role="cell">Total · ${by.length} chatteur${payS(by.length)}</span>${PEN_COLS.map(([c, l]) => `<span class="n" role="cell" data-l="${esc(l)}"><b>${pens.filter(p => penCol(p) === c).length}</b></span>`).join('')}${amt(pens)}</div>
+    </div></section>`;
+}
+// détail des pénalités, de la plus récente à la plus ancienne (les 40 dernières, puis « Tout voir »)
+function penListSection(m, pens) {
+  if (!pens.length) return '';
+  const all = S.bonus.allPen, show = all ? pens : pens.slice(0, 40);
+  return `<section class="card mt pay-pen">${secHead('Détail des pénalités', 'Une ligne par avertissement, la plus récente en haut. Passe la souris sur une case du tableau au-dessus pour voir les fautes.')}
+    <div class="pay-pt pay-prt pa-pl" role="table" aria-label="Détail des pénalités">
+      <div class="pay-ph" role="row"><span role="columnheader">Jour</span><span role="columnheader">Chatteur</span><span role="columnheader">Faute</span><span class="n" role="columnheader">Pénalité</span><span class="n" role="columnheader">N°</span></div>
+      ${show.map(p => { const nm = p.cid ? cName(p.cid) : p.name || 'Inconnu'; return `<div class="pay-pr" role="row">
+        <span class="pay-date" role="cell">${p.date ? `${esc(cap(fd(p.date, { weekday: 'short' })).replace('.', ''))} <b>${parse(p.date).getDate()}</b>` : '–'}</span>
+        ${penWho(p.cid, nm, p.where ? `<small>${esc(p.where)}</small>` : '')}
+        <span role="cell" data-l="Faute">${esc(penLbl(p))}${p.note ? `<small>${esc(p.note)}</small>` : ''}</span>
+        <span class="n pay-pv ${num(p.amount) ? '' : 'zero'}" role="cell" data-l="Pénalité">${num(p.amount) ? '−' + esc(pAmt(p)) : 'Avertissement'}</span>
+        <span class="n" role="cell" data-l="N°">${p.n ? 'N°' + esc(p.n) : ''}</span>
+      </div>`; }).join('')}
+    </div>${pens.length > show.length ? `<div class="pa-more"><button class="btn sm" type="button" data-act="bonAllPen">Tout voir · ${pens.length} pénalités</button></div>` : ''}</section>`;
+}
+// primes données à la main sur Discord (candidature, primes perso)
+function bonManual(m, man) {
+  const pd = dLong(halfPayday(m + '-B')), { dmo } = bonMo(m);
+  const head = secHead('Primes à la main', `Données sur Discord (🛠️ Admin › 💸 Primes), comme l'apport de candidature. Payées avec la paie du ${esc(pd)}.`, man.length ? `<span class="pill good">+${esc(curTxt(curTot(man), '', ' +'))}</span>` : '');
+  if (!man.length) return `<section class="card mt pay-pen">${head}<div class="pay-none">Aucune prime à la main ${esc(dmo)}.</div></section>`;
+  return `<section class="card mt pay-pen">${head}
+    <div class="pay-pt pay-prt" role="table" aria-label="Primes à la main">
+      <div class="pay-ph" role="row"><span role="columnheader">Jour</span><span role="columnheader">Chatteur</span><span role="columnheader">Raison</span><span class="n" role="columnheader">Prime</span><span></span></div>
+      ${man.map(p => { const nm = p.cid ? cName(p.cid) : p.name || 'Inconnu'; return `<div class="pay-pr" role="row">
+        <span class="pay-date" role="cell">${esc(cap(fd(p.date, { weekday: 'short' })).replace('.', ''))} <b>${parse(p.date).getDate()}</b></span>
+        ${penWho(p.cid, nm, !p.cid ? '<span class="pay-chips"><span class="pill mute">Pas relié à l\'app</span></span>' : '')}
+        <span role="cell" data-l="Raison">${esc(p.reason || '')}</span>
+        <span class="n pay-pv" role="cell" data-l="Prime">+${esc(pAmt(p))}</span><span></span>
+      </div>`; }).join('')}
+    </div></section>`;
+}
+const bonusState = () => (S.bonus ||= { m: today().slice(0, 7), f: lsGet('kl_bonf', 'all') });
+function viewBonus() {
+  const B = bonusState(), m = B.m, cur = today().slice(0, 7);
+  $('#view').classList.add('v-pay');
+  const rate = num(S.settings.eurUsd);
+  const pens = penMonth(m), prs = primeMonth(m), man = prs.filter(p => !p.auto), d = S.primesLive?.[m];
+  const pd = dLong(halfPayday(m + '-B'));
+  $('#sub').textContent = `Primes payées avec la paie du ${pd} · pénalités retirées de la paie de leur quinzaine`;
+  $('#tools').innerHTML = `${seg('bonusF', B.f, [['all', 'Tout'], ['pr', 'Primes'], ['pen', 'Pénalités']])}<div class="stepper"><button class="navstep" type="button" data-act="bonPrev" aria-label="Mois précédent">‹</button><span class="lbl">${esc(cap(fd(m + '-01', { month: 'long', year: 'numeric' })))}</span><button class="navstep" type="button" data-act="bonNext" aria-label="Mois suivant" ${m >= cur ? 'disabled' : ''}>›</button>${m === cur ? '' : '<button class="navstep pay-home" type="button" data-act="bonHome">Ce mois</button>'}</div>`;
+  // tuiles : primes (auto au barème + à la main), pénalités, minimum de jours, bilan
+  const rows = paRows(d), min = num(d?.minDays);
+  const autoTot = d ? paTot(d) : r2(prs.filter(p => p.auto).reduce((a, p) => a + (curOfP(p) === 'EUR' ? num(p.amount) : 0), 0));
+  const mt = curTot(man), pT = { EUR: r2(autoTot + mt.EUR), USD: mt.USD }, nT = curTot(pens);
+  const nAuto = d ? rows.filter(r => r.reach && num(r.total)).length : new Set(prs.filter(p => p.auto).map(p => p.cid || p.name)).size;
+  const nElig = rows.filter(r => r.elig).length, nWait = rows.filter(r => !r.elig && r.reach).length;
+  const net = r2(pT.EUR - nT.EUR);
+  const h = tiles([
+    tile('Primes', pT.EUR || pT.USD ? '+' + esc(curTxt(pT, '', ' +')) : '0 €', `${nAuto} chatteur${payS(nAuto)} au barème · ${man.length} à la main${d && !d.done ? ' · en cours' : ''}`, { c: 'var(--good)', icon: 'star' }),
+    tile('Pénalités', nT.EUR || nT.USD ? '−' + esc(curTxt(nT, '', ' −')) : '0 €', `${pens.length} avertissement${payS(pens.length)} · ${penFines(pens)} avec amende`, { c: 'var(--bad)', icon: 'alert' }),
+    tile(min ? `${min} jours` : 'Jours', d && min ? `${nElig} / ${rows.length}` : '–', d && min ? (d.done ? `chatteur${payS(nElig)} avec au moins ${min} jours travaillés` : `ont au moins ${min} jours travaillés · ${nWait} peu${nWait > 1 ? 'vent' : 't'} encore y arriver`) : 'Pas de chiffres du bot pour ce mois', { c: 'var(--info)', icon: 'calendar' }),
+    tile('Bilan', `${net < 0 ? '−' : '+'}${esc(paE(Math.abs(net)))}`, 'Primes moins pénalités, en €', { c: 'var(--accent)', icon: 'money' }),
+  ], 4);
+  const f = B.f;
+  $('#view').innerHTML = h + (f !== 'pen' ? payAutoSection(m) + bonManual(m, man) : '') + (f !== 'pr' ? penMonthSection(m, pens, rate) + penListSection(m, pens) : '');
+}
+HOOK.seg.bonusF = v => { bonusState().f = v; lsSet('kl_bonf', v); };
+HOOK.act.bonPrev = () => { const B = bonusState(); B.m = addMonths(B.m + '-01', -1).slice(0, 7); B.allPen = false; render(); };
+HOOK.act.bonNext = () => { const B = bonusState(); const n = addMonths(B.m + '-01', 1).slice(0, 7); if (n <= today().slice(0, 7)) { B.m = n; B.allPen = false; render(); } };
+HOOK.act.bonHome = () => { const B = bonusState(); B.m = today().slice(0, 7); B.allPen = false; render(); };
+HOOK.act.bonAllPen = () => { bonusState().allPen = true; render(); };
 HOOK.seg.payF = v => { S.pay.f = v; };
 HOOK.act.payHome = () => { S.pay.key = halfStep(halfKey(today()), -1); S.open = null; render(); };
 
