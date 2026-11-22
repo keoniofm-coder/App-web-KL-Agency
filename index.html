@@ -2435,6 +2435,8 @@ tr.dc-todo td:first-child { box-shadow: inset 3px 0 0 var(--warn) }
 .v-pay .pa-pl .pay-pv { color: var(--bad) }
 .v-pay .pa-pl .pay-pv.zero { font: 700 12.5px var(--f-body); color: var(--warn) }
 .v-pay .pa-pl .pay-pr > [data-l="N°"] { color: var(--muted); font-size: 12.5px }
+.v-pay .pa-tots { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px }
+.v-pay .pay-aut-t .pay-pft .pay-pv small { display: block; font: 600 10.5px var(--f-body); color: var(--muted); text-align: right }
 .v-bonus .pa-more { display: flex; justify-content: center; padding: 12px 0 2px }
 @media (max-width: 760px) {
   .v-pay .pay-aut-t .pay-pr { grid-template-columns: repeat(5, minmax(0, 1fr)); column-gap: 6px }
@@ -7221,7 +7223,9 @@ function paPrime(r, min) {
 const paRows = d => Object.entries(d?.rows || {})
   .map(([cid, r]) => ({ ...r, cid, known: !!S.chatters[cid], name: S.chatters[cid] ? cName(cid) : r.name || 'Inconnu', okS: new Set(r.ok || []), elig: r.elig ?? true, reach: r.reach ?? true }))
   .sort((a, b) => b.reach - a.reach || num(b.total) - num(a.total) || a.name.localeCompare(b.name, 'fr'));
-const paTot = d => r2(paRows(d).reduce((a, r) => a + (r.reach ? num(r.total) : 0), 0));
+// à payer : ceux qui ont leurs jours ; possible : tout le monde, sans la règle des jours
+const paSum = (d, f) => r2(paRows(d).filter(f).reduce((a, r) => a + num(r.total), 0));
+const paReal = d => paSum(d, r => r.elig), paAll = d => paSum(d, () => true);
 const bonMo = m => { const mo = fd(m + '-01', { month: 'long' }); return { mo, dmo: (/^[aeiouyhâéè]/i.test(mo) ? 'd’' : 'de ') + mo }; };
 function payAutoSection(m) {
   const d = S.primesLive?.[m], cur = today().slice(0, 7), { mo, dmo } = bonMo(m);
@@ -7230,11 +7234,11 @@ function payAutoSection(m) {
   const bar = Object.fromEntries((d.bareme || []).map(b => [b.k, b]));
   const cols = PA_COLS.filter(([c]) => bar[c]);
   const list = paRows(d);
-  const min = num(d.minDays), tot = paTot(d), pd = dLong(halfPayday(m + '-B'));
+  const min = num(d.minDays), tot = paReal(d), all = paAll(d), pd = dLong(halfPayday(m + '-B'));
   const hint = d.done
     ? `Mois fini : elles vont le 1er à 10 h dans la paie du ${esc(pd)} et le récap part sur Discord.`
-    : `Pointage et Wysper du 1er au ${esc(dShort(d.upTo || today()))}, mis à jour à ${esc(wyHm(d.at))}. Le 1er à 10 h, elles vont dans la paie du ${esc(pd)} et le récap part sur Discord.`;
-  const head = secHead(title, hint, `<span class="pill ${d.done ? 'good' : 'info'}">${d.done ? 'Mois fini' : 'En cours'}${tot ? ' · +' + esc(paE(tot)) : ''}</span>`);
+    : `En cours : Pointage et Wysper du 1er au ${esc(dShort(d.upTo || today()))}, mis à jour à ${esc(wyHm(d.at))}. Le 1er à 10 h, elles vont dans la paie du ${esc(pd)} et le récap part sur Discord.`;
+  const head = secHead(title, hint, `<span class="pa-tots"><span class="pill good" title="${min ? `Chatteurs qui ont leurs ${min} jours travaillés` : 'À payer'}">À payer · +${esc(paE(tot))}</span>${all !== tot ? `<span class="pill mute" title="Si tout le monde avait ses ${min} jours travaillés">Possible · +${esc(paE(all))}</span>` : ''}</span>`);
   const legend = `<div class="pa-bar">${min ? `<span class="pa-min" title="Jours avec un shift pointé (présent, retard ou coupure)">🗓️ Au moins <b>${min} jours</b> travaillés</span>` : ''}${(d.bareme || []).map(b => `<span title="${esc(b.l || '')}">${esc(b.e || '')} ${esc(b.short || b.l || '')} <b>${esc(paE(b.amount))}</b>${b.manual ? '<small>à la main sur Discord</small>' : ''}</span>`).join('')}</div>`;
   if (!list.length) return `<section class="card mt pay-pen pay-aut">${head}${legend}<div class="pay-none">Aucun chatteur avec un shift pointé ${esc(dmo)}.</div></section>`;
   const cell = (c, l, r) => { const [v, t, sv] = paVal(c, r); const s = r.okS.has(c) ? 'ok' : v === '–' ? 'na' : 'no'; return `<span class="n" role="cell" data-l="${esc(l)}"><span class="pa-c ${s}" title="${esc(t)}">${s === 'ok' ? ICONS.check : ''}${sv && sv !== v ? `<i class="pa-lg">${esc(v)}</i><i class="pa-sm">${esc(sv)}</i>` : esc(v)}</span></span>`; };
@@ -7246,7 +7250,7 @@ function payAutoSection(m) {
         ${cols.map(([c, l, , sh]) => cell(c, sh || l, r)).join('')}
         ${paPrime(r, min)}
       </div>`).join('')}
-      <div class="pay-pr pay-pft" role="row"><span role="cell">Total · ${list.length} chatteur${payS(list.length)}</span>${cols.map(([c, l, , sh]) => `<span class="n" role="cell" data-l="${esc(sh || l)}" title="Chatteurs qui ont cette prime"><b>${list.filter(r => r.okS.has(c)).length}</b> / ${list.length}</span>`).join('')}<span class="n pay-pv" role="cell" data-l="Prime">+${esc(paE(tot))}</span></div>
+      <div class="pay-pr pay-pft" role="row"><span role="cell">Total · ${list.length} chatteur${payS(list.length)}</span>${cols.map(([c, l, , sh]) => `<span class="n" role="cell" data-l="${esc(sh || l)}" title="Chatteurs qui ont cette prime"><b>${list.filter(r => r.okS.has(c)).length}</b> / ${list.length}</span>`).join('')}<span class="n pay-pv" role="cell" data-l="Prime" title="À payer${all !== tot ? ' · possible sans la règle des jours : +' + esc(paE(all)) : ''}">+${esc(paE(tot))}${all !== tot ? `<small>possible +${esc(paE(all))}</small>` : ''}</span></div>
     </div></section>`;
 }
 // ---- pénalités du mois : une colonne par famille de fautes (barème du bot)
@@ -7326,16 +7330,20 @@ function viewBonus() {
   $('#tools').innerHTML = `${seg('bonusF', B.f, [['all', 'Tout'], ['pr', 'Primes'], ['pen', 'Pénalités']])}<div class="stepper"><button class="navstep" type="button" data-act="bonPrev" aria-label="Mois précédent">‹</button><span class="lbl">${esc(cap(fd(m + '-01', { month: 'long', year: 'numeric' })))}</span><button class="navstep" type="button" data-act="bonNext" aria-label="Mois suivant" ${m >= cur ? 'disabled' : ''}>›</button>${m === cur ? '' : '<button class="navstep pay-home" type="button" data-act="bonHome">Ce mois</button>'}</div>`;
   // tuiles : primes (auto au barème + à la main), pénalités, minimum de jours, bilan
   const rows = paRows(d), min = num(d?.minDays);
-  const autoTot = d ? paTot(d) : r2(prs.filter(p => p.auto).reduce((a, p) => a + (curOfP(p) === 'EUR' ? num(p.amount) : 0), 0));
-  const mt = curTot(man), pT = { EUR: r2(autoTot + mt.EUR), USD: mt.USD }, nT = curTot(pens);
-  const nAuto = d ? rows.filter(r => r.reach && num(r.total)).length : new Set(prs.filter(p => p.auto).map(p => p.cid || p.name)).size;
+  // à payer (ceux qui ont leurs jours) et possible (tout le monde) ; sans chiffres du bot : les primes auto déjà écrites
+  const wrote = r2(prs.filter(p => p.auto).reduce((a, p) => a + (curOfP(p) === 'EUR' ? num(p.amount) : 0), 0));
+  const autoReal = d ? paReal(d) : wrote, autoAll = d ? paAll(d) : wrote;
+  const mt = curTot(man), pT = { EUR: r2(autoReal + mt.EUR), USD: mt.USD }, pAll = r2(autoAll + mt.EUR), nT = curTot(pens);
+  const nPay = d ? rows.filter(r => r.elig && num(r.total)).length : new Set(prs.filter(p => p.auto).map(p => p.cid || p.name)).size;
   const nElig = rows.filter(r => r.elig).length, nWait = rows.filter(r => !r.elig && r.reach).length;
-  const net = r2(pT.EUR - nT.EUR);
+  // bilan vu de la caisse : les pénalités rentrent, les primes à payer sortent
+  const net = r2(nT.EUR - pT.EUR), netAll = r2(nT.EUR - pAll);
+  const sg = v => `${v < 0 ? '−' : '+'}${paE(Math.abs(v))}`;
   const h = tiles([
-    tile('Primes', pT.EUR || pT.USD ? '+' + esc(curTxt(pT, '', ' +')) : '0 €', `${nAuto} chatteur${payS(nAuto)} au barème · ${man.length} à la main${d && !d.done ? ' · en cours' : ''}`, { c: 'var(--good)', icon: 'star' }),
+    tile('Primes à payer', pT.EUR || pT.USD ? '+' + esc(curTxt(pT, '', ' +')) : '0 €', `${pAll !== pT.EUR ? `Possible : +${esc(paE(pAll))} · ` : ''}${nPay} chatteur${payS(nPay)} au barème · ${man.length} à la main`, { c: 'var(--good)', icon: 'star' }),
     tile('Pénalités', nT.EUR || nT.USD ? '−' + esc(curTxt(nT, '', ' −')) : '0 €', `${pens.length} avertissement${payS(pens.length)} · ${penFines(pens)} avec amende`, { c: 'var(--bad)', icon: 'alert' }),
     tile(min ? `${min} jours` : 'Jours', d && min ? `${nElig} / ${rows.length}` : '–', d && min ? (d.done ? `chatteur${payS(nElig)} avec au moins ${min} jours travaillés` : `ont au moins ${min} jours travaillés · ${nWait} peu${nWait > 1 ? 'vent' : 't'} encore y arriver`) : 'Pas de chiffres du bot pour ce mois', { c: 'var(--info)', icon: 'calendar' }),
-    tile('Bilan', `${net < 0 ? '−' : '+'}${esc(paE(Math.abs(net)))}`, 'Primes moins pénalités, en €', { c: 'var(--accent)', icon: 'money' }),
+    tile('Bilan', esc(sg(net)), `Pénalités moins primes à payer${netAll !== net ? ` · ${esc(sg(netAll))} avec les primes possibles` : ''}`, { c: net < 0 ? 'var(--bad)' : 'var(--good)', icon: 'money' }),
   ], 4);
   const f = B.f;
   $('#view').innerHTML = h + (f !== 'pen' ? payAutoSection(m) + bonManual(m, man) : '') + (f !== 'pr' ? penMonthSection(m, pens, rate) + penListSection(m, pens) : '');
